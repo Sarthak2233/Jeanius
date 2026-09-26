@@ -1,0 +1,20 @@
+@layer base {
+  :root {
+    --background: #fdfbf7;
+    --foreground: #0f172a;
+    --border: #e2e8f0;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}

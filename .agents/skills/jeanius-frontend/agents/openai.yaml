@@ -1,0 +1,104 @@
+interface:
+  display_name: "Jeanius Frontend"
+  short_description: "Frontend codebase for Jeanius"
+  long_description: "The frontend codebase for Jeanius, a direct-to-consumer handmade jeans company. Includes the main e-commerce site, product configurator, and member portal."
+
+policy:
+  allow_implicit_invocation: false
+
+input_schema:
+  type: "object"
+  properties:
+    product_id:
+      type: "string"
+      description: "The product ID to display or configure."
+      required: true
+    mode:
+      type: "string"
+      description: "The mode to use: view-product, configure-product, view-category, checkout."
+      enum: ["view-product", "configure-product", "view-category", "checkout"]
+      required: true
+    section:
+      type: "string"
+      description: "Optional section to navigate to (e.g., 'description', 'shipping')."
+      required: false
+
+output_schema:
+  type: "object"
+  properties:
+    product_id:
+      type: "string"
+      description: "The product ID that was processed."
+    mode_applied:
+      type: "string"
+      description: "The mode that was used."
+    view_result:
+      type: "string"
+      description: "Description of what was viewed or configured."
+    next_steps:
+      type: "array"
+      description: "Suggested next steps or related products."
+      items:
+        type: "string"
+
+examples:
+  - name: "View a specific product"
+    input:
+      product_id: "OM2025-1104-09"
+      mode: "view-product"
+    output:
+      product_id: "OM2025-1104-09"
+      mode_applied: "view-product"
+      view_result: "Displayed OM2025-1104-09 product page with description, sizing guide, and checkout CTA."
+      next_steps:
+        - "View related OM products"
+        - "Go to cart"
+
+  - name: "Configure a product for making"
+    input:
+      product_id: "OM2025-1104-09"
+      mode: "configure-product"
+    output:
+      product_id: "OM2025-1104-09"
+      mode_applied: "configure-product"
+      view_result: "Started product configuration session for OM2025-1104-09 with waist, hip, inseam, and customization options."
+      next_steps:
+        - "Complete configuration and add to cart"
+        - "Add product to wishlist"
+
+  - name: "View a product category"
+    input:
+      product_id: "OM"
+      mode: "view-category"
+    output:
+      product_id: "OM"
+      mode_applied: "view-category"
+      view_result: "Displayed the Order Made (OM) category page with all available OM products."
+      next_steps:
+        - "View DROP products"
+        - "Visit shop landing page"
+
+  - name: "Proceed to checkout"
+    input:
+      product_id: ""
+      mode: "checkout"
+    output:
+      product_id: ""
+      mode_applied: "checkout"
+      view_result: "Navigated to the checkout page with current cart contents."
+      next_steps:
+        - "Continue shopping"
+        - "Select payment method"
+
+  - name: "View product section"
+    input:
+      product_id: "OM2025-1104-09"
+      mode: "view-product"
+      section: "shipping"
+    output:
+      product_id: "OM2025-1104-09"
+      mode_applied: "view-product"
+      view_result: "Displayed product details with focus on shipping information and delivery timing."
+      next_steps:
+        - "View sizing guide"
+        - "Contact support"
