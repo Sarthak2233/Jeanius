@@ -6,16 +6,22 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "clean": "turbo run clean",
     "diagrams:generate": "node --experimental-strip-types scripts/generate-diagrams.ts"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^22.13.5",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0",
+    "prettier": "^3.5.2",
     "turbo": "^2.4.4",
     "typescript": "^5.7.3",
-    "prettier": "^3.5.2"
+    "typescript-eslint": "^8.70.1"
   }
 }

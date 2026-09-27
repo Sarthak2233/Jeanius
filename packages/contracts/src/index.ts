@@ -73,16 +73,7 @@ export const CreateCheckoutSchema = z.object({
 
 export const TransitionProductionStageSchema = z.object({
   jobId: z.string().uuid(),
-  stage: z.enum([
-    'QUEUED',
-    'CUTTING',
-    'SEWING',
-    'WASHING',
-    'HARDWARE',
-    'QC',
-    'READY',
-    'SHIPPED',
-  ]),
+  stage: z.enum(['QUEUED', 'CUTTING', 'SEWING', 'WASHING', 'HARDWARE', 'QC', 'READY', 'SHIPPED']),
   notes: z.string().optional(),
 });
 
@@ -106,7 +97,9 @@ export const DropReturnRequestSchema = z.object({
   customerEmail: z.string().email(),
   reason: z.string().min(10, 'Please explain the reason for your return'),
   unwornConfirmation: z.literal(true, {
-    errorMap: () => ({ message: 'You must confirm the garment is unworn and unwashed with tags intact' }),
+    errorMap: () => ({
+      message: 'You must confirm the garment is unworn and unwashed with tags intact',
+    }),
   }),
 });
 
@@ -207,4 +200,3 @@ export type RejectReturnDto = z.infer<typeof RejectReturnSchema>;
 export type AccessLevelDto = z.infer<typeof AccessLevelSchema>;
 export type SupportChannelDto = z.infer<typeof SupportChannelSchema>;
 export type CustomOrderInquiryStatusDto = z.infer<typeof CustomOrderInquiryStatusSchema>;
-

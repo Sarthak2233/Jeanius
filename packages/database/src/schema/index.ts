@@ -16,7 +16,9 @@ export const products = pgTable('products', {
 
 export const productVariants = pgTable('product_variants', {
   id: uuid('id').primaryKey().defaultRandom(),
-  productId: uuid('product_id').notNull().references(() => products.id, { onDelete: 'cascade' }),
+  productId: uuid('product_id')
+    .notNull()
+    .references(() => products.id, { onDelete: 'cascade' }),
   sku: text('sku').notNull().unique(),
   options: jsonb('options').$type<Record<string, string>>().notNull(),
   additionalPriceAmount: integer('additional_price_amount').notNull().default(0),
@@ -41,11 +43,15 @@ export const orders = pgTable('orders', {
 
 export const productionJobs = pgTable('production_jobs', {
   id: uuid('id').primaryKey().defaultRandom(),
-  orderId: uuid('order_id').notNull().references(() => orders.id, { onDelete: 'cascade' }),
+  orderId: uuid('order_id')
+    .notNull()
+    .references(() => orders.id, { onDelete: 'cascade' }),
   orderLineId: text('order_line_id').notNull(),
   currentStage: text('current_stage', {
     enum: ['QUEUED', 'CUTTING', 'SEWING', 'WASHING', 'HARDWARE', 'QC', 'READY', 'SHIPPED'],
-  }).notNull().default('QUEUED'),
+  })
+    .notNull()
+    .default('QUEUED'),
   targetCompletionDate: timestamp('target_completion_date').notNull(),
   notes: jsonb('notes').$type<string[]>(),
   delayReason: text('delay_reason'),

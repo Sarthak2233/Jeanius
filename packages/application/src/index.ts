@@ -2,13 +2,7 @@
  * @jeanius/application
  * Use cases, application services, and ports (repository/gateway interfaces).
  */
-import type {
-  Product,
-  Cart,
-  Order,
-  ProductionJob,
-  ProductionStage,
-} from '@jeanius/domain';
+import type { Product, Cart, Order, ProductionJob, ProductionStage } from '@jeanius/domain';
 import type { AddToCartDto, CreateCheckoutDto } from '@jeanius/contracts';
 
 // ================= Ports (Repository & Gateway Interfaces) =================
@@ -79,7 +73,11 @@ export class CheckoutService {
 export class ProductionService {
   constructor(private readonly productionRepo: IProductionJobRepository) {}
 
-  async transitionStage(jobId: string, nextStage: ProductionStage, notes?: string): Promise<ProductionJob> {
+  async transitionStage(
+    jobId: string,
+    nextStage: ProductionStage,
+    notes?: string,
+  ): Promise<ProductionJob> {
     const job = await this.productionRepo.findById(jobId);
     if (!job) {
       throw new Error(`ProductionJob ${jobId} not found`);

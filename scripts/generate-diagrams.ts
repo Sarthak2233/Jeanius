@@ -38,7 +38,7 @@ function generateDiagrams(): void {
     try {
       execSync(
         `npx -y @mermaid-js/mermaid-cli -i "${inputPath}" -o "${outputPath}" -b transparent -t neutral --quiet`,
-        { stdio: 'pipe' }
+        { stdio: 'pipe' },
       );
 
       if (existsSync(outputPath)) {

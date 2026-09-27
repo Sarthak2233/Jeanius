@@ -6,13 +6,7 @@
 // ================= Actors & Roles (JN-003) =================
 
 export type ActorRole =
-  | 'GUEST'
-  | 'CUSTOMER'
-  | 'MEMBER'
-  | 'TAILOR'
-  | 'FULFILLMENT'
-  | 'SUPPORT'
-  | 'ADMIN';
+  'GUEST' | 'CUSTOMER' | 'MEMBER' | 'TAILOR' | 'FULFILLMENT' | 'SUPPORT' | 'ADMIN';
 
 export interface Actor {
   readonly id: string;
@@ -43,14 +37,7 @@ export interface Address {
 // ================= OM Manufacturing Pipeline (JN-005) =================
 
 export type ProductionStage =
-  | 'QUEUED'
-  | 'CUTTING'
-  | 'SEWING'
-  | 'WASHING'
-  | 'HARDWARE'
-  | 'QC'
-  | 'READY'
-  | 'SHIPPED';
+  'QUEUED' | 'CUTTING' | 'SEWING' | 'WASHING' | 'HARDWARE' | 'QC' | 'READY' | 'SHIPPED';
 
 export const ORDERED_PRODUCTION_STAGES: readonly ProductionStage[] = [
   'QUEUED',
@@ -92,7 +79,7 @@ export interface ProductionJob {
  */
 export function canAdvanceProductionStage(
   current: ProductionStage,
-  next: ProductionStage
+  next: ProductionStage,
 ): boolean {
   if (current === next) return false;
   if (current === 'QC' && next === 'SEWING') return true; // Rework loop
@@ -106,10 +93,7 @@ export function canAdvanceProductionStage(
 /**
  * Calculates estimated completion date dynamically based on order date and ProductionPolicy.
  */
-export function calculateEstimatedCompletion(
-  orderDate: Date,
-  policy: ProductionPolicy
-): Date {
+export function calculateEstimatedCompletion(orderDate: Date, policy: ProductionPolicy): Date {
   const result = new Date(orderDate.getTime());
   let addedDays = 0;
   const targetDays = policy.maximumDays;
@@ -132,19 +116,9 @@ export function calculateEstimatedCompletion(
 
 // ================= Catalog & Products (JN-007, JN-008) =================
 
-export type ProductStatus =
-  | 'DRAFT'
-  | 'SCHEDULED'
-  | 'PUBLISHED'
-  | 'SOLD_OUT'
-  | 'ARCHIVED';
+export type ProductStatus = 'DRAFT' | 'SCHEDULED' | 'PUBLISHED' | 'SOLD_OUT' | 'ARCHIVED';
 
-export type VariantStatus =
-  | 'AVAILABLE'
-  | 'LOW_STOCK'
-  | 'SOLD_OUT'
-  | 'DISABLED'
-  | 'ARCHIVED';
+export type VariantStatus = 'AVAILABLE' | 'LOW_STOCK' | 'SOLD_OUT' | 'DISABLED' | 'ARCHIVED';
 
 export type DropFulfillmentStatus =
   | 'INVENTORY_STAGED'
@@ -228,13 +202,7 @@ export type OrderStatus =
   | 'REFUNDED';
 
 export type PaymentStatus =
-  | 'INITIATED'
-  | 'PENDING'
-  | 'PAID'
-  | 'FAILED'
-  | 'EXPIRED'
-  | 'REFUNDED'
-  | 'PARTIALLY_REFUNDED';
+  'INITIATED' | 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED' | 'REFUNDED' | 'PARTIALLY_REFUNDED';
 
 export interface OrderLine {
   readonly id: string;
@@ -268,19 +236,14 @@ export interface Order {
  * Validates whether an order can be cancelled.
  * Rule: OM orders cannot be cancelled once cutting has begun.
  */
-export function canCancelOrder(
-  order: Order,
-  jobs?: readonly ProductionJob[]
-): boolean {
+export function canCancelOrder(order: Order, jobs?: readonly ProductionJob[]): boolean {
   if (order.status === 'CANCELLED' || order.status === 'SHIPPED' || order.status === 'DELIVERED') {
     return false;
   }
 
   // If OM jobs exist, verify none have reached CUTTING or beyond
   if (jobs && jobs.length > 0) {
-    const hasCuttingStarted = jobs.some(
-      (job) => job.currentStage !== 'QUEUED'
-    );
+    const hasCuttingStarted = jobs.some((job) => job.currentStage !== 'QUEUED');
     if (hasCuttingStarted) {
       return false; // Point of no return
     }
@@ -292,10 +255,7 @@ export function canCancelOrder(
 /**
  * Validates product lifecycle state transitions (JN-007).
  */
-export function canTransitionProductStatus(
-  current: ProductStatus,
-  next: ProductStatus
-): boolean {
+export function canTransitionProductStatus(current: ProductStatus, next: ProductStatus): boolean {
   if (current === next) return false;
   if (current === 'ARCHIVED') return false; // Archived products cannot transition
 
@@ -316,18 +276,19 @@ export function canTransitionProductStatus(
 /**
  * Validates variant lifecycle state transitions (JN-008).
  */
-export function canTransitionVariantStatus(
-  current: VariantStatus,
-  next: VariantStatus
-): boolean {
+export function canTransitionVariantStatus(current: VariantStatus, next: VariantStatus): boolean {
   if (current === next) return false;
   if (current === 'ARCHIVED') return false;
 
   switch (current) {
     case 'AVAILABLE':
-      return next === 'LOW_STOCK' || next === 'SOLD_OUT' || next === 'DISABLED' || next === 'ARCHIVED';
+      return (
+        next === 'LOW_STOCK' || next === 'SOLD_OUT' || next === 'DISABLED' || next === 'ARCHIVED'
+      );
     case 'LOW_STOCK':
-      return next === 'AVAILABLE' || next === 'SOLD_OUT' || next === 'DISABLED' || next === 'ARCHIVED';
+      return (
+        next === 'AVAILABLE' || next === 'SOLD_OUT' || next === 'DISABLED' || next === 'ARCHIVED'
+      );
     case 'SOLD_OUT':
       return next === 'AVAILABLE' || next === 'ARCHIVED';
     case 'DISABLED':
@@ -340,10 +301,7 @@ export function canTransitionVariantStatus(
 /**
  * Validates payment lifecycle state transitions (JN-009).
  */
-export function canTransitionPaymentStatus(
-  current: PaymentStatus,
-  next: PaymentStatus
-): boolean {
+export function canTransitionPaymentStatus(current: PaymentStatus, next: PaymentStatus): boolean {
   if (current === next) return false;
 
   switch (current) {
@@ -367,10 +325,7 @@ export function canTransitionPaymentStatus(
 /**
  * Checks whether a delivered DROP garment is within its 5-day inspection return window (JN-006).
  */
-export function isDropEligibleForReturn(
-  deliveryDate: Date,
-  returnWindowDays: number = 5
-): boolean {
+export function isDropEligibleForReturn(deliveryDate: Date, returnWindowDays: number = 5): boolean {
   const now = new Date();
   const windowMs = returnWindowDays * 24 * 60 * 60 * 1000;
   return now.getTime() - deliveryDate.getTime() <= windowMs;
@@ -411,7 +366,7 @@ export interface Shipment {
 
 export function canTransitionShipmentStatus(
   current: ShipmentStatus,
-  next: ShipmentStatus
+  next: ShipmentStatus,
 ): boolean {
   switch (current) {
     case 'PENDING':
@@ -428,11 +383,7 @@ export function canTransitionShipmentStatus(
         next === 'RETURNED_TO_SENDER'
       );
     case 'OUT_FOR_DELIVERY':
-      return (
-        next === 'DELIVERED' ||
-        next === 'ATTEMPTED_DELIVERY' ||
-        next === 'RETURNED_TO_SENDER'
-      );
+      return next === 'DELIVERED' || next === 'ATTEMPTED_DELIVERY' || next === 'RETURNED_TO_SENDER';
     case 'ATTEMPTED_DELIVERY':
       return next === 'OUT_FOR_DELIVERY' || next === 'RETURNED_TO_SENDER';
     case 'DELIVERED':
@@ -471,10 +422,7 @@ export interface ReturnRequest {
   readonly qcNotes?: string;
 }
 
-export function canTransitionReturnStatus(
-  current: ReturnStatus,
-  next: ReturnStatus
-): boolean {
+export function canTransitionReturnStatus(current: ReturnStatus, next: ReturnStatus): boolean {
   switch (current) {
     case 'REQUESTED':
       return next === 'APPROVED' || next === 'REJECTED';
@@ -501,10 +449,7 @@ export function canTransitionReturnStatus(
 
 export type AccessLevel = 'PUBLIC' | 'AUTHENTICATED' | 'MEMBER' | 'ADMIN';
 
-export function canActorAccessLevel(
-  actorRole: ActorRole,
-  requiredLevel: AccessLevel
-): boolean {
+export function canActorAccessLevel(actorRole: ActorRole, requiredLevel: AccessLevel): boolean {
   if (requiredLevel === 'PUBLIC') {
     return true;
   }
@@ -514,10 +459,7 @@ export function canActorAccessLevel(
   }
 
   if (requiredLevel === 'MEMBER') {
-    return (
-      actorRole === 'MEMBER' ||
-      actorRole === 'ADMIN'
-    );
+    return actorRole === 'MEMBER' || actorRole === 'ADMIN';
   }
 
   if (requiredLevel === 'ADMIN') {
@@ -532,11 +474,7 @@ export function canActorAccessLevel(
 export type SupportChannel = 'INSTAGRAM_DM' | 'EMAIL' | 'CUSTOM_ORDER_FORM';
 
 export type CustomOrderInquiryStatus =
-  | 'INQUIRY_RECEIVED'
-  | 'QUOTED'
-  | 'APPROVED'
-  | 'REJECTED'
-  | 'CONVERTED_TO_ORDER';
+  'INQUIRY_RECEIVED' | 'QUOTED' | 'APPROVED' | 'REJECTED' | 'CONVERTED_TO_ORDER';
 
 export interface CustomOrderInquiry {
   readonly id: string;
@@ -563,23 +501,44 @@ export interface DomainEvent<T = unknown> {
 
 export type OrderCreatedEvent = DomainEvent<{ orderId: string; orderNumber: string }>;
 export type OrderPaidEvent = DomainEvent<{ orderId: string; paymentTransactionId: string }>;
-export type ProductionJobStartedEvent = DomainEvent<{ jobId: string; orderId: string; stage: ProductionStage }>;
+export type ProductionJobStartedEvent = DomainEvent<{
+  jobId: string;
+  orderId: string;
+  stage: ProductionStage;
+}>;
 export type ProductionStageAdvancedEvent = DomainEvent<{
   jobId: string;
   previousStage: ProductionStage;
   nextStage: ProductionStage;
 }>;
-export type OrderShippedEvent = DomainEvent<{ orderId: string; trackingNumber: string; carrier: string }>;
+export type OrderShippedEvent = DomainEvent<{
+  orderId: string;
+  trackingNumber: string;
+  carrier: string;
+}>;
 export type ProductPublishedEvent = DomainEvent<{ productId: string; slug: string }>;
 export type VariantSoldOutEvent = DomainEvent<{ variantId: string; sku: string }>;
 export type PaymentFailedEvent = DomainEvent<{ paymentId: string; reason: string }>;
 export type PaymentRefundedEvent = DomainEvent<{ paymentId: string; amount: Money }>;
-export type DropReturnRequestedEvent = DomainEvent<{ orderId: string; orderLineId: string; reason: string }>;
+export type DropReturnRequestedEvent = DomainEvent<{
+  orderId: string;
+  orderLineId: string;
+  reason: string;
+}>;
 export type ShipmentPackedEvent = DomainEvent<{ shipmentId: string; orderId: string }>;
-export type ShipmentDispatchedEvent = DomainEvent<{ shipmentId: string; trackingNumber: string; carrier: string }>;
+export type ShipmentDispatchedEvent = DomainEvent<{
+  shipmentId: string;
+  trackingNumber: string;
+  carrier: string;
+}>;
 export type ShipmentDeliveredEvent = DomainEvent<{ shipmentId: string; deliveredAt: string }>;
 export type ReturnApprovedEvent = DomainEvent<{ returnId: string; orderId: string }>;
 export type ReturnRejectedEvent = DomainEvent<{ returnId: string; reason: string }>;
 export type ReturnCompletedEvent = DomainEvent<{ returnId: string; refundAmount: Money }>;
-export type CustomOrderInquiryCreatedEvent = DomainEvent<{ inquiryId: string; customerEmail: string }>;
+export type CustomOrderInquiryCreatedEvent = DomainEvent<{
+  inquiryId: string;
+  customerEmail: string;
+}>;
 
+// ================= Standardized Errors (JN-053) =================
+export * from './errors/index.js';

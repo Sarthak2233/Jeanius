@@ -150,23 +150,25 @@ jeanius/
 
 | ID     | Task                           | Description                                               | Status      |
 | ------ | ------------------------------ | --------------------------------------------------------- | ----------- |
-| JN-046 | Enable strict TypeScript       | Strict mode across repository.                            | NOT_STARTED |
-| JN-047 | Configure ESLint               | Shared lint rules.                                        | NOT_STARTED |
-| JN-048 | Configure Prettier             | Shared formatting.                                        | NOT_STARTED |
-| JN-049 | Configure import rules         | Prevent invalid architectural imports.                    | NOT_STARTED |
-| JN-050 | Define domain dependency rules | Domain cannot depend on infrastructure/UI.                | NOT_STARTED |
-| JN-051 | Define database rules          | Database access only through repository/data layer.       | NOT_STARTED |
-| JN-052 | Define client/server rules     | Prevent server secrets/code from entering client bundles. | NOT_STARTED |
-| JN-053 | Define error rules             | Standardize domain/application/API errors.                | NOT_STARTED |
-| JN-054 | Define validation rules        | Zod at external boundaries.                               | NOT_STARTED |
-| JN-055 | Define naming conventions      | Files, entities, repositories, actions and components.    | NOT_STARTED |
-| JN-056 | Define testing requirements    | Establish required test level by feature.                 | NOT_STARTED |
-| JN-057 | Define migration rules         | Database changes must use migrations.                     | NOT_STARTED |
-| JN-058 | Define security rules          | Authentication, authorization, secrets, uploads and PII.  | NOT_STARTED |
-| JN-059 | Define observability rules     | Structured logging and critical event tracking.           | NOT_STARTED |
-| JN-060 | Define commit rules            | Conventional commits/review requirements.                 | NOT_STARTED |
-| JN-061 | Define CI quality gates        | Build, lint, typecheck, test and security checks.         | NOT_STARTED |
-| JN-062 | Create contributor guide       | Explain repository architecture and workflows.            | NOT_STARTED |
+| JN-046 | Enable strict TypeScript       | Strict mode across repository.                            | DONE        |
+| JN-047 | Configure ESLint               | Shared lint rules.                                        | DONE        |
+| JN-048 | Configure Prettier             | Shared formatting.                                        | DONE        |
+| JN-049 | Configure import rules         | Prevent invalid architectural imports.                    | DONE        |
+| JN-050 | Define domain dependency rules | Domain cannot depend on infrastructure/UI.                | DONE        |
+| JN-051 | Define database rules          | Database access only through repository/data layer.       | DONE        |
+| JN-052 | Define client/server rules     | Prevent server secrets/code from entering client bundles. | DONE        |
+| JN-053 | Define error rules             | Standardize domain/application/API errors.                | DONE        |
+| JN-054 | Define validation rules        | Zod at external boundaries.                               | DONE        |
+| JN-055 | Define naming conventions      | Files, entities, repositories, actions and components.    | DONE        |
+| JN-056 | Define testing requirements    | Establish required test level by feature.                 | DONE        |
+| JN-057 | Define migration rules         | Database changes must use migrations.                     | DONE        |
+| JN-058 | Define security rules          | Authentication, authorization, secrets, uploads and PII.  | DONE        |
+| JN-059 | Define observability rules     | Structured logging and critical event tracking.           | DONE        |
+| JN-060 | Define commit rules            | Conventional commits/review requirements.                 | DONE        |
+| JN-061 | Define CI quality gates        | Build, lint, typecheck, test and security checks.         | DONE        |
+| JN-062 | Create contributor guide       | Explain repository architecture and workflows.            | DONE        |
+
+**Exit:** Engineering governance codified in `.agents/rules/`, CI quality gates verified, and monorepo enforces zero-error builds.
 
 ---
 
