@@ -8,6 +8,11 @@ This document explains the internal structure of the Jeanius monorepo, detailing
 
 The codebase is structured as a **Domain-Driven Design (DDD) Modular Monolith** using Turborepo and pnpm workspaces:
 
+![Architecture Component Layers](../assets/diagrams/architecture-component-layers.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
+
 ```mermaid
 graph TD
     subgraph Frontend & API Runtimes
@@ -52,6 +57,8 @@ graph TD
     Integrations -.->|Implements Gateways| AppLayer
     Integrations --> Domain
 ```
+
+</details>
 
 ---
 

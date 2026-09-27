@@ -1,0 +1,20 @@
+stateDiagram-v2
+    [*] --> DRAFT: Cart configured & customer proceeds to checkout
+    DRAFT --> PENDING_PAYMENT: Checkout submitted & PaymentIntent created
+    PENDING_PAYMENT --> PAID: Payment gateway confirms capture
+    PENDING_PAYMENT --> CANCELLED: Abandoned or expired session
+    
+    PAID --> IN_PRODUCTION: Order-Made (OM) garment job queued
+    PAID --> READY_FOR_DISPATCH: Pre-made DROP batch allocated
+    
+    IN_PRODUCTION --> READY_FOR_DISPATCH: Final QC passed & packaging complete
+    READY_FOR_DISPATCH --> SHIPPED: Courier tracking generated (Kathmandu dispatch)
+    SHIPPED --> DELIVERED: Carrier confirms consignee delivery
+    
+    PAID --> REFUNDED: Cancelled prior to cutting (OM only)
+    DELIVERED --> RETURNED: Return inspected & accepted (DROP only, 5-day window)
+    
+    CANCELLED --> [*]
+    REFUNDED --> [*]
+    RETURNED --> [*]
+    DELIVERED --> [*]

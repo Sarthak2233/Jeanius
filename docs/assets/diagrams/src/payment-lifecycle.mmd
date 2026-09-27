@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> INITIATED: PaymentIntent created with correlation ID
+    INITIATED --> PENDING: Customer redirected to payment rail
+    PENDING --> EXPIRED: Session timed out (30m TTL)
+    PENDING --> FAILED: Card declined or user abandoned
+    PENDING --> PAID: Webhook verified & signature validated
+    
+    PAID --> REFUNDED: Full refund issued (Pre-cutting OM or approved DROP return)
+    PAID --> PARTIALLY_REFUNDED: Partial credit / shipping adjustment
+    
+    EXPIRED --> [*]
+    FAILED --> [*]
+    REFUNDED --> [*]

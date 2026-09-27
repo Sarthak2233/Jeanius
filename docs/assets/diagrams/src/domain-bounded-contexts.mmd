@@ -1,0 +1,31 @@
+graph TD
+    subgraph Core Commerce Contexts
+        Catalog["Catalog and Product<br/>• Products, Options, Variants"]
+        Cart["Cart and Checkout<br/>• CartLines, Currency, Taxes"]
+        Order["Order Management<br/>• Orders, Lines, Snapshot"]
+        Payment["Payment and Reconciliation<br/>• PaymentIntents, Webhooks"]
+    end
+
+    subgraph Operations and Fulfillment Contexts
+        Production["OM Workshop Operations<br/>• 8 Stages, Cut Tickets, Artisans"]
+        Inventory["DROP Inventory<br/>• Physical Stock, Reservations"]
+        Shipping["Shipment and Logistics<br/>• Waybills, Tracking, Carriers"]
+    end
+
+    subgraph Customer and Community Contexts
+        Customer["Customer and Membership<br/>• Accounts, Roles, Together Drops"]
+        Support["Support and Custom Inquiries<br/>• Bespoke Quotes, Channel Routing"]
+    end
+
+    Cart -->|References Variant| Catalog
+    Order -->|Created from| Cart
+    Order -->|Snapshots Price and Fit| Catalog
+    Payment -->|Authorizes and Settles| Order
+    Production -->|Fulfills OM Lines| Order
+    Inventory -->|Fulfills DROP Lines| Order
+    Shipping -->|Dispatches from| Production
+    Shipping -->|Dispatches from| Inventory
+    Customer -->|Places| Order
+    Customer -->|Accesses Member Drops| Catalog
+    Support -->|Escalates Issues| Order
+    Support -->|Converts Bespoke Quote| Order

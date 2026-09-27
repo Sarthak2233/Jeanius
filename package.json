@@ -2,13 +2,15 @@
   "name": "jeanius-monorepo",
   "private": true,
   "packageManager": "pnpm@11.17.0",
+  "type": "module",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "diagrams:generate": "node --experimental-strip-types scripts/generate-diagrams.ts"
   },
   "devDependencies": {
     "@types/node": "^22.13.5",

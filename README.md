@@ -86,6 +86,11 @@ jeanius/
 
 All interactions follow strict unidirectional flow and inversion of control:
 
+![Order Checkout Sequence](docs/assets/diagrams/order-checkout-sequence.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -114,6 +119,8 @@ sequenceDiagram
     Workshop->>Database: Views OM Production Board in apps/admin
     Note over Workshop: Tailor advances job: QUEUED → CUTTING → SEWING...
 ```
+
+</details>
 
 ### Architectural Guardrails
 1. **Domain Purity:** `@jeanius/domain` never imports React, Next.js, or database libraries.

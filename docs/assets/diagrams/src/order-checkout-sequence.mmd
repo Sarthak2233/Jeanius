@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    actor Customer
+    participant Storefront as apps/storefront (Next.js)
+    participant Zustand as Configurator Store (Zustand)
+    participant ServerAction as Server Action (Checkout)
+    participant Application as packages/application
+    participant Database as packages/database (Drizzle)
+    participant Orchestrator as packages/integrations (Payment)
+    actor Workshop as apps/admin (Tailor)
+
+    Customer->>Storefront: Views Lot 001 Straight Raw Denim
+    Customer->>Zustand: Selects Fit=Straight, Waist=32, Inseam=34
+    Note over Zustand: Updates UI interaction state locally
+    Customer->>Storefront: Clicks "Order Custom Jeans"
+    Storefront->>ServerAction: submitCheckout(orderPayload)
+    ServerAction->>Application: CheckoutService.initiateCheckout()
+    Application->>Database: Verify current price & create PENDING Order
+    Application->>Orchestrator: PaymentOrchestrator.initiatePayment(Order)
+    Orchestrator-->>Customer: Redirect to payment rail (Stripe / eSewa)
+    Customer->>Orchestrator: Completes payment
+    Orchestrator->>Storefront: Webhook notification (/api/webhooks/*)
+    Storefront->>Application: Mark Order PAID & spawn ProductionJob(QUEUED)
+    Application->>Database: Persist ProductionJob in PostgreSQL
+    Workshop->>Database: Views OM Production Board in apps/admin
+    Note over Workshop: Tailor advances job: QUEUED → CUTTING → SEWING...

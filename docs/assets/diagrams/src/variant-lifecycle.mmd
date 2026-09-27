@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> AVAILABLE: Variant stock > 3 (or OM fabric available)
+    AVAILABLE --> LOW_STOCK: Stock <= 3 units (DROP only)
+    LOW_STOCK --> SOLD_OUT: Stock = 0
+    AVAILABLE --> SOLD_OUT: Stock = 0
+    AVAILABLE --> DISABLED: Admin manually toggles off
+    DISABLED --> AVAILABLE: Admin reactivates
+    SOLD_OUT --> AVAILABLE: Restocked
+    SOLD_OUT --> ARCHIVED: Permanently removed from matrix
+    DISABLED --> ARCHIVED: Permanently removed from matrix

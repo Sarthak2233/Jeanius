@@ -4,6 +4,11 @@
 
 The Jeanius platform is architected as a **Domain-Driven Design (DDD) Modular Monolith**. Business capabilities are decomposed into 8 distinct Bounded Contexts, each maintaining its own ubiquitous language, domain models, and business invariants:
 
+![Domain Bounded Contexts](../assets/diagrams/domain-bounded-contexts.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
+
 ```mermaid
 graph TD
     subgraph Core Commerce Contexts
@@ -37,6 +42,8 @@ graph TD
     Support -->|Escalates Issues| Order
     Support -->|Converts Bespoke Quote| Order
 ```
+
+</details>
 
 ### Bounded Context Catalog
 
@@ -122,6 +129,11 @@ Jeanius strictly adheres to **Clean Architecture** (Hexagonal Architecture / Por
 
 In the Next.js App Router, code execution is partitioned into four clear runtime boundaries to balance SEO, security, zero bundle overhead, and rich interactivity:
 
+![Architecture Runtime Boundaries](../assets/diagrams/architecture-runtime-boundaries.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
+
 ```mermaid
 graph LR
     subgraph Next.js Frontend and API Runtimes
@@ -151,6 +163,8 @@ graph LR
     DB -.->|Implements Repository Ports| AppCore
     Gateways -.->|Implements Gateway Ports| AppCore
 ```
+
+</details>
 
 ### Runtime Responsibility Matrix
 

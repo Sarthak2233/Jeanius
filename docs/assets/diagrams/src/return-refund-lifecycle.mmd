@@ -1,0 +1,16 @@
+stateDiagram-v2
+    [*] --> REQUESTED: Customer files return request within 5 days
+    REQUESTED --> REJECTED: Ineligible (OM cut garment or past window)
+    REQUESTED --> APPROVED: Return authorization & return waybill issued
+    APPROVED --> IN_TRANSIT: Customer drops parcel at carrier
+    IN_TRANSIT --> QC_INSPECTION: Garment arrives at Kathmandu warehouse
+    
+    QC_INSPECTION --> RESTOCKED: Passed (Unwashed, unworn, tags intact)
+    QC_INSPECTION --> SCRAPPED: Defective / damaged during wear
+    
+    RESTOCKED --> REFUND_PROCESSING: Gateway refund triggered
+    SCRAPPED --> REFUND_PROCESSING: Verified workshop defect upheld
+    
+    REFUND_PROCESSING --> COMPLETED: Refund cleared or store credit issued
+    REJECTED --> [*]
+    COMPLETED --> [*]

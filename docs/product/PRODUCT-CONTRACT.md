@@ -65,6 +65,11 @@ The scope for Jeanius is strictly defined across three tiers to guarantee focus 
 
 Every commercial transaction follows an immutable state machine:
 
+![Order Lifecycle](../assets/diagrams/order-lifecycle.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
+
 ```mermaid
 stateDiagram-v2
     [*] --> DRAFT: Customer adds item to Cart
@@ -96,6 +101,8 @@ stateDiagram-v2
     REFUNDED --> [*]
 ```
 
+</details>
+
 ### State Definitions & Rules
 1. **DRAFT:** Ephemeral cart state.
 2. **PENDING_PAYMENT:** Order created with frozen line items and locked price snapshot. A payment session is active.
@@ -110,6 +117,11 @@ stateDiagram-v2
 ## 5. OM Manufacturing Lifecycle (JN-005)
 
 The craftsmanship pipeline is the heart of Jeanius. Every pair of custom jeans progresses through eight mandatory stages:
+
+![OM Production Pipeline](../assets/diagrams/om-production-pipeline.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
 
 ```mermaid
 stateDiagram-v2
@@ -134,6 +146,8 @@ stateDiagram-v2
     SHIPPED --> [*]
 ```
 
+</details>
+
 ### Workshop Stage Details
 1. **STAGE 1 — QUEUED:** Order received. Tailor allocates raw denim roll (e.g., 14oz Japanese Kurabo selvedge) and prepares pattern cards.
 2. **STAGE 2 — CUTTING:** **[POINT OF NO RETURN]** Fabric is rolled out, chalked to customer's exact waist and inseam, and precision-cut. Cancellation is locked.
@@ -149,6 +163,11 @@ stateDiagram-v2
 ## 6. DROP Lifecycle & Return Policy (JN-006)
 
 Unlike Order-Made garments, DROP products represent limited physical batches manufactured and stored in the Kathmandu workshop warehouse before release.
+
+![DROP Fulfillment Lifecycle](../assets/diagrams/drop-fulfillment-lifecycle.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
 
 ```mermaid
 stateDiagram-v2
@@ -175,6 +194,8 @@ stateDiagram-v2
     SCRAPPED --> [*]
 ```
 
+</details>
+
 ### DROP Return Policy Rules
 1. **5-Day Inspection Window:** The customer has exactly 5 calendar days from the carrier-verified delivery timestamp to file a return request. On day 6, the sale becomes final and non-refundable.
 2. **Condition Requirements:** The garment must be completely unwashed, unworn, and retain original pocket flashers, selvedge ticker lines, and branded leather tags.
@@ -185,6 +206,11 @@ stateDiagram-v2
 ## 7. Product Lifecycle & Visibility Matrix (JN-007)
 
 Every editorial style in the Jeanius catalog progresses through an explicit lifecycle governing catalog visibility, search engine indexing, and purchasing availability:
+
+![Product Lifecycle](../assets/diagrams/product-lifecycle.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
 
 ```mermaid
 stateDiagram-v2
@@ -198,6 +224,8 @@ stateDiagram-v2
     SOLD_OUT --> ARCHIVED: Permanently discontinued
     ARCHIVED --> [*]
 ```
+
+</details>
 
 ### Catalog Visibility Matrix
 
@@ -215,6 +243,11 @@ stateDiagram-v2
 
 A **Variant** represents a concrete, purchasable combination of options (e.g. Lot 001, Fit=Straight, Waist=32, Inseam=34).
 
+![Variant Lifecycle](../assets/diagrams/variant-lifecycle.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
+
 ```mermaid
 stateDiagram-v2
     [*] --> AVAILABLE: Variant stock > 3 (or OM fabric available)
@@ -228,6 +261,8 @@ stateDiagram-v2
     DISABLED --> ARCHIVED: Permanently removed from matrix
 ```
 
+</details>
+
 ### Matrix Resolution & Invariants
 1. **Independent Option Availability:** Individual option values (e.g., Waist 32 in Slim Fit) can transition to `SOLD_OUT` independently. The configurator dynamically disables unavailable combinations without marking the entire product sold out.
 2. **Product-Level Sold Out Invariant:** A Product transitions to `SOLD_OUT` if and only if **all** of its purchasable variants are in `SOLD_OUT` or `DISABLED` states.
@@ -238,6 +273,11 @@ stateDiagram-v2
 ## 9. Payment Lifecycle & Provider Reconciliation (JN-009)
 
 The payment domain operates entirely on internal `PaymentIntent` records decoupled from external gateway implementations:
+
+![Payment Lifecycle](../assets/diagrams/payment-lifecycle.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
 
 ```mermaid
 stateDiagram-v2
@@ -254,6 +294,8 @@ stateDiagram-v2
     FAILED --> [*]
     REFUNDED --> [*]
 ```
+
+</details>
 
 ### Reconciliation & Multi-Rail Rules
 1. **Multi-Rail Routing:**
@@ -285,6 +327,11 @@ Entering the `CUTTING` stage generates an immutable, printable **Cut Ticket** wo
 
 All physical shipments dispatch from the Jeanius workshop fulfillment hub in Kathmandu, Nepal, utilizing DHL Express, Aramex, or registered Nepal Post for international deliveries:
 
+![Shipment Lifecycle](../assets/diagrams/shipment-lifecycle.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
+
 ```mermaid
 stateDiagram-v2
     [*] --> PENDING: Order paid (DROP) or OM stage 7 READY reached
@@ -305,6 +352,8 @@ stateDiagram-v2
     DELIVERED --> [*]
 ```
 
+</details>
+
 ### Logistics Rules & Operational Invariants
 1. **Immutable Waybill Binding:** Once a shipment transitions to `SHIPPED`, its `carrier` and `trackingNumber` are immutable. Any reshipment creates a new `Shipment` record linked to the original Order.
 2. **Inspection Window Activation:** The carrier webhook registering the `DELIVERED` status updates `deliveredAt`, immediately starting the immutable 5-day DROP `InspectionWindow`.
@@ -316,6 +365,11 @@ stateDiagram-v2
 ## 12. Return & Refund Policy Lifecycle (JN-012)
 
 Customer return requests follow a strict state machine governed by the commerce model and physical inspection criteria:
+
+![Return & Refund Lifecycle](../assets/diagrams/return-refund-lifecycle.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
 
 ```mermaid
 stateDiagram-v2
@@ -335,6 +389,8 @@ stateDiagram-v2
     REJECTED --> [*]
     COMPLETED --> [*]
 ```
+
+</details>
 
 ### Return Policy Invariants
 1. **OM Non-Returnable Invariant:** Made-to-order (`OM`) garments are strictly **final sale** once cutting has commenced. The only exception is a verified manufacturing defect where measured garment dimensions deviate beyond ±0.25" from the approved Cut Ticket.
@@ -365,6 +421,11 @@ Access to collections, editorial content, and workshop operations is governed by
 
 Jeanius strictly delineates communication channels between conversational pre-sales and authoritative transactional support:
 
+![Support Channel Boundaries](../assets/diagrams/support-channel-boundaries.svg)
+
+<details>
+<summary>View Diagram Source (ASCII Architecture)</summary>
+
 ```text
 ┌─────────────────────────────────┐       ┌─────────────────────────────────┐
 │     INSTAGRAM DM (@jeanius)     │       │     EMAIL (support@jeanius)     │
@@ -384,6 +445,8 @@ Jeanius strictly delineates communication channels between conversational pre-sa
                     │ • Conversion to payable Order     │
                     └───────────────────────────────────┘
 ```
+
+</details>
 
 ### Channel Protocols & Service Level Agreements (SLAs)
 1. **Instagram DM Protocol:** Social channels are strictly informational and non-transactional. Support agents never accept payment details, modify addresses, or cancel orders via DM. Customers are routed to the authenticated platform.

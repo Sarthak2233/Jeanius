@@ -1,0 +1,17 @@
+stateDiagram-v2
+    [*] --> PENDING: Order paid (DROP) or OM stage 7 READY reached
+    PENDING --> PACKED: Garment picked, pressed, tote-bagged & boxed
+    PACKED --> SHIPPED: Carrier waybill registered & manifest handed over
+    SHIPPED --> IN_TRANSIT: Carrier export customs scan registered
+    IN_TRANSIT --> OUT_FOR_DELIVERY: Destination regional hub scan
+    OUT_FOR_DELIVERY --> DELIVERED: Consignee signature obtained
+    
+    IN_TRANSIT --> ATTEMPTED_DELIVERY: Customer unavailable / customs clearance required
+    ATTEMPTED_DELIVERY --> OUT_FOR_DELIVERY: Re-attempt scheduled
+    ATTEMPTED_DELIVERY --> RETURNED_TO_SENDER: Retention window exceeded
+    IN_TRANSIT --> LOST: Carrier declares parcel lost
+    
+    DELIVERED --> RETURNED: Customer return processed
+    RETURNED_TO_SENDER --> [*]
+    LOST --> [*]
+    DELIVERED --> [*]

@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> DRAFT: Created in Admin
+    DRAFT --> SCHEDULED: Release date set in future
+    DRAFT --> PUBLISHED: Immediate publication
+    SCHEDULED --> PUBLISHED: Release timestamp reached
+    PUBLISHED --> SOLD_OUT: All variants depleted (DROP) or fabric exhausted (OM)
+    SOLD_OUT --> PUBLISHED: Restocked / new fabric bolts arrived
+    PUBLISHED --> ARCHIVED: Permanently discontinued
+    SOLD_OUT --> ARCHIVED: Permanently discontinued
+    ARCHIVED --> [*]

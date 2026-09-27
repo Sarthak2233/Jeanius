@@ -1,0 +1,18 @@
+stateDiagram-v2
+    [*] --> INVENTORY_STAGED: Batch counted in Kathmandu warehouse
+    INVENTORY_STAGED --> RESERVED: Checkout confirmed (Stock decremented)
+    RESERVED --> PACKING: Warehouse picks, presses & totes garment
+    PACKING --> SHIPPED: Waybill generated & tracking registered
+    SHIPPED --> DELIVERED: Carrier confirms delivery
+    
+    state DELIVERED {
+        [*] --> INSPECTION_WINDOW_ACTIVE: 5-Day inspection timer begins
+        INSPECTION_WINDOW_ACTIVE --> INSPECTION_WINDOW_EXPIRED: Day 6+ reached (Final Sale)
+    }
+    
+    INSPECTION_WINDOW_ACTIVE --> RETURN_REQUESTED: Customer files return
+    RETURN_REQUESTED --> RETURN_APPROVED: Return accepted by support
+    RETURN_REQUESTED --> RETURN_REJECTED: Policy violation (e.g. worn/washed)
+    RETURN_APPROVED --> RETURN_RECEIVED: Garment arrives at Kathmandu warehouse
+    RETURN_RECEIVED --> RESTOCKED: QC approved (Restocked to inventory)
+    RETURN_RECEIVED --> SCRAPPED: Damaged / defective

@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> QUEUED: Order Paid (Job Created)
+    QUEUED --> CUTTING: Fabric rolls allocated & master pattern marked (POINT OF NO RETURN)
+    CUTTING --> SEWING: Panels bundled & assigned to artisan
+    SEWING --> WASHING: Assembly completed (Chainstitch, flat felled seams)
+    WASHING --> HARDWARE: Rinse/dry complete (Custom shrinkage settled)
+    HARDWARE --> QC: Solid silver/brass buttons, rivets & leather patch fixed
+    
+    QC --> READY: Measurements match tolerance (±0.25")
+    QC --> SEWING: Defect identified (Rework loop)
+    
+    READY --> SHIPPED: Handed to courier with packing slip & tote
+    SHIPPED --> [*]

@@ -1129,6 +1129,11 @@ Don't have the agent blindly execute `JN-001 → JN-604` one by one.
 
 The important dependency graph is:
 
+![Master Architecture Dependency Graph](docs/assets/diagrams/master-dependency-graph.svg)
+
+<details>
+<summary>View ASCII Diagram</summary>
+
 ```text
                          PRODUCT SPEC
                               │
@@ -1184,6 +1189,8 @@ The important dependency graph is:
                 ▼                 ▼
               Review           Support
 ```
+
+</details>
 
 ---
 

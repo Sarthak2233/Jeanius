@@ -1,0 +1,15 @@
+graph TD
+    subgraph Social Channels
+        IG["INSTAGRAM DM (@jeanius.denim)<br/>• Sizing advice & fit guidance<br/>• Raw denim fading inspiration<br/>• Fabric origin storytelling<br/>──► Directs to on-platform link"]
+    end
+
+    subgraph Authenticated Support
+        Email["EMAIL (support@jeanius.com)<br/>• Order cancellation requests<br/>• Address corrections prior to cutting<br/>• Formal return authorizations<br/>• Carrier disputes & claims"]
+    end
+
+    subgraph Storefront Platform
+        CustomForm["STOREFRONT CUSTOM ORDER FORM<br/>• Structured bespoke inquiry form<br/>• Measurement & photo uploads<br/>• Tailor quote & SLA generation<br/>• Conversion to payable Order"]
+    end
+
+    IG -->|Directs Customer To| CustomForm
+    Email -->|Authenticates & Updates| CustomForm
