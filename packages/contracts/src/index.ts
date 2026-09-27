@@ -4,6 +4,18 @@
  */
 import { z } from 'zod';
 
+export const ActorRoleSchema = z.enum([
+  'GUEST',
+  'CUSTOMER',
+  'MEMBER',
+  'TAILOR',
+  'FULFILLMENT',
+  'SUPPORT',
+  'ADMIN',
+]);
+
+export const CommerceModelSchema = z.enum(['OM', 'DROP', 'CUSTOM_ORDER']);
+
 export const MoneySchema = z.object({
   amount: z.number().int().nonnegative(),
   currency: z.enum(['USD', 'NPR']).or(z.string().min(3).max(3)),
@@ -48,8 +60,26 @@ export const TransitionProductionStageSchema = z.object({
   notes: z.string().optional(),
 });
 
+export const CancelOrderSchema = z.object({
+  orderId: z.string().uuid(),
+  reason: z.string().min(5, 'Reason must be at least 5 characters'),
+});
+
+export const CustomOrderInquirySchema = z.object({
+  customerName: z.string().min(2),
+  customerEmail: z.string().email(),
+  productCategory: z.enum(['BOTTOMS', 'TOPS', 'ACCESSORIES']),
+  desiredFabricWeight: z.string().optional(),
+  description: z.string().min(20, 'Please describe your custom request in detail'),
+  referenceImageUrls: z.array(z.string().url()).optional(),
+});
+
+export type ActorRoleDto = z.infer<typeof ActorRoleSchema>;
+export type CommerceModelDto = z.infer<typeof CommerceModelSchema>;
 export type MoneyDto = z.infer<typeof MoneySchema>;
 export type AddressDto = z.infer<typeof AddressSchema>;
 export type AddToCartDto = z.infer<typeof AddToCartSchema>;
 export type CreateCheckoutDto = z.infer<typeof CreateCheckoutSchema>;
 export type TransitionProductionStageDto = z.infer<typeof TransitionProductionStageSchema>;
+export type CancelOrderDto = z.infer<typeof CancelOrderSchema>;
+export type CustomOrderInquiryDto = z.infer<typeof CustomOrderInquirySchema>;

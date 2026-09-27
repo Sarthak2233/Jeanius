@@ -49,11 +49,11 @@ Turn the product specification into an implementation contract before writing fe
 
 | ID     | Task                                  | Description                                                                              | Status      |
 | ------ | ------------------------------------- | ---------------------------------------------------------------------------------------- | ----------- |
-| JN-001 | Freeze product scope                  | Establish MVP, Phase 2 and explicitly excluded functionality.                            | NOT_STARTED |
-| JN-002 | Freeze commerce models                | Formalize OM, DROP and future product types.                                             | NOT_STARTED |
-| JN-003 | Define actor model                    | Customer, member, admin, production staff, support and super-admin.                      | NOT_STARTED |
-| JN-004 | Define order lifecycle                | Cart → Checkout → Payment → Order → Production/Fulfillment → Shipment → Delivery.        | NOT_STARTED |
-| JN-005 | Define OM lifecycle                   | Configuration → Payment → Production Job → QC → Fulfillment → Shipment.                  | NOT_STARTED |
+| JN-001 | Freeze product scope                  | Establish MVP, Phase 2 and explicitly excluded functionality.                            | DONE        |
+| JN-002 | Freeze commerce models                | Formalize OM, DROP and future product types.                                             | DONE        |
+| JN-003 | Define actor model                    | Customer, member, admin, production staff, support and super-admin.                      | DONE        |
+| JN-004 | Define order lifecycle                | Cart → Checkout → Payment → Order → Production/Fulfillment → Shipment → Delivery.        | DONE        |
+| JN-005 | Define OM lifecycle                   | Configuration → Payment → Production Job → QC → Fulfillment → Shipment.                  | DONE        |
 | JN-006 | Define DROP lifecycle                 | Inventory → Purchase → Fulfillment → Shipment → Delivery/Return.                         | NOT_STARTED |
 | JN-007 | Define product lifecycle              | Draft → Scheduled → Published → Sold Out → Archived.                                     | NOT_STARTED |
 | JN-008 | Define variant lifecycle              | Available → Sold Out → Disabled → Archived.                                              | NOT_STARTED |
