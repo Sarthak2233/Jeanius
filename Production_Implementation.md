@@ -565,43 +565,45 @@ PaymentOrchestrator
 
 ---
 
-# STATE 17 — OM MANUFACTURING PIPELINE
+# STATE 17 — OM MANUFACTURING PIPELINE (TAILOR WORKSHOP)
 
-This is what differentiates Jeanius from a generic ecommerce implementation.
+This is what differentiates Jeanius from a generic ecommerce implementation. Scoped primarily for the `TAILOR` craftsman actor in Kathmandu.
 
-| ID     | Task                                | Description                      | Status      |
-| ------ | ----------------------------------- | -------------------------------- | ----------- |
-| JN-284 | Create ProductionJob                | Manufacturing work order.        | NOT_STARTED |
-| JN-285 | Freeze production specification     | Exact customer configuration.    | NOT_STARTED |
-| JN-286 | Create production queue             | Admin manufacturing queue.       | NOT_STARTED |
-| JN-287 | Build Cutting stage                 | Production workflow.             | NOT_STARTED |
-| JN-288 | Build Sewing stage                  | Production workflow.             | NOT_STARTED |
-| JN-289 | Build Washing stage                 | Production workflow.             | NOT_STARTED |
-| JN-290 | Build Hardware stage                | Rivets/buttons/assembly.         | NOT_STARTED |
-| JN-291 | Build QC stage                      | Quality inspection.              | NOT_STARTED |
-| JN-292 | Build Ready stage                   | Ready for fulfillment.           | NOT_STARTED |
-| JN-293 | Build production status transitions | Controlled state machine.        | NOT_STARTED |
-| JN-294 | Calculate production deadline       | Configurable lead time/calendar. | NOT_STARTED |
-| JN-295 | Support production notes            | Internal manufacturing notes.    | NOT_STARTED |
-| JN-296 | Track production timestamps         | Stage start/completion.          | NOT_STARTED |
-| JN-297 | Track production delays             | Delay reason.                    | NOT_STARTED |
-| JN-298 | Build admin production board        | Visual operational queue.        | NOT_STARTED |
-| JN-299 | Build order-to-production link      | Admin can trace order.           | NOT_STARTED |
-| JN-300 | Test production transitions         | Valid/invalid state changes.     | NOT_STARTED |
+| ID     | Task                                | Description                                               | Status      |
+| ------ | ----------------------------------- | --------------------------------------------------------- | ----------- |
+| JN-284 | Create ProductionJob                | Manufacturing work order entity.                          | NOT_STARTED |
+| JN-285 | Freeze production specification     | Exact customer configuration & pattern measurements.       | NOT_STARTED |
+| JN-286 | Create production queue             | `TAILOR` workshop manufacturing queue.                    | NOT_STARTED |
+| JN-287 | Build Cutting stage                 | Pattern cut ticket & continuous fabric bolt allocation.   | NOT_STARTED |
+| JN-288 | Build Sewing stage                  | Assembly workflow & chainstitch construction.             | NOT_STARTED |
+| JN-289 | Build Washing stage                 | Raw rinse vs. one-wash processing.                        | NOT_STARTED |
+| JN-290 | Build Hardware stage                | Rivets, copper buttons & leather patch debossing.         | NOT_STARTED |
+| JN-291 | Build QC stage                      | Quality inspection (tolerance ±0.25" check).              | NOT_STARTED |
+| JN-292 | Build Ready stage                   | Ready for fulfillment handover.                           | NOT_STARTED |
+| JN-293 | Build production status transitions | Controlled state machine (`Queued` to `Ready`).           | NOT_STARTED |
+| JN-294 | Calculate production deadline       | Configurable lead time/calendar (Nepal holidays).         | NOT_STARTED |
+| JN-295 | Support production notes            | Internal tailor notes & garment identification.           | NOT_STARTED |
+| JN-296 | Track production timestamps         | Stage start/completion telemetry.                         | NOT_STARTED |
+| JN-297 | Track production delays             | `TAILOR` delay logging & fabric defect tagging.           | NOT_STARTED |
+| JN-298 | Build craftsman floor board         | `TAILOR` touchscreen tablet board in `apps/admin/workshop`.| NOT_STARTED |
+| JN-299 | Build order-to-production link      | Traceability linking order lines to garment tickets.      | NOT_STARTED |
+| JN-300 | Test production transitions         | Valid/invalid state changes & tailor permission checks.   | NOT_STARTED |
 
 ---
 
-# STATE 18 — DROP FULFILLMENT
+# STATE 18 — DROP & SPLIT FULFILLMENT (FULFILLMENT DISPATCH)
 
-| ID     | Task                             | Description                     | Status      |
-| ------ | -------------------------------- | ------------------------------- | ----------- |
-| JN-301 | Define DROP fulfillment workflow | Ready-to-ship flow.             | NOT_STARTED |
-| JN-302 | Reserve DROP inventory           | Purchase reservation.           | NOT_STARTED |
-| JN-303 | Create fulfillment task          | Admin shipping queue.           | NOT_STARTED |
-| JN-304 | Pack DROP order                  | Fulfillment status.             | NOT_STARTED |
-| JN-305 | Record shipment                  | Carrier/tracking.               | NOT_STARTED |
-| JN-306 | Apply DROP refund policy         | Product-specific policy.        | NOT_STARTED |
-| JN-307 | Test DROP lifecycle              | Purchase → shipment → delivery. | NOT_STARTED |
+Scoped for the `FULFILLMENT` warehouse and packing clerk in Kathmandu.
+
+| ID     | Task                             | Description                                               | Status      |
+| ------ | -------------------------------- | --------------------------------------------------------- | ----------- |
+| JN-301 | Define DROP fulfillment workflow | Ready-to-ship flow for `FULFILLMENT` clerk.               | NOT_STARTED |
+| JN-302 | Reserve DROP inventory           | Purchase reservation & stock pick.                        | NOT_STARTED |
+| JN-303 | Create fulfillment task          | `FULFILLMENT` dispatch station in `apps/admin/fulfillment`.| NOT_STARTED |
+| JN-304 | Pack order & customs declaration | Pack order & generate Nepal Commercial Invoice (HS 6203.42).| NOT_STARTED |
+| JN-305 | Record shipment & waybills       | Generate DHL label & multi-package split tracking.        | NOT_STARTED |
+| JN-306 | Apply DROP refund policy         | Warehouse restock inspection flow.                        | NOT_STARTED |
+| JN-307 | Test DROP lifecycle              | Purchase → packaging → waybill → dispatch.                | NOT_STARTED |
 
 ---
 
@@ -623,33 +625,37 @@ This is what differentiates Jeanius from a generic ecommerce implementation.
 
 ---
 
-# STATE 20 — CUSTOMER ACCOUNT
+# STATE 20 — CUSTOMER ACCOUNT (CUSTOMER PORTAL)
 
-| ID     | Task                     | Description                    | Status      |
-| ------ | ------------------------ | ------------------------------ | ----------- |
-| JN-319 | Build account dashboard  | Customer overview.             | NOT_STARTED |
-| JN-320 | Build profile page       | Personal details.              | NOT_STARTED |
-| JN-321 | Build address management | Saved addresses.               | NOT_STARTED |
-| JN-322 | Build order history      | Previous purchases.            | NOT_STARTED |
-| JN-323 | Build order detail       | Configuration/status/tracking. | NOT_STARTED |
-| JN-324 | Build review history     | Customer reviews.              | NOT_STARTED |
-| JN-325 | Build membership state   | Membership access.             | NOT_STARTED |
-| JN-326 | Build account security   | Password/session controls.     | NOT_STARTED |
+Scoped for authenticated `CUSTOMER` buyers on `apps/storefront/account`.
+
+| ID     | Task                             | Description                                               | Status      |
+| ------ | -------------------------------- | --------------------------------------------------------- | ----------- |
+| JN-319 | Build account dashboard & sizing | `CUSTOMER` hub with saved sizing profile (waist/inseam).  | NOT_STARTED |
+| JN-320 | Build profile page               | Personal details, contact, and fit preferences.           | NOT_STARTED |
+| JN-321 | Build address management         | Saved international/domestic shipping addresses.          | NOT_STARTED |
+| JN-322 | Build order history & cancel btn | Order list with 1-click pre-cutting 24h cancel button.    | NOT_STARTED |
+| JN-323 | Build visual OM denim tracker    | Live 8-stage interactive denim progress & invoice download.| NOT_STARTED |
+| JN-324 | Build review history             | Customer reviews & fade progression uploads.              | NOT_STARTED |
+| JN-325 | Build membership state           | Member tier display & community perks.                    | NOT_STARTED |
+| JN-326 | Build account security           | Password/session controls & signout.                      | NOT_STARTED |
 
 ---
 
-# STATE 21 — MEMBERSHIP / DROP / TOGETHER
+# STATE 21 — MEMBERSHIP / DROP / TOGETHER (MEMBER LOUNGE)
 
-| ID     | Task                               | Description                          | Status      |
-| ------ | ---------------------------------- | ------------------------------------ | ----------- |
-| JN-327 | Define membership levels           | Confirm actual production hierarchy. | NOT_STARTED |
-| JN-328 | Define DROP access policy          | Public/member/protected.             | NOT_STARTED |
-| JN-329 | Define TOGETHER access policy      | Authorization rules.                 | NOT_STARTED |
-| JN-330 | Implement protected route          | Server-side authorization.           | NOT_STARTED |
-| JN-331 | Implement unauthorized state       | Login/forbidden UX.                  | NOT_STARTED |
-| JN-332 | Prevent protected metadata leakage | API/HTML/image security.             | NOT_STARTED |
-| JN-333 | Implement member navigation state  | Header/account behavior.             | NOT_STARTED |
-| JN-334 | Test authorization boundaries      | Public/authenticated/authorized.     | NOT_STARTED |
+Scoped for VIP `MEMBER` collectors on `apps/storefront/member`.
+
+| ID     | Task                               | Description                                               | Status      |
+| ------ | ---------------------------------- | --------------------------------------------------------- | ----------- |
+| JN-327 | Define membership levels           | Confirm actual production hierarchy (Customer vs Member). | NOT_STARTED |
+| JN-328 | Define DROP access policy          | Public vs. member-only drop rules.                        | NOT_STARTED |
+| JN-329 | Build TOGETHER member lounge       | Gated member drop lounge & archival gallery.              | NOT_STARTED |
+| JN-330 | Implement protected route guards   | Server-side authorization preventing media/data leakage.  | NOT_STARTED |
+| JN-331 | Implement unauthorized state       | Login/forbidden VIP acquisition UX.                       | NOT_STARTED |
+| JN-332 | Prevent protected metadata leakage | Protect member-only product schemas from public feeds.    | NOT_STARTED |
+| JN-333 | Build member early access window   | 1-hour early access countdown & fabric bolt allocation.   | NOT_STARTED |
+| JN-334 | Test authorization boundaries      | Verify GUEST vs CUSTOMER vs MEMBER access boundaries.     | NOT_STARTED |
 
 ---
 
@@ -703,77 +709,81 @@ This is what differentiates Jeanius from a generic ecommerce implementation.
 
 ---
 
-# STATE 25 — ADMIN PRODUCT MANAGEMENT
+# STATE 25 — ADMIN SHELL & RBAC NAVIGATION (ALL STAFF)
 
-| ID     | Task                              | Description                    | Status      |
-| ------ | --------------------------------- | ------------------------------ | ----------- |
-| JN-364 | Build admin shell                 | Admin navigation/layout.       | NOT_STARTED |
-| JN-365 | Build admin authentication        | Privileged access.             | NOT_STARTED |
-| JN-366 | Build product list                | Search/filter products.        | NOT_STARTED |
-| JN-367 | Build product creation            | Create product.                | NOT_STARTED |
-| JN-368 | Build product editor              | Edit product.                  | NOT_STARTED |
-| JN-369 | Build image management            | Upload/reorder/delete.         | NOT_STARTED |
-| JN-370 | Build option management           | Create/edit product options.   | NOT_STARTED |
-| JN-371 | Build variant management          | SKU/stock/price.               | NOT_STARTED |
-| JN-372 | Build OM/DROP selector            | Product type.                  | NOT_STARTED |
-| JN-373 | Build scheduling                  | Scheduled publication/release. | NOT_STARTED |
-| JN-374 | Build access-level controls       | Protected products/content.    | NOT_STARTED |
-| JN-375 | Build related-products management | Product relationships.         | NOT_STARTED |
-| JN-376 | Build SEO editor                  | Metadata.                      | NOT_STARTED |
-| JN-377 | Build product preview             | Preview before publication.    | NOT_STARTED |
-
----
-
-# STATE 26 — ADMIN ORDER MANAGEMENT
-
-| ID     | Task                      | Description                             | Status      |
-| ------ | ------------------------- | --------------------------------------- | ----------- |
-| JN-378 | Build order search        | Search by order/customer/product.       | NOT_STARTED |
-| JN-379 | Build order detail        | Full commercial and production context. | NOT_STARTED |
-| JN-380 | Build payment status      | Financial state.                        | NOT_STARTED |
-| JN-381 | Build production status   | Manufacturing state.                    | NOT_STARTED |
-| JN-382 | Build shipping status     | Fulfillment/tracking.                   | NOT_STARTED |
-| JN-383 | Build internal notes      | Staff-only notes.                       | NOT_STARTED |
-| JN-384 | Build cancellation action | Controlled cancellation.                | NOT_STARTED |
-| JN-385 | Build refund action       | Controlled refund.                      | NOT_STARTED |
-| JN-386 | Build tracking action     | Add/update tracking.                    | NOT_STARTED |
-| JN-387 | Build order export        | CSV/Excel export if required.           | NOT_STARTED |
-| JN-388 | Build order audit history | State/action timeline.                  | NOT_STARTED |
+| ID     | Task                              | Description                                               | Status      |
+| ------ | --------------------------------- | --------------------------------------------------------- | ----------- |
+| JN-364 | Build admin shell & RBAC menus    | Scoped navigation trees for `TAILOR`, `FULFILLMENT`, `SUPPORT`, `ADMIN`. | NOT_STARTED |
+| JN-365 | Build admin authentication        | Privileged access with sub-path guards (`/admin/*`).       | NOT_STARTED |
+| JN-366 | Build product list                | Search/filter products across models (OM / DROP).         | NOT_STARTED |
+| JN-367 | Build product creation            | Create product with physical specifications.              | NOT_STARTED |
+| JN-368 | Build product editor              | Edit product story, denim mill, and weave specs.          | NOT_STARTED |
+| JN-369 | Build image management            | High-res selvedge macro image upload and gallery ordering.| NOT_STARTED |
+| JN-370 | Build option management           | Waist, inseam length, hardware alloy options.             | NOT_STARTED |
+| JN-371 | Build variant management          | SKU, stock limits, and price matrix.                      | NOT_STARTED |
+| JN-372 | Build OM/DROP selector            | Configure Order-Made vs. Ready-to-Ship behavior.          | NOT_STARTED |
+| JN-373 | Build scheduling                  | Scheduled publication & capsule drop countdowns.          | NOT_STARTED |
+| JN-374 | Build access-level controls       | Assign `PUBLIC`, `MEMBER`, or `INTERNAL_STAFF` visibility.| NOT_STARTED |
+| JN-375 | Build related-products management | Curated pairing (e.g. Jeans + Denim Jacket + Tote).       | NOT_STARTED |
+| JN-376 | Build SEO editor                  | OpenGraph tags, structured JSON-LD data.                  | NOT_STARTED |
+| JN-377 | Build product preview             | Visual preview before going live.                         | NOT_STARTED |
 
 ---
 
-# STATE 27 — ADMIN INVENTORY & PRODUCTION
+# STATE 26 — SUPPORT DESK & ORDER MANAGEMENT (SUPPORT & ADMIN)
 
-| ID     | Task                             | Description                | Status      |
-| ------ | -------------------------------- | -------------------------- | ----------- |
-| JN-389 | Build inventory dashboard        | Stock overview.            | NOT_STARTED |
-| JN-390 | Build inventory adjustment       | Manual stock changes.      | NOT_STARTED |
-| JN-391 | Build low-stock view             | Operational queue.         | NOT_STARTED |
-| JN-392 | Build production dashboard       | Manufacturing overview.    | NOT_STARTED |
-| JN-393 | Build Cutting queue              | Production stage.          | NOT_STARTED |
-| JN-394 | Build Sewing queue               | Production stage.          | NOT_STARTED |
-| JN-395 | Build Washing queue              | Production stage.          | NOT_STARTED |
-| JN-396 | Build Hardware queue             | Production stage.          | NOT_STARTED |
-| JN-397 | Build QC queue                   | Quality control.           | NOT_STARTED |
-| JN-398 | Build completed-production queue | Ready-to-ship.             | NOT_STARTED |
-| JN-399 | Build production detail          | Full order/specification.  | NOT_STARTED |
-| JN-400 | Add production notes             | Manufacturing staff notes. | NOT_STARTED |
-| JN-401 | Add delay management             | Record production delays.  | NOT_STARTED |
+Scoped for the `SUPPORT` customer care specialist and `ADMIN`.
+
+| ID     | Task                              | Description                                               | Status      |
+| ------ | --------------------------------- | --------------------------------------------------------- | ----------- |
+| JN-378 | Build Support Console order lookup| Search orders by customer email, name, or transaction ID. | NOT_STARTED |
+| JN-379 | Build order detail                | Full commercial, tailoring, and fulfillment context.      | NOT_STARTED |
+| JN-380 | Build payment status & details    | Inspect gateway references (Stripe / eSewa) & charges.    | NOT_STARTED |
+| JN-381 | Build production status view      | Monitor live workshop stage progression.                  | NOT_STARTED |
+| JN-382 | Build shipping & split packages   | Multi-package status (Package 1 DROP vs Package 2 OM).    | NOT_STARTED |
+| JN-383 | Build support & audit notes       | Customer care history & staff-only notes.                 | NOT_STARTED |
+| JN-384 | Build pre-cutting edit/cancel     | Modify address/inseam or cancel *before* `CUTTING` stage. | NOT_STARTED |
+| JN-385 | Build DROP return claim review    | Review 5-day return requests, photos, & issue refund.     | NOT_STARTED |
+| JN-386 | Build tracking management         | Manual override / update tracking carrier.                | NOT_STARTED |
+| JN-387 | Build order export                | Export compliant commercial data for customs/tax.         | NOT_STARTED |
+| JN-388 | Build order audit history         | Immutable timeline of state changes and actor IDs.        | NOT_STARTED |
 
 ---
 
-# STATE 28 — ADMIN CONTENT & SUPPORT
+# STATE 27 — WORKSHOP FLOOR & INVENTORY (TAILOR & ADMIN)
 
-| ID     | Task                      | Description                        | Status      |
-| ------ | ------------------------- | ---------------------------------- | ----------- |
-| JN-402 | Build content dashboard   | Content management.                | NOT_STARTED |
-| JN-403 | Build announcement editor | Homepage notice management.        | NOT_STARTED |
-| JN-404 | Build policy editor       | Shipping/refund/OM/DROP copy.      | NOT_STARTED |
-| JN-405 | Build sizing editor       | Sizing content.                    | NOT_STARTED |
-| JN-406 | Build contact editor      | Support instructions.              | NOT_STARTED |
-| JN-407 | Build custom-order queue  | Support operations.                | NOT_STARTED |
-| JN-408 | Build customer lookup     | Search customer/order.             | NOT_STARTED |
-| JN-409 | Build support notes       | Internal customer-support history. | NOT_STARTED |
+Scoped for `TAILOR` craftsmen on the floor and `ADMIN` operations.
+
+| ID     | Task                             | Description                                               | Status      |
+| ------ | -------------------------------- | --------------------------------------------------------- | ----------- |
+| JN-389 | Build inventory dashboard        | Raw fabric bolt yardage and DROP stock overview.          | NOT_STARTED |
+| JN-390 | Build bolt inventory adjustment  | Register new fabric bolts, continuous lengths & shrinkage.| NOT_STARTED |
+| JN-391 | Build low-stock & remnant view   | Track remnant fabric scraps under minimum cut length.     | NOT_STARTED |
+| JN-392 | Build Craftsman Floor Mode       | `TAILOR` touch tablet interface in `apps/admin/workshop`. | NOT_STARTED |
+| JN-393 | Build Cut-Ticket print station   | Print physical tickets with bolt ID and tailor dimensions.| NOT_STARTED |
+| JN-394 | Build QR routing scan station    | Scan garment tag for rapid stage advancement.             | NOT_STARTED |
+| JN-395 | Build Sewing queue               | Active assembly pipeline.                                 | NOT_STARTED |
+| JN-396 | Build Washing queue              | Rinsing and tumble finishing.                             | NOT_STARTED |
+| JN-397 | Build Hardware queue             | Button fly, copper rivets, and leather patch debossing.   | NOT_STARTED |
+| JN-398 | Build QC inspection station      | Tolerance checks (waist ±0.25", inseam ±0.25").           | NOT_STARTED |
+| JN-399 | Build completed-production queue | Handover queue to Fulfillment dispatch.                   | NOT_STARTED |
+| JN-400 | Add tailor operational notes     | Craftsman notes attached to specific garment run.         | NOT_STARTED |
+| JN-401 | Add delay & defect logging       | Log weave flaws, machine downtime, or panel recuts.       | NOT_STARTED |
+
+---
+
+# STATE 28 — CONTENT & ATELIER INQUIRIES (SUPPORT & ADMIN)
+
+| ID     | Task                             | Description                                               | Status      |
+| ------ | -------------------------------- | --------------------------------------------------------- | ----------- |
+| JN-402 | Build content dashboard          | Lookbook, story, and denim care CMS.                      | NOT_STARTED |
+| JN-403 | Build announcement editor        | Urgent operational notices (workshop holidays, drops).    | NOT_STARTED |
+| JN-404 | Build policy editor              | Production lead-time, refund, and shipping policy text.   | NOT_STARTED |
+| JN-405 | Build sizing editor              | Fit guide and measurement tables.                         | NOT_STARTED |
+| JN-406 | Build contact editor             | Channel instructions (Instagram DM vs Email support).     | NOT_STARTED |
+| JN-407 | Build custom atelier inquiry desk| Review bespoke requests, draft tailor quote, send invoice.| NOT_STARTED |
+| JN-408 | Build customer 360 lookup        | Holistic customer profile (purchases, sizing, inquiries). | NOT_STARTED |
+| JN-409 | Build support resolution log     | Track issue resolution times and customer satisfaction.   | NOT_STARTED |
 
 ---
 
