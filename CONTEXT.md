@@ -99,3 +99,50 @@ _Avoid_: Worker, manufacturer, staff, maker
 **Fulfillment Operator**:
 A staff member who inspects, packs, and registers shipments with couriers.
 _Avoid_: Packer, shipper, dispatch worker
+
+## Logistics & Returns
+
+**Waybill**:
+The carrier-generated bill of lading and tracking documentation attached to a physical shipment package.
+_Avoid_: Shipping label, tag, docket
+
+**CarrierTracking**:
+The verified external courier telemetry updates ingested via carrier webhooks.
+_Avoid_: Shipping status, package tracker
+
+**ReturnAuthorization**:
+Formal approval issued by workshop support authorizing a customer to return an eligible garment.
+_Avoid_: RMA, return ticket, return pass
+
+**RestockInspection**:
+The physical warehouse quality-control assessment verifying that a returned garment is unworn, unwashed, and restockable.
+_Avoid_: Return check, inwards inspection
+
+## Access & Support
+
+**MembershipTier**:
+An authorization level determining catalog visibility and drop access privileges.
+_Avoid_: User level, subscription plan, VIP tier
+
+**TogetherDrop**:
+A restricted collection or release accessible exclusively to authenticated community members.
+_Avoid_: Private drop, member sale
+
+**SupportBoundary**:
+The strict separation between informal social engagement (Instagram DM) and authoritative transactional operations (Email/Platform).
+_Avoid_: Helpdesk policy, support channel rule
+
+**CustomOrderInquiry**:
+A structured customer request for non-standard garment silhouettes or bespoke fabric allocations.
+_Avoid_: Bespoke request, tailor ticket, custom quote
+
+## Architecture & System Boundaries
+
+**BoundedContext**:
+An explicit boundary within which a specific domain model and ubiquitous language applies cleanly without conceptual leakage.
+_Avoid_: Microservice, module, domain silo
+
+**ServerAction**:
+A secure server-side mutation function invoked directly by client UI components to enforce domain invariants.
+_Avoid_: API call, RPC endpoint, mutation controller
+

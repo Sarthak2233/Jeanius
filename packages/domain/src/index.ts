@@ -376,6 +376,182 @@ export function isDropEligibleForReturn(
   return now.getTime() - deliveryDate.getTime() <= windowMs;
 }
 
+// ================= Shipment Lifecycle (JN-011) =================
+
+export type ShipmentStatus =
+  | 'PENDING'
+  | 'PACKED'
+  | 'SHIPPED'
+  | 'IN_TRANSIT'
+  | 'OUT_FOR_DELIVERY'
+  | 'DELIVERED'
+  | 'ATTEMPTED_DELIVERY'
+  | 'RETURNED_TO_SENDER'
+  | 'RETURNED'
+  | 'LOST';
+
+export interface ShipmentItem {
+  readonly orderLineId: string;
+  readonly sku: string;
+  readonly quantity: number;
+}
+
+export interface Shipment {
+  readonly id: string;
+  readonly orderId: string;
+  readonly trackingNumber?: string;
+  readonly carrier?: 'DHL_EXPRESS' | 'ARAMEX' | 'NEPAL_POST' | string;
+  readonly status: ShipmentStatus;
+  readonly items: readonly ShipmentItem[];
+  readonly shippingAddress: Address;
+  readonly packedAt?: string;
+  readonly shippedAt?: string;
+  readonly deliveredAt?: string;
+}
+
+export function canTransitionShipmentStatus(
+  current: ShipmentStatus,
+  next: ShipmentStatus
+): boolean {
+  switch (current) {
+    case 'PENDING':
+      return next === 'PACKED' || next === 'LOST';
+    case 'PACKED':
+      return next === 'SHIPPED' || next === 'PENDING';
+    case 'SHIPPED':
+      return next === 'IN_TRANSIT' || next === 'LOST';
+    case 'IN_TRANSIT':
+      return (
+        next === 'OUT_FOR_DELIVERY' ||
+        next === 'ATTEMPTED_DELIVERY' ||
+        next === 'LOST' ||
+        next === 'RETURNED_TO_SENDER'
+      );
+    case 'OUT_FOR_DELIVERY':
+      return (
+        next === 'DELIVERED' ||
+        next === 'ATTEMPTED_DELIVERY' ||
+        next === 'RETURNED_TO_SENDER'
+      );
+    case 'ATTEMPTED_DELIVERY':
+      return next === 'OUT_FOR_DELIVERY' || next === 'RETURNED_TO_SENDER';
+    case 'DELIVERED':
+      return next === 'RETURNED';
+    case 'RETURNED_TO_SENDER':
+    case 'RETURNED':
+    case 'LOST':
+      return false; // Terminal states
+    default:
+      return false;
+  }
+}
+
+// ================= Return & Refund Lifecycle (JN-012) =================
+
+export type ReturnStatus =
+  | 'REQUESTED'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'IN_TRANSIT'
+  | 'QC_INSPECTION'
+  | 'RESTOCKED'
+  | 'SCRAPPED'
+  | 'REFUND_PROCESSING'
+  | 'COMPLETED';
+
+export interface ReturnRequest {
+  readonly id: string;
+  readonly orderId: string;
+  readonly orderLineId: string;
+  readonly customerId: string;
+  readonly reason: string;
+  readonly status: ReturnStatus;
+  readonly requestedAt: string;
+  readonly resolution?: 'REFUND' | 'STORE_CREDIT' | 'REJECTED';
+  readonly qcNotes?: string;
+}
+
+export function canTransitionReturnStatus(
+  current: ReturnStatus,
+  next: ReturnStatus
+): boolean {
+  switch (current) {
+    case 'REQUESTED':
+      return next === 'APPROVED' || next === 'REJECTED';
+    case 'APPROVED':
+      return next === 'IN_TRANSIT' || next === 'REJECTED';
+    case 'IN_TRANSIT':
+      return next === 'QC_INSPECTION';
+    case 'QC_INSPECTION':
+      return next === 'RESTOCKED' || next === 'SCRAPPED';
+    case 'RESTOCKED':
+    case 'SCRAPPED':
+      return next === 'REFUND_PROCESSING';
+    case 'REFUND_PROCESSING':
+      return next === 'COMPLETED';
+    case 'REJECTED':
+    case 'COMPLETED':
+      return false; // Terminal states
+    default:
+      return false;
+  }
+}
+
+// ================= Membership & Access Control (JN-013) =================
+
+export type AccessLevel = 'PUBLIC' | 'AUTHENTICATED' | 'MEMBER' | 'ADMIN';
+
+export function canActorAccessLevel(
+  actorRole: ActorRole,
+  requiredLevel: AccessLevel
+): boolean {
+  if (requiredLevel === 'PUBLIC') {
+    return true;
+  }
+
+  if (requiredLevel === 'AUTHENTICATED') {
+    return actorRole !== 'GUEST';
+  }
+
+  if (requiredLevel === 'MEMBER') {
+    return (
+      actorRole === 'MEMBER' ||
+      actorRole === 'ADMIN'
+    );
+  }
+
+  if (requiredLevel === 'ADMIN') {
+    return actorRole === 'ADMIN';
+  }
+
+  return false;
+}
+
+// ================= Customer Support & Inquiries (JN-014) =================
+
+export type SupportChannel = 'INSTAGRAM_DM' | 'EMAIL' | 'CUSTOM_ORDER_FORM';
+
+export type CustomOrderInquiryStatus =
+  | 'INQUIRY_RECEIVED'
+  | 'QUOTED'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'CONVERTED_TO_ORDER';
+
+export interface CustomOrderInquiry {
+  readonly id: string;
+  readonly customerName: string;
+  readonly customerEmail: string;
+  readonly productCategory: 'BOTTOMS' | 'TOPS' | 'ACCESSORIES';
+  readonly description: string;
+  readonly status: CustomOrderInquiryStatus;
+  readonly desiredFabricWeight?: string;
+  readonly referenceImageUrls?: readonly string[];
+  readonly quotedPrice?: Money;
+  readonly quotedLeadDays?: number;
+  readonly createdAt: string;
+}
+
 // ================= Domain Events =================
 
 export interface DomainEvent<T = unknown> {
@@ -399,3 +575,11 @@ export type VariantSoldOutEvent = DomainEvent<{ variantId: string; sku: string }
 export type PaymentFailedEvent = DomainEvent<{ paymentId: string; reason: string }>;
 export type PaymentRefundedEvent = DomainEvent<{ paymentId: string; amount: Money }>;
 export type DropReturnRequestedEvent = DomainEvent<{ orderId: string; orderLineId: string; reason: string }>;
+export type ShipmentPackedEvent = DomainEvent<{ shipmentId: string; orderId: string }>;
+export type ShipmentDispatchedEvent = DomainEvent<{ shipmentId: string; trackingNumber: string; carrier: string }>;
+export type ShipmentDeliveredEvent = DomainEvent<{ shipmentId: string; deliveredAt: string }>;
+export type ReturnApprovedEvent = DomainEvent<{ returnId: string; orderId: string }>;
+export type ReturnRejectedEvent = DomainEvent<{ returnId: string; reason: string }>;
+export type ReturnCompletedEvent = DomainEvent<{ returnId: string; refundAmount: Money }>;
+export type CustomOrderInquiryCreatedEvent = DomainEvent<{ inquiryId: string; customerEmail: string }>;
+

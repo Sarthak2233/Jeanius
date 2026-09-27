@@ -278,3 +278,115 @@ Entering the `CUTTING` stage generates an immutable, printable **Cut Ticket** wo
 ### Delay Escalation & Rework Protocols
 1. **Delay Management:** If a job encounters a bottleneck (e.g., custom button stockout), the tailor records a formal `delayReason` and estimated revised completion date, automatically notifying support.
 2. **QC Rework Protocol:** If a garment fails the Stage 6 QC inspection (tolerance exceeded > ±0.25"), it is transitioned back to `SEWING` with a tagged defect note rather than discarded.
+
+---
+
+## 11. Shipment Lifecycle & Logistics Operations (JN-011)
+
+All physical shipments dispatch from the Jeanius workshop fulfillment hub in Kathmandu, Nepal, utilizing DHL Express, Aramex, or registered Nepal Post for international deliveries:
+
+```mermaid
+stateDiagram-v2
+    [*] --> PENDING: Order paid (DROP) or OM stage 7 READY reached
+    PENDING --> PACKED: Garment picked, pressed, tote-bagged & boxed
+    PACKED --> SHIPPED: Carrier waybill registered & manifest handed over
+    SHIPPED --> IN_TRANSIT: Carrier export customs scan registered
+    IN_TRANSIT --> OUT_FOR_DELIVERY: Destination regional hub scan
+    OUT_FOR_DELIVERY --> DELIVERED: Consignee signature obtained
+    
+    IN_TRANSIT --> ATTEMPTED_DELIVERY: Customer unavailable / customs clearance required
+    ATTEMPTED_DELIVERY --> OUT_FOR_DELIVERY: Re-attempt scheduled
+    ATTEMPTED_DELIVERY --> RETURNED_TO_SENDER: Retention window exceeded
+    IN_TRANSIT --> LOST: Carrier declares parcel lost
+    
+    DELIVERED --> RETURNED: Customer return processed
+    RETURNED_TO_SENDER --> [*]
+    LOST --> [*]
+    DELIVERED --> [*]
+```
+
+### Logistics Rules & Operational Invariants
+1. **Immutable Waybill Binding:** Once a shipment transitions to `SHIPPED`, its `carrier` and `trackingNumber` are immutable. Any reshipment creates a new `Shipment` record linked to the original Order.
+2. **Inspection Window Activation:** The carrier webhook registering the `DELIVERED` status updates `deliveredAt`, immediately starting the immutable 5-day DROP `InspectionWindow`.
+3. **Customs & Commercial Invoice:** Every international parcel originating from Kathmandu includes an automated commercial invoice declaring harmonized tariff code `6203.42` (men's cotton denim trousers) or `6204.62` (women's cotton denim trousers).
+4. **Split Shipments:** Orders containing both ready-to-ship DROP items and OM items are defaulted to single-dispatch upon OM completion, unless split-shipping is explicitly requested and funded at checkout.
+
+---
+
+## 12. Return & Refund Policy Lifecycle (JN-012)
+
+Customer return requests follow a strict state machine governed by the commerce model and physical inspection criteria:
+
+```mermaid
+stateDiagram-v2
+    [*] --> REQUESTED: Customer files return request within 5 days
+    REQUESTED --> REJECTED: Ineligible (OM cut garment or past window)
+    REQUESTED --> APPROVED: Return authorization & return waybill issued
+    APPROVED --> IN_TRANSIT: Customer drops parcel at carrier
+    IN_TRANSIT --> QC_INSPECTION: Garment arrives at Kathmandu warehouse
+    
+    QC_INSPECTION --> RESTOCKED: Passed (Unwashed, unworn, tags intact)
+    QC_INSPECTION --> SCRAPPED: Defective / damaged during wear
+    
+    RESTOCKED --> REFUND_PROCESSING: Gateway refund triggered
+    SCRAPPED --> REFUND_PROCESSING: Verified workshop defect upheld
+    
+    REFUND_PROCESSING --> COMPLETED: Refund cleared or store credit issued
+    REJECTED --> [*]
+    COMPLETED --> [*]
+```
+
+### Return Policy Invariants
+1. **OM Non-Returnable Invariant:** Made-to-order (`OM`) garments are strictly **final sale** once cutting has commenced. The only exception is a verified manufacturing defect where measured garment dimensions deviate beyond ±0.25" from the approved Cut Ticket.
+2. **DROP 5-Day Eligibility:** DROP items can only be returned if the return is requested within 5 calendar days of the carrier's verified delivery timestamp (`deliveredAt`).
+3. **Condition Criteria:** Garments must be unworn, unwashed, and returned in original condition with all pocket flashers, selvedge ID stickers, and leather patch tags intact.
+4. **Refund Processing:** Approved returns result in a direct refund reversal via the original payment rail (Stripe card reversal or Nepal digital wallet refund) or store credit, triggered only after physical warehouse QC approval.
+
+---
+
+## 13. Membership & Access Control Model (JN-013)
+
+Access to collections, editorial content, and workshop operations is governed by an explicit four-tier access hierarchy:
+
+| Access Level | Permitted Actors | Catalog Visibility | Purchasing Privileges | Administrative Rights |
+| :--- | :--- | :--- | :--- | :--- |
+| **PUBLIC** | `GUEST` (Unauthenticated) | Standard OM & DROP products, public lookbooks, sizing guide | Full checkout on public items | None |
+| **AUTHENTICATED**| `CUSTOMER` | Public catalog + personal order history, saved addresses, live tracking | Full checkout, review submission | None |
+| **MEMBER** | `MEMBER` | Public catalog + restricted `Together` drops, early access previews | Member pricing, exclusive community fabric allocations | Community features |
+| **INTERNAL_STAFF** | `TAILOR`, `FULFILLMENT`, `SUPPORT`, `ADMIN` | Full catalog, draft previews, internal costs | Staff purchases | Operations board, Cut Tickets, Order management |
+
+### Security & Anti-Leakage Invariants
+1. **Zero Metadata Leakage:** Products with `accessLevel: 'MEMBER'` do not expose pricing, high-resolution media, or variant IDs in public React Server Component (RSC) HTML payloads, public REST feeds, or XML sitemaps.
+2. **Server-Side Enforcement:** Attempting to view or purchase a member-restricted product without a verified session containing `role: 'MEMBER'` throws a 404 or redirects to authentication. Client-side hiding alone is unacceptable.
+
+---
+
+## 14. Customer Support & Custom-Order Boundaries (JN-014)
+
+Jeanius strictly delineates communication channels between conversational pre-sales and authoritative transactional support:
+
+```text
+┌─────────────────────────────────┐       ┌─────────────────────────────────┐
+│     INSTAGRAM DM (@jeanius)     │       │     EMAIL (support@jeanius)     │
+│ • Sizing advice & fit guidance  │       │ • Order cancellation requests   │
+│ • Raw denim fading inspiration  │       │ • Address corrections (Pre-cut) │
+│ • Fabric origin storytelling    │       │ • Formal return authorizations  │
+│ ──► Directs to on-platform link │       │ • Carrier disputes & claims     │
+└─────────────────────────────────┘       └─────────────────────────────────┘
+                 │                                         │
+                 └────────────────────┬────────────────────┘
+                                      ▼
+                    ┌───────────────────────────────────┐
+                    │      STOREFRONT CUSTOM ORDER      │
+                    │ • Structured bespoke inquiry form │
+                    │ • Measurement & photo uploads     │
+                    │ • Tailor quote & SLA generation   │
+                    │ • Conversion to payable Order     │
+                    └───────────────────────────────────┘
+```
+
+### Channel Protocols & Service Level Agreements (SLAs)
+1. **Instagram DM Protocol:** Social channels are strictly informational and non-transactional. Support agents never accept payment details, modify addresses, or cancel orders via DM. Customers are routed to the authenticated platform.
+2. **Order Modification Window:** Customers may request shipping address or measurement updates via email exclusively during the `QUEUED` stage. Once a job enters `CUTTING`, measurement modifications are strictly locked.
+3. **Custom-Order Inquiry Flow:** Bespoke requests (non-standard silhouettes, deadstock fabric bolts, bespoke embroidery) are submitted via the dedicated storefront form. Staff review inquiries in `apps/admin`, enter fixed price quotes and lead-time estimates, and generate a secure checkout link for customer authorization.
+

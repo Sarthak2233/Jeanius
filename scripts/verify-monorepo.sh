@@ -6,7 +6,10 @@ echo "=== Jeanius Monorepo Verification ==="
 echo "1. Checking pnpm workspaces..."
 pnpm ls -r --depth -1
 
-echo "2. Running typecheck across all workspaces..."
+echo "2. Running build across all workspaces..."
+pnpm turbo run build
+
+echo "3. Running typecheck across all workspaces..."
 pnpm turbo run typecheck
 
-echo "3. Monorepo verified successfully!"
+echo "4. Monorepo verified successfully!"

@@ -59,15 +59,15 @@ Turn the product specification into an implementation contract before writing fe
 | JN-008 | Define variant lifecycle              | Available → Sold Out → Disabled → Archived.                                              | DONE        |
 | JN-009 | Define payment lifecycle              | Initiated → Pending → Paid/Failed/Expired → Refunded/Partially Refunded.                 | DONE        |
 | JN-010 | Define production lifecycle           | Queued → Cutting → Sewing → Washing → Hardware → QC → Ready → Shipped.                   | DONE        |
-| JN-011 | Define shipment lifecycle             | Pending → Packed → Shipped → In Transit → Delivered → Returned.                          | NOT_STARTED |
-| JN-012 | Define return/refund lifecycle        | Requested → Approved/Rejected → Processing → Completed.                                  | NOT_STARTED |
-| JN-013 | Define membership/access model        | Public, authenticated and protected/member-only states.                                  | NOT_STARTED |
-| JN-014 | Define support model                  | Instagram/email/custom-order support boundaries.                                         | NOT_STARTED |
-| JN-015 | Define terminology                    | Create canonical Jeanius domain glossary.                                                | NOT_STARTED |
-| JN-016 | Create domain map                     | Map Product, Catalog, Cart, Order, Payment, Production, Shipping, etc.                   | NOT_STARTED |
-| JN-017 | Define domain dependencies            | Establish allowed dependencies between domains.                                          | NOT_STARTED |
-| JN-018 | Define architectural boundaries       | Prevent UI/database/provider leakage into domain logic.                                  | NOT_STARTED |
-| JN-019 | Define server/client boundaries       | Decide what runs in Server Components, Client Components, Server Actions and API routes. | NOT_STARTED |
+| JN-011 | Define shipment lifecycle             | Pending → Packed → Shipped → In Transit → Delivered → Returned.                          | DONE        |
+| JN-012 | Define return/refund lifecycle        | Requested → Approved/Rejected → Processing → Completed.                                  | DONE        |
+| JN-013 | Define membership/access model        | Public, authenticated and protected/member-only states.                                  | DONE        |
+| JN-014 | Define support model                  | Instagram/email/custom-order support boundaries.                                         | DONE        |
+| JN-015 | Define terminology                    | Create canonical Jeanius domain glossary.                                                | DONE        |
+| JN-016 | Create domain map                     | Map Product, Catalog, Cart, Order, Payment, Production, Shipping, etc.                   | DONE        |
+| JN-017 | Define domain dependencies            | Establish allowed dependencies between domains.                                          | DONE        |
+| JN-018 | Define architectural boundaries       | Prevent UI/database/provider leakage into domain logic.                                  | DONE        |
+| JN-019 | Define server/client boundaries       | Decide what runs in Server Components, Client Components, Server Actions and API routes. | DONE        |
 | JN-020 | Create ADR system                     | Establish Architecture Decision Records.                                                 | NOT_STARTED |
 | JN-021 | Write architecture ADR                | Record modular-monolith decision.                                                        | NOT_STARTED |
 | JN-022 | Write ORM ADR                         | Record Drizzle/Supabase decision.                                                        | NOT_STARTED |
