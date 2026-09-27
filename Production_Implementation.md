@@ -68,14 +68,14 @@ Turn the product specification into an implementation contract before writing fe
 | JN-017 | Define domain dependencies            | Establish allowed dependencies between domains.                                          | DONE        |
 | JN-018 | Define architectural boundaries       | Prevent UI/database/provider leakage into domain logic.                                  | DONE        |
 | JN-019 | Define server/client boundaries       | Decide what runs in Server Components, Client Components, Server Actions and API routes. | DONE        |
-| JN-020 | Create ADR system                     | Establish Architecture Decision Records.                                                 | NOT_STARTED |
-| JN-021 | Write architecture ADR                | Record modular-monolith decision.                                                        | NOT_STARTED |
-| JN-022 | Write ORM ADR                         | Record Drizzle/Supabase decision.                                                        | NOT_STARTED |
-| JN-023 | Write state ADR                       | Record Zustand decision.                                                                 | NOT_STARTED |
-| JN-024 | Write API ADR                         | Define Next.js server boundary strategy.                                                 | NOT_STARTED |
-| JN-025 | Write payment ADR                     | Define Payment Orchestrator architecture.                                                | NOT_STARTED |
-| JN-026 | Define Definition of Done             | Production completion requirements.                                                      | NOT_STARTED |
-| JN-027 | Define production readiness checklist | Launch requirements from the beginning.                                                  | NOT_STARTED |
+| JN-020 | Create ADR system                     | Establish Architecture Decision Records.                                                 | DONE        |
+| JN-021 | Write architecture ADR                | Record modular-monolith decision.                                                        | DONE        |
+| JN-022 | Write ORM ADR                         | Record Drizzle/Supabase decision.                                                        | DONE        |
+| JN-023 | Write state ADR                       | Record Zustand decision.                                                                 | DONE        |
+| JN-024 | Write API ADR                         | Define Next.js server boundary strategy.                                                 | DONE        |
+| JN-025 | Write payment ADR                     | Define Payment Orchestrator architecture.                                                | DONE        |
+| JN-026 | Define Definition of Done             | Production completion requirements.                                                      | DONE        |
+| JN-027 | Define production readiness checklist | Launch requirements from the beginning.                                                  | DONE        |
 
 **Exit:** Jeanius has a frozen product and architecture contract.
 
