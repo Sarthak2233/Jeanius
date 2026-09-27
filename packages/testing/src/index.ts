@@ -14,6 +14,7 @@ export function createTestProduct(overrides?: Partial<Product>): Product {
     commerceModel: 'OM',
     category: 'BOTTOMS',
     isPublished: true,
+    status: 'PUBLISHED',
     variants: [
       {
         id: 'var-test-001',
@@ -23,6 +24,7 @@ export function createTestProduct(overrides?: Partial<Product>): Product {
         additionalPrice: { amount: 0, currency: 'USD' },
         inventoryCount: 0,
         isAvailable: true,
+        status: 'AVAILABLE',
       },
     ],
     createdAt: new Date().toISOString(),

@@ -130,7 +130,44 @@ export function calculateEstimatedCompletion(
   return result;
 }
 
-// ================= Catalog & Products =================
+// ================= Catalog & Products (JN-007, JN-008) =================
+
+export type ProductStatus =
+  | 'DRAFT'
+  | 'SCHEDULED'
+  | 'PUBLISHED'
+  | 'SOLD_OUT'
+  | 'ARCHIVED';
+
+export type VariantStatus =
+  | 'AVAILABLE'
+  | 'LOW_STOCK'
+  | 'SOLD_OUT'
+  | 'DISABLED'
+  | 'ARCHIVED';
+
+export type DropFulfillmentStatus =
+  | 'INVENTORY_STAGED'
+  | 'RESERVED'
+  | 'PACKING'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'RETURN_REQUESTED'
+  | 'RETURNED';
+
+export interface CutTicket {
+  readonly jobId: string;
+  readonly orderNumber: string;
+  readonly orderLineId: string;
+  readonly customerName?: string;
+  readonly measurements: Readonly<Record<string, string | number>>;
+  readonly fabricLot: string;
+  readonly threadColor: string;
+  readonly buttonFinish: string;
+  readonly pocketBagFabric: string;
+  readonly cutAt: string;
+  readonly artisanName?: string;
+}
 
 export interface ProductVariant {
   readonly id: string;
@@ -140,6 +177,7 @@ export interface ProductVariant {
   readonly additionalPrice: Money;
   readonly inventoryCount: number; // Relevant for DROP; OM is make-to-order
   readonly isAvailable: boolean;
+  readonly status?: VariantStatus;
 }
 
 export interface Product {
@@ -151,6 +189,8 @@ export interface Product {
   readonly commerceModel: CommerceModel;
   readonly category: 'BOTTOMS' | 'TOPS' | 'ACCESSORIES';
   readonly isPublished: boolean;
+  readonly status?: ProductStatus;
+  readonly publishAt?: string;
   readonly variants: readonly ProductVariant[];
   readonly createdAt: string;
   readonly updatedAt: string;
@@ -249,6 +289,93 @@ export function canCancelOrder(
   return true;
 }
 
+/**
+ * Validates product lifecycle state transitions (JN-007).
+ */
+export function canTransitionProductStatus(
+  current: ProductStatus,
+  next: ProductStatus
+): boolean {
+  if (current === next) return false;
+  if (current === 'ARCHIVED') return false; // Archived products cannot transition
+
+  switch (current) {
+    case 'DRAFT':
+      return next === 'SCHEDULED' || next === 'PUBLISHED' || next === 'ARCHIVED';
+    case 'SCHEDULED':
+      return next === 'PUBLISHED' || next === 'DRAFT' || next === 'ARCHIVED';
+    case 'PUBLISHED':
+      return next === 'SOLD_OUT' || next === 'ARCHIVED';
+    case 'SOLD_OUT':
+      return next === 'PUBLISHED' || next === 'ARCHIVED';
+    default:
+      return false;
+  }
+}
+
+/**
+ * Validates variant lifecycle state transitions (JN-008).
+ */
+export function canTransitionVariantStatus(
+  current: VariantStatus,
+  next: VariantStatus
+): boolean {
+  if (current === next) return false;
+  if (current === 'ARCHIVED') return false;
+
+  switch (current) {
+    case 'AVAILABLE':
+      return next === 'LOW_STOCK' || next === 'SOLD_OUT' || next === 'DISABLED' || next === 'ARCHIVED';
+    case 'LOW_STOCK':
+      return next === 'AVAILABLE' || next === 'SOLD_OUT' || next === 'DISABLED' || next === 'ARCHIVED';
+    case 'SOLD_OUT':
+      return next === 'AVAILABLE' || next === 'ARCHIVED';
+    case 'DISABLED':
+      return next === 'AVAILABLE' || next === 'ARCHIVED';
+    default:
+      return false;
+  }
+}
+
+/**
+ * Validates payment lifecycle state transitions (JN-009).
+ */
+export function canTransitionPaymentStatus(
+  current: PaymentStatus,
+  next: PaymentStatus
+): boolean {
+  if (current === next) return false;
+
+  switch (current) {
+    case 'INITIATED':
+      return next === 'PENDING' || next === 'FAILED' || next === 'EXPIRED';
+    case 'PENDING':
+      return next === 'PAID' || next === 'FAILED' || next === 'EXPIRED';
+    case 'PAID':
+      return next === 'REFUNDED' || next === 'PARTIALLY_REFUNDED';
+    case 'PARTIALLY_REFUNDED':
+      return next === 'REFUNDED';
+    case 'FAILED':
+    case 'EXPIRED':
+    case 'REFUNDED':
+      return false; // Terminal states
+    default:
+      return false;
+  }
+}
+
+/**
+ * Checks whether a delivered DROP garment is within its 5-day inspection return window (JN-006).
+ */
+export function isDropEligibleForReturn(
+  deliveryDate: Date,
+  returnWindowDays: number = 5
+): boolean {
+  const now = new Date();
+  const windowMs = returnWindowDays * 24 * 60 * 60 * 1000;
+  return now.getTime() - deliveryDate.getTime() <= windowMs;
+}
+
 // ================= Domain Events =================
 
 export interface DomainEvent<T = unknown> {
@@ -267,3 +394,8 @@ export type ProductionStageAdvancedEvent = DomainEvent<{
   nextStage: ProductionStage;
 }>;
 export type OrderShippedEvent = DomainEvent<{ orderId: string; trackingNumber: string; carrier: string }>;
+export type ProductPublishedEvent = DomainEvent<{ productId: string; slug: string }>;
+export type VariantSoldOutEvent = DomainEvent<{ variantId: string; sku: string }>;
+export type PaymentFailedEvent = DomainEvent<{ paymentId: string; reason: string }>;
+export type PaymentRefundedEvent = DomainEvent<{ paymentId: string; amount: Money }>;
+export type DropReturnRequestedEvent = DomainEvent<{ orderId: string; orderLineId: string; reason: string }>;

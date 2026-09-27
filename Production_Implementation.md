@@ -54,11 +54,11 @@ Turn the product specification into an implementation contract before writing fe
 | JN-003 | Define actor model                    | Customer, member, admin, production staff, support and super-admin.                      | DONE        |
 | JN-004 | Define order lifecycle                | Cart → Checkout → Payment → Order → Production/Fulfillment → Shipment → Delivery.        | DONE        |
 | JN-005 | Define OM lifecycle                   | Configuration → Payment → Production Job → QC → Fulfillment → Shipment.                  | DONE        |
-| JN-006 | Define DROP lifecycle                 | Inventory → Purchase → Fulfillment → Shipment → Delivery/Return.                         | NOT_STARTED |
-| JN-007 | Define product lifecycle              | Draft → Scheduled → Published → Sold Out → Archived.                                     | NOT_STARTED |
-| JN-008 | Define variant lifecycle              | Available → Sold Out → Disabled → Archived.                                              | NOT_STARTED |
-| JN-009 | Define payment lifecycle              | Initiated → Pending → Paid/Failed/Expired → Refunded/Partially Refunded.                 | NOT_STARTED |
-| JN-010 | Define production lifecycle           | Queued → Cutting → Sewing → Washing → Hardware → QC → Ready → Shipped.                   | NOT_STARTED |
+| JN-006 | Define DROP lifecycle                 | Inventory → Purchase → Fulfillment → Shipment → Delivery/Return.                         | DONE        |
+| JN-007 | Define product lifecycle              | Draft → Scheduled → Published → Sold Out → Archived.                                     | DONE        |
+| JN-008 | Define variant lifecycle              | Available → Sold Out → Disabled → Archived.                                              | DONE        |
+| JN-009 | Define payment lifecycle              | Initiated → Pending → Paid/Failed/Expired → Refunded/Partially Refunded.                 | DONE        |
+| JN-010 | Define production lifecycle           | Queued → Cutting → Sewing → Washing → Hardware → QC → Ready → Shipped.                   | DONE        |
 | JN-011 | Define shipment lifecycle             | Pending → Packed → Shipped → In Transit → Delivered → Returned.                          | NOT_STARTED |
 | JN-012 | Define return/refund lifecycle        | Requested → Approved/Rejected → Processing → Completed.                                  | NOT_STARTED |
 | JN-013 | Define membership/access model        | Public, authenticated and protected/member-only states.                                  | NOT_STARTED |

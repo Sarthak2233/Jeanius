@@ -56,9 +56,31 @@ _Avoid_: Step, phase, state
 A domain configuration entity defining active lead times, buffer days, and holiday exclusions for workshop scheduling.
 _Avoid_: SLA, timeline, schedule config
 
+**CutTicket**:
+An immutable manufacturing specification snapshot generated when cutting begins, containing exact pattern measurements and hardware.
+_Avoid_: Work sheet, pattern sheet, spec sheet
+
 **Shipment**:
 The physical fulfillment dispatch of packed goods assigned to an international carrier with tracking.
 _Avoid_: Delivery, parcel, dispatch
+
+**InspectionWindow**:
+The strict 5-day post-delivery timeframe during which DROP garments remain eligible for inspection and return.
+_Avoid_: Return window, trial period, grace period
+
+## Payments & Lifecycle
+
+**PaymentIntent**:
+A provider-independent domain representation of an initiated payment transaction before confirmation.
+_Avoid_: Invoice, charge, transaction token
+
+**Reconciliation**:
+The automated validation ensuring external gateway settlement matches internal order totals.
+_Avoid_: Audit check, balancing, tally
+
+**ScheduledRelease**:
+A product state with an automated publication timestamp where purchasing is blocked until the target date.
+_Avoid_: Embargo, pre-launch, future drop
 
 ## Actors & Roles
 

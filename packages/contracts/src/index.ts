@@ -16,6 +16,32 @@ export const ActorRoleSchema = z.enum([
 
 export const CommerceModelSchema = z.enum(['OM', 'DROP', 'CUSTOM_ORDER']);
 
+export const ProductStatusSchema = z.enum([
+  'DRAFT',
+  'SCHEDULED',
+  'PUBLISHED',
+  'SOLD_OUT',
+  'ARCHIVED',
+]);
+
+export const VariantStatusSchema = z.enum([
+  'AVAILABLE',
+  'LOW_STOCK',
+  'SOLD_OUT',
+  'DISABLED',
+  'ARCHIVED',
+]);
+
+export const PaymentStatusSchema = z.enum([
+  'INITIATED',
+  'PENDING',
+  'PAID',
+  'FAILED',
+  'EXPIRED',
+  'REFUNDED',
+  'PARTIALLY_REFUNDED',
+]);
+
 export const MoneySchema = z.object({
   amount: z.number().int().nonnegative(),
   currency: z.enum(['USD', 'NPR']).or(z.string().min(3).max(3)),
@@ -74,8 +100,26 @@ export const CustomOrderInquirySchema = z.object({
   referenceImageUrls: z.array(z.string().url()).optional(),
 });
 
+export const DropReturnRequestSchema = z.object({
+  orderId: z.string().uuid(),
+  orderLineId: z.string().uuid(),
+  customerEmail: z.string().email(),
+  reason: z.string().min(10, 'Please explain the reason for your return'),
+  unwornConfirmation: z.literal(true, {
+    errorMap: () => ({ message: 'You must confirm the garment is unworn and unwashed with tags intact' }),
+  }),
+});
+
+export const UpdateVariantStatusSchema = z.object({
+  variantId: z.string().uuid(),
+  status: VariantStatusSchema,
+});
+
 export type ActorRoleDto = z.infer<typeof ActorRoleSchema>;
 export type CommerceModelDto = z.infer<typeof CommerceModelSchema>;
+export type ProductStatusDto = z.infer<typeof ProductStatusSchema>;
+export type VariantStatusDto = z.infer<typeof VariantStatusSchema>;
+export type PaymentStatusDto = z.infer<typeof PaymentStatusSchema>;
 export type MoneyDto = z.infer<typeof MoneySchema>;
 export type AddressDto = z.infer<typeof AddressSchema>;
 export type AddToCartDto = z.infer<typeof AddToCartSchema>;
@@ -83,3 +127,5 @@ export type CreateCheckoutDto = z.infer<typeof CreateCheckoutSchema>;
 export type TransitionProductionStageDto = z.infer<typeof TransitionProductionStageSchema>;
 export type CancelOrderDto = z.infer<typeof CancelOrderSchema>;
 export type CustomOrderInquiryDto = z.infer<typeof CustomOrderInquirySchema>;
+export type DropReturnRequestDto = z.infer<typeof DropReturnRequestSchema>;
+export type UpdateVariantStatusDto = z.infer<typeof UpdateVariantStatusSchema>;
