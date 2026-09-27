@@ -22,7 +22,7 @@ export default function AdminDashboardPage() {
               JEANIUS WORKSHOP OPERATIONS
             </h1>
             <p style={{ color: '#94a3b8', margin: '0.25rem 0 0 0', fontSize: '0.9rem' }}>
-              OM Manufacturing Pipeline & DROP Inventory Orchestration
+              Order Made Manufacturing Pipeline & DROP Inventory Orchestration
             </p>
           </div>
           <span style={{ fontSize: '0.8rem', padding: '0.25rem 0.75rem', background: '#1e293b', border: '1px solid #475569', borderRadius: '4px', color: '#38bdf8' }}>
@@ -33,7 +33,7 @@ export default function AdminDashboardPage() {
 
       <section style={{ marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '1.1rem', letterSpacing: '0.05em', color: '#cbd5e1', marginBottom: '1rem', textTransform: 'uppercase' }}>
-          OM Production Pipeline Stages
+          Order Made Production Pipeline Stages
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
           {STAGES.map((stage, idx) => (

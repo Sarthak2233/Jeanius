@@ -1,6 +1,18 @@
 {
   "version": 1,
   "skills": {
+    "archify": {
+      "source": "tt-a1i/archify",
+      "sourceType": "github",
+      "skillPath": "archify/SKILL.md",
+      "computedHash": "2dafa540bb19ed1d2ea032b071b4f617036d5166b3575a24545bd626e3d8e499"
+    },
+    "archify-review": {
+      "source": "tt-a1i/archify",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/archify-review/SKILL.md",
+      "computedHash": "ea17fd7a735f2e787defcc35d67f97908ddb7c5817220d6163a32998b4573f8f"
+    },
     "ask-matt": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -86,7 +98,7 @@
       "computedHash": "2449db6ab1ded9581f69fcc56c1f64818112d05e271fd4c5da23c6523f9d3d9d"
     },
     "jeanius-frontend": {
-      "source": "local",
+      "source": "./local",
       "sourceType": "local",
       "skillPath": ".agents/skills/jeanius-frontend/SKILL.md",
       "computedHash": "manual"
