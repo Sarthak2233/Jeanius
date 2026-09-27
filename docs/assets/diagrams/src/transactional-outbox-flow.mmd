@@ -1,0 +1,29 @@
+sequenceDiagram
+    autonumber
+    actor Webhook as Payment Gateway Webhook
+    participant RouteHandler as Next.js Route Handler
+    participant DB as PostgreSQL Transaction
+    participant Worker as Outbox Event Processor
+    participant Email as SendGrid Email API
+    participant Workshop as Workshop Portal Realtime
+    participant Logistics as DHL Waybill Service
+
+    Webhook->>RouteHandler: POST /api/webhooks/stripe
+    RouteHandler->>RouteHandler: Verify HMAC Signature
+
+    rect rgb(240, 245, 255)
+        Note over RouteHandler,DB: Single Atomic ACID Transaction
+        RouteHandler->>DB: UPDATE orders SET status = 'PAID'
+        RouteHandler->>DB: INSERT INTO outbox_events (OrderPaidEvent)
+        DB-->>RouteHandler: Transaction Committed
+    end
+
+    RouteHandler-->>Webhook: 200 OK (Instant Response)
+
+    loop Asynchronous Background Dispatch
+        Worker->>DB: SELECT FOR UPDATE SKIP LOCKED status = 'PENDING'
+        Worker->>Email: Send Order Confirmation Email
+        Worker->>Workshop: Push Order to Workshop Cutting Queue
+        Worker->>Logistics: Queue Export Commercial Invoice
+        Worker->>DB: UPDATE outbox_events SET status = 'COMPLETED'
+    end

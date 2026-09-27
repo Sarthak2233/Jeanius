@@ -1,20 +1,34 @@
 stateDiagram-v2
-    [*] --> DRAFT: Cart configured & customer proceeds to checkout
-    DRAFT --> PENDING_PAYMENT: Checkout submitted & PaymentIntent created
-    PENDING_PAYMENT --> PAID: Payment gateway confirms capture
-    PENDING_PAYMENT --> CANCELLED: Abandoned or expired session
+    [*] --> DRAFT: Cart configured & checkout initiated
+    DRAFT --> PENDING_PAYMENT: Two-Phase Inventory Hold locked & Intent created
+    PENDING_PAYMENT --> PAID: Payment verified via webhook
+    PENDING_PAYMENT --> CANCELLED: Timeout > 10m or abandoned (Hold released)
     
-    PAID --> IN_PRODUCTION: Order-Made (OM) garment job queued
-    PAID --> READY_FOR_DISPATCH: Pre-made DROP batch allocated
+    state PAID {
+        [*] --> ROUTE_PACKAGES: Order split into FulfillmentPackages
+        ROUTE_PACKAGES --> DROP_PACKAGE: Ready-to-Ship items
+        ROUTE_PACKAGES --> OM_PACKAGE: Made-to-Order custom items
+        
+        state DROP_PACKAGE {
+            [*] --> READY_DISPATCH_DROP: Warehouse picks & packs in 24h
+            READY_DISPATCH_DROP --> SHIPPED_DROP: Courier tracking assigned (Package 1)
+        }
+        
+        state OM_PACKAGE {
+            [*] --> IN_PRODUCTION: Craftsman cutting & tailoring (7-14 days)
+            IN_PRODUCTION --> READY_DISPATCH_OM: Workshop QC passed
+            READY_DISPATCH_OM --> SHIPPED_OM: Courier tracking assigned (Package 2)
+        }
+    }
     
-    IN_PRODUCTION --> READY_FOR_DISPATCH: Final QC passed & packaging complete
-    READY_FOR_DISPATCH --> SHIPPED: Courier tracking generated (Kathmandu dispatch)
-    SHIPPED --> DELIVERED: Carrier confirms consignee delivery
+    SHIPPED_DROP --> DELIVERED_PARTIAL: Drop item delivered
+    SHIPPED_OM --> DELIVERED_ALL: All packages delivered
+    DELIVERED_PARTIAL --> DELIVERED_ALL: Final package arrives
     
     PAID --> REFUNDED: Cancelled prior to cutting (OM only)
-    DELIVERED --> RETURNED: Return inspected & accepted (DROP only, 5-day window)
+    DELIVERED_ALL --> RETURNED: Return inspected & accepted (DROP only, 5-day window)
     
     CANCELLED --> [*]
     REFUNDED --> [*]
     RETURNED --> [*]
-    DELIVERED --> [*]
+    DELIVERED_ALL --> [*]

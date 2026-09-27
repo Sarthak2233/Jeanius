@@ -24,6 +24,8 @@ Every ADR transitions through standard lifecycle states:
 | [ADR-003](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-003-zustand-client-state.md) | Zustand for Client-Side Interaction State | `Accepted` | 2026-09-27 | Client State Management, Storefront |
 | [ADR-004](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-004-nextjs-server-boundary.md) | Next.js Server Boundary & API Strategy | `Accepted` | 2026-09-27 | Server Runtime, Server Actions, Route Handlers |
 | [ADR-005](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-005-payment-orchestrator.md) | Decoupled Payment Orchestrator Architecture | `Accepted` | 2026-09-27 | Payment Gateway, Dual Rails (Stripe / Nepal) |
+| [ADR-006](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-006-two-phase-inventory-reservation.md) | Two-Phase Inventory Reservation & Drop Concurrency | `Accepted` | 2026-09-27 | Inventory, Drops, Concurrency, Locking |
+| [ADR-007](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-007-transactional-outbox-pattern.md) | Transactional Outbox Pattern for Asynchronous Events | `Accepted` | 2026-09-27 | Messaging, Reliability, Event-Driven Side Effects |
 
 ---
 

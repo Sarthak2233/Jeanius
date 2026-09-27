@@ -25,7 +25,9 @@ The scope for Jeanius is strictly defined across three tiers to guarantee focus 
 
 ### A. Order-Made (OM) — Made to Order
 * **Core Principle:** Jeans, jackets, and accessories cut and assembled after customer payment.
-* **Inventory Behavior:** Zero finished goods inventory required. Orders lock reservations on raw fabric yardage (e.g. 2.7m of 14oz Kurabo raw selvedge denim).
+* **Inventory Behavior & Fabric Bolt Continuity:**
+  * Zero finished goods inventory required. Orders lock reservations on raw fabric yardage on discrete continuous **Fabric Bolts** (e.g. 2.7m of 14oz Kurabo raw selvedge denim).
+  * **Continuous Yardage Invariant:** Selvedge denim is woven on narrow shuttle looms (28–31 inches wide). Garment panels for a single pair of jeans **must be cut from a single, continuous fabric bolt**. Splitting cuts across different bolts or dye lots is strictly prohibited to preserve patina fade and weave consistency.
 * **Production Policy:** Governed dynamically by `ProductionPolicy` (default: 7–14 business days, automatically extending for official Nepal workshop holidays).
 * **Cancellation & Refund Contract:**
   * **Pre-Cutting:** The customer may cancel within 24 hours of payment if the job has not entered the `CUTTING` stage (100% refund).
@@ -63,7 +65,7 @@ The scope for Jeanius is strictly defined across three tiers to guarantee focus 
 
 ## 4. Order Lifecycle State Machine (JN-004)
 
-Every commercial transaction follows an immutable state machine:
+Every commercial transaction follows an immutable state machine supporting multi-package split fulfillment:
 
 ![Order Lifecycle](../assets/diagrams/order-lifecycle.svg)
 
@@ -72,45 +74,53 @@ Every commercial transaction follows an immutable state machine:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> DRAFT: Customer adds item to Cart
-    DRAFT --> PENDING_PAYMENT: Checkout initiated
-    
-    PENDING_PAYMENT --> EXPIRED: Unpaid timeout (30 min)
-    PENDING_PAYMENT --> FAILED: Payment declined / abandoned
-    PENDING_PAYMENT --> PAID: Payment verified via Webhook
+    [*] --> DRAFT: Cart configured & checkout initiated
+    DRAFT --> PENDING_PAYMENT: Two-Phase Inventory Hold locked & Intent created
+    PENDING_PAYMENT --> PAID: Payment verified via webhook
+    PENDING_PAYMENT --> CANCELLED: Timeout > 10m or abandoned (Hold released)
     
     state PAID {
-        [*] --> SPLIT_FULFILLMENT
-        SPLIT_FULFILLMENT --> IN_PRODUCTION: Has OM line items
-        SPLIT_FULFILLMENT --> READY_FOR_DISPATCH: DROP only items
-        IN_PRODUCTION --> READY_FOR_DISPATCH: All OM ProductionJobs READY
+        [*] --> ROUTE_PACKAGES: Order split into FulfillmentPackages
+        ROUTE_PACKAGES --> DROP_PACKAGE: Ready-to-Ship items
+        ROUTE_PACKAGES --> OM_PACKAGE: Made-to-Order custom items
+        
+        state DROP_PACKAGE {
+            [*] --> READY_DISPATCH_DROP: Warehouse picks & packs in 24h
+            READY_DISPATCH_DROP --> SHIPPED_DROP: Courier tracking assigned (Package 1)
+        }
+        
+        state OM_PACKAGE {
+            [*] --> IN_PRODUCTION: Craftsman cutting & tailoring (7-14 days)
+            IN_PRODUCTION --> READY_DISPATCH_OM: Workshop QC passed
+            READY_DISPATCH_OM --> SHIPPED_OM: Courier tracking assigned (Package 2)
+        }
     }
     
-    READY_FOR_DISPATCH --> SHIPPED: Tracking number recorded
-    SHIPPED --> DELIVERED: Carrier confirms delivery
+    SHIPPED_DROP --> DELIVERED_PARTIAL: Drop item delivered
+    SHIPPED_OM --> DELIVERED_ALL: All packages delivered
+    DELIVERED_PARTIAL --> DELIVERED_ALL: Final package arrives
     
-    PAID --> CANCELLED: Pre-cutting cancellation (Full refund)
-    DELIVERED --> REFUND_REQUESTED: DROP item refund request (within 5 days)
-    REFUND_REQUESTED --> REFUNDED: Returned goods inspected & approved
-    REFUND_REQUESTED --> DELIVERED: Refund rejected (worn/damaged)
+    PAID --> REFUNDED: Cancelled prior to cutting (OM only)
+    DELIVERED_ALL --> RETURNED: Return inspected & accepted (DROP only, 5-day window)
     
-    EXPIRED --> [*]
-    FAILED --> [*]
     CANCELLED --> [*]
-    DELIVERED --> [*]
     REFUNDED --> [*]
+    RETURNED --> [*]
+    DELIVERED_ALL --> [*]
 ```
 
 </details>
 
 ### State Definitions & Rules
 1. **DRAFT:** Ephemeral cart state.
-2. **PENDING_PAYMENT:** Order created with frozen line items and locked price snapshot. A payment session is active.
+2. **PENDING_PAYMENT:** Order created with frozen line items and locked price snapshot. A 10-minute Two-Phase Inventory Hold is actively reserved.
 3. **PAID:** Payment confirmed by verified webhook. If OM lines are present, a `ProductionJob` is created for each custom line item.
-4. **IN_PRODUCTION:** At least one OM line item is actively in the manufacturing queue.
-5. **READY_FOR_DISPATCH:** Items inspected, pressed, and packed into branded canvas tote bags with maker certificates.
-6. **SHIPPED:** Dispatched with an international tracking number (e.g. DHL Express, Aramex).
-7. **DELIVERED:** Courier signals delivery to destination address.
+4. **MULTI-PACKAGE SPLIT FULFILLMENT:**
+   - Orders containing both ready-to-ship DROP items and custom Order-Made garments split into independent `FulfillmentPackage`s.
+   - **Package 1 (DROP):** Dispatches from Kathmandu warehouse within 24–48 hours via DHL Express.
+   - **Package 2 (OM):** Dispatches upon completing all 8 workshop production stages (7–14 days).
+5. **SHIPPED:** Courier tracking numbers assigned to respective packages.
+6. **DELIVERED_ALL:** All packages delivered to customer.
 
 ---
 
@@ -266,7 +276,61 @@ stateDiagram-v2
 ### Matrix Resolution & Invariants
 1. **Independent Option Availability:** Individual option values (e.g., Waist 32 in Slim Fit) can transition to `SOLD_OUT` independently. The configurator dynamically disables unavailable combinations without marking the entire product sold out.
 2. **Product-Level Sold Out Invariant:** A Product transitions to `SOLD_OUT` if and only if **all** of its purchasable variants are in `SOLD_OUT` or `DISABLED` states.
-3. **Inventory Race Protection:** DROP variant inventory is checked server-side with atomic SQL decrement during checkout to prevent overselling.
+3. **Inventory Race Protection (Two-Phase Hold):** DROP variant inventory is protected by a two-phase atomic reservation (Claim + 10-minute TTL) to prevent overselling on limited selvedge drops.
+
+---
+
+## 8.B Two-Phase Inventory Hold (Claim + TTL) Architecture
+
+During high-concurrency limited drop launches (e.g. 50 pairs of Japanese selvedge denim), the platform enforces an atomic reservation workflow before payment:
+
+![Two-Phase Inventory Hold](../assets/diagrams/two-phase-inventory-reservation.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Customer
+    participant Storefront as Next.js Storefront
+    participant ServerAction as Server Action
+    participant Database as Supabase PostgreSQL
+    participant Gateway as Payment Gateway
+    participant Sweeper as Expired Hold Sweeper
+
+    Customer->>Storefront: Click Proceed to Checkout
+    Storefront->>ServerAction: submitCheckout(cartId, idempotencyKey)
+    ServerAction->>Database: Atomic SQL Hold (available - reserved >= qty)
+    alt Stock Available
+        Database-->>ServerAction: Hold Granted (expires in 10 minutes)
+        ServerAction->>Gateway: Create Payment Intent
+        Gateway-->>ServerAction: clientSecret / paymentUrl
+        ServerAction-->>Storefront: Proceed to Payment Form
+    else Stock Exhausted
+        Database-->>ServerAction: Zero Units Available
+        ServerAction-->>Storefront: Return Out of Stock Notice
+    end
+
+    alt Successful Payment within 10m
+        Customer->>Gateway: Submit Card / Wallet Payment
+        Gateway->>ServerAction: Webhook payment_intent.succeeded
+        ServerAction->>Database: Commit Inventory (total - 1, reserved - 1)
+        ServerAction-->>Customer: Order Confirmation
+    else Payment Abandoned or Expired
+        Customer-xGateway: Closes browser or payment fails
+        Note over Sweeper,Database: Runs every 60s or on-demand
+        Sweeper->>Database: Release Expired Holds (reserved - 1)
+        Database-->>Database: Stock returned to available pool
+    end
+```
+
+</details>
+
+### Two-Phase Invariants
+1. **Conditional Atomic Hold:** Soft claims succeed only if `available_quantity - reserved_quantity >= requested_qty`.
+2. **Deterministic Expiration:** Uncompleted reservations expire in exactly 10 minutes, returning reserved stock to the available drop pool.
+3. **Zero Overselling:** No payment intent is generated without an active, validated reservation token.
 
 ---
 
@@ -452,4 +516,54 @@ Jeanius strictly delineates communication channels between conversational pre-sa
 1. **Instagram DM Protocol:** Social channels are strictly informational and non-transactional. Support agents never accept payment details, modify addresses, or cancel orders via DM. Customers are routed to the authenticated platform.
 2. **Order Modification Window:** Customers may request shipping address or measurement updates via email exclusively during the `QUEUED` stage. Once a job enters `CUTTING`, measurement modifications are strictly locked.
 3. **Custom-Order Inquiry Flow:** Bespoke requests (non-standard silhouettes, deadstock fabric bolts, bespoke embroidery) are submitted via the dedicated storefront form. Staff review inquiries in `apps/admin`, enter fixed price quotes and lead-time estimates, and generate a secure checkout link for customer authorization.
+
+---
+
+## 15. Transactional Outbox & Reliable Asynchronous Events
+
+To eliminate dual-write hazards and guarantee at-least-once delivery of notifications, workshop cutting alerts, and logistics waybills, all domain events are written atomically within the business database transaction:
+
+![Transactional Outbox Flow](../assets/diagrams/transactional-outbox-flow.svg)
+
+<details>
+<summary>View Diagram Source (Mermaid)</summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Webhook as Payment Gateway Webhook
+    participant RouteHandler as Next.js Route Handler
+    participant DB as PostgreSQL Transaction
+    participant Worker as Outbox Event Processor
+    participant Email as SendGrid Email API
+    participant Workshop as Workshop Portal Realtime
+    participant Logistics as DHL Waybill Service
+
+    Webhook->>RouteHandler: POST /api/webhooks/stripe
+    RouteHandler->>RouteHandler: Verify HMAC Signature
+
+    rect rgb(240, 245, 255)
+        Note over RouteHandler,DB: Single Atomic ACID Transaction
+        RouteHandler->>DB: UPDATE orders SET status = 'PAID'
+        RouteHandler->>DB: INSERT INTO outbox_events (OrderPaidEvent)
+        DB-->>RouteHandler: Transaction Committed
+    end
+
+    RouteHandler-->>Webhook: 200 OK (Instant Response)
+
+    loop Asynchronous Background Dispatch
+        Worker->>DB: SELECT FOR UPDATE SKIP LOCKED status = 'PENDING'
+        Worker->>Email: Send Order Confirmation Email
+        Worker->>Workshop: Push Order to Workshop Cutting Queue
+        Worker->>Logistics: Queue Export Commercial Invoice
+        Worker->>DB: UPDATE outbox_events SET status = 'COMPLETED'
+    end
+```
+
+</details>
+
+### Outbox Guarantees
+1. **Atomicity:** An order cannot be marked `PAID` without staging its `OrderPaidDomainEvent` in `outbox_events`.
+2. **Sub-100ms Response:** Webhooks and checkout Server Actions return immediately without waiting for third-party HTTP roundtrips.
+3. **Idempotent Dispatch:** Consumers handle duplicate deliveries idempotently using the unique event UUID.
 

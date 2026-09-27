@@ -223,6 +223,11 @@ Notifications
 | JN-082 | Create ContentPage entity        | CMS-like content.                              | NOT_STARTED |
 | JN-083 | Create Membership entity         | Protected-content access.                      | NOT_STARTED |
 | JN-084 | Define domain events             | Product, order, payment and production events. | NOT_STARTED |
+| JN-085 | Create FabricBolt aggregate      | Narrow shuttle-loom continuous yardage allocation. | NOT_STARTED |
+| JN-086 | Create InventoryReservation      | Two-phase hold (atomic claim + 10-minute TTL).   | NOT_STARTED |
+| JN-087 | Create LedgerEntry entity        | Double-entry financial audit & accounting log.  | NOT_STARTED |
+| JN-088 | Create ExportDeclaration VO      | Nepal customs export compliance & HS 6203.42.    | NOT_STARTED |
+| JN-089 | Expand Shipment aggregate        | Multi-package split fulfillment (DROP vs. OM).   | NOT_STARTED |
 
 ---
 
