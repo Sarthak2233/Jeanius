@@ -83,14 +83,10 @@ export class ProductionService {
       throw new Error(`ProductionJob ${jobId} not found`);
     }
 
-    const updatedJob: ProductionJob = {
-      ...job,
-      currentStage: nextStage,
-      notes: notes ? [...(job.notes || []), notes] : job.notes,
-      updatedAt: new Date().toISOString(),
-    };
+    job.advanceStage(nextStage);
+    void notes;
 
-    await this.productionRepo.save(updatedJob);
-    return updatedJob;
+    await this.productionRepo.save(job);
+    return job;
   }
 }

@@ -203,33 +203,35 @@ Notifications
 
 | ID     | Task                             | Description                                    | Status      |
 | ------ | -------------------------------- | ---------------------------------------------- | ----------- |
-| JN-063 | Create domain ID types           | Strongly typed IDs.                            | NOT_STARTED |
-| JN-064 | Create Money value object        | Currency + minor-unit representation.          | NOT_STARTED |
-| JN-065 | Create Address value object      | Country/region/postal/address structure.       | NOT_STARTED |
-| JN-066 | Create Product entity            | Core product aggregate.                        | NOT_STARTED |
-| JN-067 | Create ProductOption entity      | Configurable option definition.                | NOT_STARTED |
-| JN-068 | Create OptionValue entity        | Individual option values.                      | NOT_STARTED |
-| JN-069 | Create Variant entity            | Concrete purchasable configuration.            | NOT_STARTED |
-| JN-070 | Create ProductType               | OM/DROP/pre-order/future types.                | NOT_STARTED |
-| JN-071 | Create Cart entity               | Customer/guest cart aggregate.                 | NOT_STARTED |
-| JN-072 | Create CartLine entity           | Exact variant/configuration snapshot.          | NOT_STARTED |
-| JN-073 | Create Order entity              | Immutable commercial transaction.              | NOT_STARTED |
-| JN-074 | Create OrderLine entity          | Exact purchased configuration.                 | NOT_STARTED |
-| JN-075 | Create Payment entity            | Internal payment state.                        | NOT_STARTED |
-| JN-076 | Create ProductionJob entity      | Manufacturing work order.                      | NOT_STARTED |
-| JN-077 | Create Shipment entity           | Fulfillment/shipping state.                    | NOT_STARTED |
-| JN-078 | Create Review entity             | Product review.                                | NOT_STARTED |
-| JN-079 | Create Question entity           | Product Q&A.                                   | NOT_STARTED |
-| JN-080 | Create CustomOrderRequest entity | Controlled custom-order workflow.              | NOT_STARTED |
-| JN-081 | Create Announcement entity       | Operational homepage notices.                  | NOT_STARTED |
-| JN-082 | Create ContentPage entity        | CMS-like content.                              | NOT_STARTED |
-| JN-083 | Create Membership entity         | Protected-content access.                      | NOT_STARTED |
-| JN-084 | Define domain events             | Product, order, payment and production events. | NOT_STARTED |
-| JN-085 | Create FabricBolt aggregate      | Narrow shuttle-loom continuous yardage allocation. | NOT_STARTED |
-| JN-086 | Create InventoryReservation      | Two-phase hold (atomic claim + 10-minute TTL).   | NOT_STARTED |
-| JN-087 | Create LedgerEntry entity        | Double-entry financial audit & accounting log.  | NOT_STARTED |
-| JN-088 | Create ExportDeclaration VO      | Nepal customs export compliance & HS 6203.42.    | NOT_STARTED |
-| JN-089 | Expand Shipment aggregate        | Multi-package split fulfillment (DROP vs. OM).   | NOT_STARTED |
+| JN-063 | Create domain ID types           | Strongly typed IDs.                            | DONE        |
+| JN-064 | Create Money value object        | Currency + minor-unit representation.          | DONE        |
+| JN-065 | Create Address value object      | Country/region/postal/address structure.       | DONE        |
+| JN-066 | Create Product entity            | Core product aggregate.                        | DONE        |
+| JN-067 | Create ProductOption entity      | Configurable option definition.                | DONE        |
+| JN-068 | Create OptionValue entity        | Individual option values.                      | DONE        |
+| JN-069 | Create Variant entity            | Concrete purchasable configuration.            | DONE        |
+| JN-070 | Create ProductType               | OM/DROP/pre-order/future types.                | DONE        |
+| JN-071 | Create Cart entity               | Customer/guest cart aggregate.                 | DONE        |
+| JN-072 | Create CartLine entity           | Exact variant/configuration snapshot.          | DONE        |
+| JN-073 | Create Order entity              | Immutable commercial transaction.              | DONE        |
+| JN-074 | Create OrderLine entity          | Exact purchased configuration.                 | DONE        |
+| JN-075 | Create Payment entity            | Internal payment state.                        | DONE        |
+| JN-076 | Create ProductionJob entity      | Manufacturing work order.                      | DONE        |
+| JN-077 | Create Shipment entity           | Fulfillment/shipping state.                    | DONE        |
+| JN-078 | Create Review entity             | Product review.                                | DONE        |
+| JN-079 | Create Question entity           | Product Q&A.                                   | DONE        |
+| JN-080 | Create CustomOrderRequest entity | Controlled custom-order workflow.              | DONE        |
+| JN-081 | Create Announcement entity       | Operational homepage notices.                  | DONE        |
+| JN-082 | Create ContentPage entity        | CMS-like content.                              | DONE        |
+| JN-083 | Create Membership entity         | Protected-content access.                      | DONE        |
+| JN-084 | Define domain events             | Product, order, payment and production events. | DONE        |
+| JN-085 | Create FabricBolt aggregate      | Narrow shuttle-loom continuous yardage allocation. | DONE        |
+| JN-086 | Create InventoryReservation      | Two-phase hold (atomic claim + 10-minute TTL).   | DONE        |
+| JN-087 | Create LedgerEntry entity        | Double-entry financial audit & accounting log.  | DONE        |
+| JN-088 | Create ExportDeclaration VO      | Nepal customs export compliance & HS 6203.42.    | DONE        |
+| JN-089 | Expand Shipment aggregate        | Multi-package split fulfillment (DROP vs. OM).   | DONE        |
+
+**Exit:** Pure domain model implemented across 27 aggregates, entities, and value objects with 100% test coverage and zero external dependencies.
 
 ---
 

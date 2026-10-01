@@ -33,7 +33,9 @@ export abstract class BaseError extends Error {
 
 // ================= 1. Domain Errors (Business Invariants) =================
 
-export abstract class DomainError extends BaseError {}
+export class DomainError extends BaseError {
+  public override readonly code: string = 'DOMAIN_ERROR';
+}
 
 export class InvalidMeasurementError extends DomainError {
   public readonly code = 'INVALID_MEASUREMENT';
@@ -106,31 +108,33 @@ export class ReturnEligibilityExpiredError extends DomainError {
 
 // ================= 2. Application Errors (Use-Case Execution) =================
 
-export abstract class ApplicationError extends BaseError {}
+export class ApplicationError extends BaseError {
+  public override readonly code: string = 'APPLICATION_ERROR';
+}
 
 export class NotFoundError extends ApplicationError {
-  public readonly code = 'NOT_FOUND';
+  public override readonly code = 'NOT_FOUND';
   constructor(resource: string, identifier: string) {
     super(`${resource} with identifier "${identifier}" was not found.`, { resource, identifier });
   }
 }
 
 export class ConflictError extends ApplicationError {
-  public readonly code = 'CONFLICT';
+  public override readonly code = 'CONFLICT';
   constructor(message: string, details?: Record<string, unknown>) {
     super(message, details);
   }
 }
 
 export class UnauthorizedError extends ApplicationError {
-  public readonly code = 'UNAUTHORIZED';
+  public override readonly code = 'UNAUTHORIZED';
   constructor(message = 'Authentication required to perform this action.') {
     super(message);
   }
 }
 
 export class ForbiddenError extends ApplicationError {
-  public readonly code = 'FORBIDDEN';
+  public override readonly code = 'FORBIDDEN';
   constructor(role: string, operation: string) {
     super(`Actor with role "${role}" is not authorized to execute "${operation}".`, {
       role,
@@ -141,17 +145,19 @@ export class ForbiddenError extends ApplicationError {
 
 // ================= 3. Infrastructure Errors (External Providers) =================
 
-export abstract class InfrastructureError extends BaseError {}
+export class InfrastructureError extends BaseError {
+  public override readonly code: string = 'INFRASTRUCTURE_ERROR';
+}
 
 export class PaymentGatewayError extends InfrastructureError {
-  public readonly code = 'PAYMENT_GATEWAY_ERROR';
+  public override readonly code = 'PAYMENT_GATEWAY_ERROR';
   constructor(provider: string, message: string, details?: Record<string, unknown>) {
     super(`Payment gateway [${provider}] failure: ${message}`, { provider, ...details });
   }
 }
 
 export class CourierApiError extends InfrastructureError {
-  public readonly code = 'COURIER_API_ERROR';
+  public override readonly code = 'COURIER_API_ERROR';
   constructor(carrier: string, message: string, details?: Record<string, unknown>) {
     super(`Courier service [${carrier}] error: ${message}`, { carrier, ...details });
   }

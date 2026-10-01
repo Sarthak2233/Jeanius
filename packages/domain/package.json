@@ -14,7 +14,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "echo \"@jeanius/domain linted\"",
-    "build": "echo \"@jeanius/domain ready\""
+    "build": "echo \"@jeanius/domain ready\"",
+    "test": "npx tsx --test \"src/**/*.test.ts\""
   },
   "devDependencies": {
     "typescript": "^5.7.3"

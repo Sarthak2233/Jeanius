@@ -1,10 +1,10 @@
 /**
  * @jeanius/domain
- * Framework-independent business domain entities, value objects, and lifecycle state machines.
+ * Pure framework-independent business domain entities, value objects, lifecycle state machines,
+ * and outbox domain events.
  */
 
 // ================= Actors & Roles (JN-003) =================
-
 export type ActorRole =
   'GUEST' | 'CUSTOMER' | 'MEMBER' | 'TAILOR' | 'FULFILLMENT' | 'SUPPORT' | 'ADMIN';
 
@@ -14,294 +14,49 @@ export interface Actor {
   readonly role: ActorRole;
 }
 
-// ================= Commerce Models (JN-002) =================
+// ================= Common & Identifiers (JN-063, JN-064, JN-065) =================
+export * from './common/entity-id.js';
+export * from './common/money.vo.js';
+export * from './common/address.vo.js';
 
-export type CommerceModel = 'OM' | 'DROP' | 'CUSTOM_ORDER';
+// ================= Catalog & Products (JN-066, JN-067, JN-068, JN-069, JN-070) =================
+export * from './catalog/product-type.js';
+export * from './catalog/option-value.entity.js';
+export * from './catalog/product-option.entity.js';
+export * from './catalog/variant.entity.js';
+export * from './catalog/product.entity.js';
 
-export interface Money {
-  readonly amount: number; // Stored in minor units (e.g. cents, paisa)
-  readonly currency: 'USD' | 'NPR' | string;
-}
+// Legacy compatibility aliases if needed
+export type { ProductVariant as ProductVariantInterface } from './catalog/variant.entity.js';
 
-export interface Address {
-  readonly fullName: string;
-  readonly addressLine1: string;
-  readonly addressLine2?: string;
-  readonly city: string;
-  readonly stateOrProvince?: string;
-  readonly postalCode: string;
-  readonly country: string;
-  readonly phone: string;
-}
+// ================= Cart (JN-071, JN-072) =================
+export * from './cart/cart-line.entity.js';
+export * from './cart/cart.entity.js';
 
-// ================= OM Manufacturing Pipeline (JN-005) =================
-
-export type ProductionStage =
-  'QUEUED' | 'CUTTING' | 'SEWING' | 'WASHING' | 'HARDWARE' | 'QC' | 'READY' | 'SHIPPED';
-
-export const ORDERED_PRODUCTION_STAGES: readonly ProductionStage[] = [
-  'QUEUED',
-  'CUTTING',
-  'SEWING',
-  'WASHING',
-  'HARDWARE',
-  'QC',
-  'READY',
-  'SHIPPED',
-] as const;
-
-export interface ProductionPolicy {
-  readonly productType: CommerceModel;
-  readonly minimumDays: number;
-  readonly maximumDays: number;
-  readonly excludedDates?: readonly string[];
-  readonly excludedHolidays?: readonly string[];
-  readonly effectiveFrom: string;
-  readonly effectiveUntil?: string;
-}
-
-export interface ProductionJob {
-  readonly id: string;
-  readonly orderId: string;
-  readonly orderLineId: string;
-  readonly currentStage: ProductionStage;
-  readonly targetCompletionDate: string;
-  readonly notes?: readonly string[];
-  readonly delayReason?: string;
-  readonly createdAt: string;
-  readonly updatedAt: string;
-}
+// ================= Orders (JN-073, JN-074) =================
+export * from './order/order-line.entity.js';
+export * from './order/order.entity.js';
 
 /**
- * Validates whether a production job can transition from current to next stage.
- * Forward advancement along the pipeline is allowed.
- * QC -> SEWING is permitted specifically for rework.
+ * Functional helper for order cancellation validation (backwards compatibility).
  */
-export function canAdvanceProductionStage(
-  current: ProductionStage,
-  next: ProductionStage,
+export function canCancelOrder(
+  order: { status: string; canCancel?: (jobs?: unknown) => boolean },
+  jobs?: readonly unknown[],
 ): boolean {
-  if (current === next) return false;
-  if (current === 'QC' && next === 'SEWING') return true; // Rework loop
-
-  const currentIndex = ORDERED_PRODUCTION_STAGES.indexOf(current);
-  const nextIndex = ORDERED_PRODUCTION_STAGES.indexOf(next);
-
-  return nextIndex === currentIndex + 1;
-}
-
-/**
- * Calculates estimated completion date dynamically based on order date and ProductionPolicy.
- */
-export function calculateEstimatedCompletion(orderDate: Date, policy: ProductionPolicy): Date {
-  const result = new Date(orderDate.getTime());
-  let addedDays = 0;
-  const targetDays = policy.maximumDays;
-
-  while (addedDays < targetDays) {
-    result.setDate(result.getDate() + 1);
-    const dayOfWeek = result.getDay();
-    // Exclude Saturday (standard rest day in Nepal) and Sunday if specified
-    const isWeekend = dayOfWeek === 6; // Nepal rest day is Saturday
-    const dateStr = result.toISOString().split('T')[0] ?? '';
-    const isHoliday = policy.excludedHolidays?.includes(dateStr) ?? false;
-
-    if (!isWeekend && !isHoliday) {
-      addedDays++;
-    }
+  if (typeof order.canCancel === 'function') {
+    return order.canCancel(jobs);
   }
-
-  return result;
+  return order.status !== 'CANCELLED' && order.status !== 'SHIPPED' && order.status !== 'DELIVERED';
 }
 
-// ================= Catalog & Products (JN-007, JN-008) =================
-
-export type ProductStatus = 'DRAFT' | 'SCHEDULED' | 'PUBLISHED' | 'SOLD_OUT' | 'ARCHIVED';
-
-export type VariantStatus = 'AVAILABLE' | 'LOW_STOCK' | 'SOLD_OUT' | 'DISABLED' | 'ARCHIVED';
-
-export type DropFulfillmentStatus =
-  | 'INVENTORY_STAGED'
-  | 'RESERVED'
-  | 'PACKING'
-  | 'SHIPPED'
-  | 'DELIVERED'
-  | 'RETURN_REQUESTED'
-  | 'RETURNED';
-
-export interface CutTicket {
-  readonly jobId: string;
-  readonly orderNumber: string;
-  readonly orderLineId: string;
-  readonly customerName?: string;
-  readonly measurements: Readonly<Record<string, string | number>>;
-  readonly fabricLot: string;
-  readonly threadColor: string;
-  readonly buttonFinish: string;
-  readonly pocketBagFabric: string;
-  readonly cutAt: string;
-  readonly artisanName?: string;
-}
-
-export interface ProductVariant {
-  readonly id: string;
-  readonly productId: string;
-  readonly sku: string;
-  readonly options: Readonly<Record<string, string>>; // e.g. { fit: 'Slim', waist: '32', inseam: '34' }
-  readonly additionalPrice: Money;
-  readonly inventoryCount: number; // Relevant for DROP; OM is make-to-order
-  readonly isAvailable: boolean;
-  readonly status?: VariantStatus;
-}
-
-export interface Product {
-  readonly id: string;
-  readonly slug: string;
-  readonly title: string;
-  readonly description: string;
-  readonly basePrice: Money;
-  readonly commerceModel: CommerceModel;
-  readonly category: 'BOTTOMS' | 'TOPS' | 'ACCESSORIES';
-  readonly isPublished: boolean;
-  readonly status?: ProductStatus;
-  readonly publishAt?: string;
-  readonly variants: readonly ProductVariant[];
-  readonly createdAt: string;
-  readonly updatedAt: string;
-}
-
-// ================= Cart =================
-
-export interface CartLine {
-  readonly id: string;
-  readonly productId: string;
-  readonly variantId: string;
-  readonly quantity: number;
-  readonly unitPrice: Money;
-  readonly selectedOptions: Readonly<Record<string, string>>;
-}
-
-export interface Cart {
-  readonly id: string;
-  readonly customerId?: string;
-  readonly lines: readonly CartLine[];
-  readonly createdAt: string;
-  readonly updatedAt: string;
-}
-
-// ================= Orders (JN-004) =================
-
-export type OrderStatus =
-  | 'PENDING'
-  | 'PAID'
-  | 'IN_PRODUCTION'
-  | 'PACKED'
-  | 'SHIPPED'
-  | 'DELIVERED'
-  | 'CANCELLED'
-  | 'REFUNDED';
-
-export type PaymentStatus =
-  'INITIATED' | 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED' | 'REFUNDED' | 'PARTIALLY_REFUNDED';
-
-export interface OrderLine {
-  readonly id: string;
-  readonly orderId: string;
-  readonly productId: string;
-  readonly variantId: string;
-  readonly productTitle: string;
-  readonly commerceModel: CommerceModel;
-  readonly selectedOptions: Readonly<Record<string, string>>;
-  readonly unitPrice: Money;
-  readonly quantity: number;
-  readonly total: Money;
-}
-
-export interface Order {
-  readonly id: string;
-  readonly orderNumber: string;
-  readonly customerId?: string;
-  readonly customerEmail: string;
-  readonly status: OrderStatus;
-  readonly paymentStatus: PaymentStatus;
-  readonly shippingAddress: Address;
-  readonly lines: readonly OrderLine[];
-  readonly subtotal: Money;
-  readonly shippingCost: Money;
-  readonly total: Money;
-  readonly createdAt: string;
-}
-
-/**
- * Validates whether an order can be cancelled.
- * Rule: OM orders cannot be cancelled once cutting has begun.
- */
-export function canCancelOrder(order: Order, jobs?: readonly ProductionJob[]): boolean {
-  if (order.status === 'CANCELLED' || order.status === 'SHIPPED' || order.status === 'DELIVERED') {
-    return false;
-  }
-
-  // If OM jobs exist, verify none have reached CUTTING or beyond
-  if (jobs && jobs.length > 0) {
-    const hasCuttingStarted = jobs.some((job) => job.currentStage !== 'QUEUED');
-    if (hasCuttingStarted) {
-      return false; // Point of no return
-    }
-  }
-
-  return true;
-}
-
-/**
- * Validates product lifecycle state transitions (JN-007).
- */
-export function canTransitionProductStatus(current: ProductStatus, next: ProductStatus): boolean {
-  if (current === next) return false;
-  if (current === 'ARCHIVED') return false; // Archived products cannot transition
-
-  switch (current) {
-    case 'DRAFT':
-      return next === 'SCHEDULED' || next === 'PUBLISHED' || next === 'ARCHIVED';
-    case 'SCHEDULED':
-      return next === 'PUBLISHED' || next === 'DRAFT' || next === 'ARCHIVED';
-    case 'PUBLISHED':
-      return next === 'SOLD_OUT' || next === 'ARCHIVED';
-    case 'SOLD_OUT':
-      return next === 'PUBLISHED' || next === 'ARCHIVED';
-    default:
-      return false;
-  }
-}
-
-/**
- * Validates variant lifecycle state transitions (JN-008).
- */
-export function canTransitionVariantStatus(current: VariantStatus, next: VariantStatus): boolean {
-  if (current === next) return false;
-  if (current === 'ARCHIVED') return false;
-
-  switch (current) {
-    case 'AVAILABLE':
-      return (
-        next === 'LOW_STOCK' || next === 'SOLD_OUT' || next === 'DISABLED' || next === 'ARCHIVED'
-      );
-    case 'LOW_STOCK':
-      return (
-        next === 'AVAILABLE' || next === 'SOLD_OUT' || next === 'DISABLED' || next === 'ARCHIVED'
-      );
-    case 'SOLD_OUT':
-      return next === 'AVAILABLE' || next === 'ARCHIVED';
-    case 'DISABLED':
-      return next === 'AVAILABLE' || next === 'ARCHIVED';
-    default:
-      return false;
-  }
-}
+// ================= Payments (JN-075) =================
+export * from './payment/payment.entity.js';
 
 /**
  * Validates payment lifecycle state transitions (JN-009).
  */
-export function canTransitionPaymentStatus(current: PaymentStatus, next: PaymentStatus): boolean {
+export function canTransitionPaymentStatus(current: string, next: string): boolean {
   if (current === next) return false;
 
   switch (current) {
@@ -322,83 +77,38 @@ export function canTransitionPaymentStatus(current: PaymentStatus, next: Payment
   }
 }
 
+// ================= Production & Workshop (JN-076) =================
+export * from './production/production-stage.js';
+export * from './production/production-job.entity.js';
+
+// ================= Inventory & Selvedge Yardage (JN-085, JN-086) =================
+export * from './inventory/fabric-bolt.aggregate.js';
+export * from './inventory/inventory-reservation.entity.js';
+
+// ================= Fulfillment & Logistics (JN-077, JN-088, JN-089) =================
+export * from './fulfillment/export-declaration.vo.js';
+export * from './fulfillment/shipment-package.entity.js';
+export * from './fulfillment/shipment.aggregate.js';
+
+export type DropFulfillmentStatus =
+  | 'INVENTORY_STAGED'
+  | 'RESERVED'
+  | 'PACKING'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'RETURN_REQUESTED'
+  | 'RETURNED';
+
 /**
  * Checks whether a delivered DROP garment is within its 5-day inspection return window (JN-006).
  */
-export function isDropEligibleForReturn(deliveryDate: Date, returnWindowDays: number = 5): boolean {
+export function isDropEligibleForReturn(deliveryDate: Date, returnWindowDays = 5): boolean {
   const now = new Date();
   const windowMs = returnWindowDays * 24 * 60 * 60 * 1000;
   return now.getTime() - deliveryDate.getTime() <= windowMs;
 }
 
-// ================= Shipment Lifecycle (JN-011) =================
-
-export type ShipmentStatus =
-  | 'PENDING'
-  | 'PACKED'
-  | 'SHIPPED'
-  | 'IN_TRANSIT'
-  | 'OUT_FOR_DELIVERY'
-  | 'DELIVERED'
-  | 'ATTEMPTED_DELIVERY'
-  | 'RETURNED_TO_SENDER'
-  | 'RETURNED'
-  | 'LOST';
-
-export interface ShipmentItem {
-  readonly orderLineId: string;
-  readonly sku: string;
-  readonly quantity: number;
-}
-
-export interface Shipment {
-  readonly id: string;
-  readonly orderId: string;
-  readonly trackingNumber?: string;
-  readonly carrier?: 'DHL_EXPRESS' | 'ARAMEX' | 'NEPAL_POST' | string;
-  readonly status: ShipmentStatus;
-  readonly items: readonly ShipmentItem[];
-  readonly shippingAddress: Address;
-  readonly packedAt?: string;
-  readonly shippedAt?: string;
-  readonly deliveredAt?: string;
-}
-
-export function canTransitionShipmentStatus(
-  current: ShipmentStatus,
-  next: ShipmentStatus,
-): boolean {
-  switch (current) {
-    case 'PENDING':
-      return next === 'PACKED' || next === 'LOST';
-    case 'PACKED':
-      return next === 'SHIPPED' || next === 'PENDING';
-    case 'SHIPPED':
-      return next === 'IN_TRANSIT' || next === 'LOST';
-    case 'IN_TRANSIT':
-      return (
-        next === 'OUT_FOR_DELIVERY' ||
-        next === 'ATTEMPTED_DELIVERY' ||
-        next === 'LOST' ||
-        next === 'RETURNED_TO_SENDER'
-      );
-    case 'OUT_FOR_DELIVERY':
-      return next === 'DELIVERED' || next === 'ATTEMPTED_DELIVERY' || next === 'RETURNED_TO_SENDER';
-    case 'ATTEMPTED_DELIVERY':
-      return next === 'OUT_FOR_DELIVERY' || next === 'RETURNED_TO_SENDER';
-    case 'DELIVERED':
-      return next === 'RETURNED';
-    case 'RETURNED_TO_SENDER':
-    case 'RETURNED':
-    case 'LOST':
-      return false; // Terminal states
-    default:
-      return false;
-  }
-}
-
-// ================= Return & Refund Lifecycle (JN-012) =================
-
+// ================= Returns & Refunds (JN-012) =================
 export type ReturnStatus =
   | 'REQUESTED'
   | 'APPROVED'
@@ -445,100 +155,34 @@ export function canTransitionReturnStatus(current: ReturnStatus, next: ReturnSta
   }
 }
 
-// ================= Membership & Access Control (JN-013) =================
-
+// ================= Access Control & Support (JN-013, JN-014) =================
 export type AccessLevel = 'PUBLIC' | 'AUTHENTICATED' | 'MEMBER' | 'ADMIN';
 
 export function canActorAccessLevel(actorRole: ActorRole, requiredLevel: AccessLevel): boolean {
-  if (requiredLevel === 'PUBLIC') {
-    return true;
-  }
-
-  if (requiredLevel === 'AUTHENTICATED') {
-    return actorRole !== 'GUEST';
-  }
-
-  if (requiredLevel === 'MEMBER') {
-    return actorRole === 'MEMBER' || actorRole === 'ADMIN';
-  }
-
-  if (requiredLevel === 'ADMIN') {
-    return actorRole === 'ADMIN';
-  }
-
+  if (requiredLevel === 'PUBLIC') return true;
+  if (requiredLevel === 'AUTHENTICATED') return actorRole !== 'GUEST';
+  if (requiredLevel === 'MEMBER') return actorRole === 'MEMBER' || actorRole === 'ADMIN';
+  if (requiredLevel === 'ADMIN') return actorRole === 'ADMIN';
   return false;
 }
 
-// ================= Customer Support & Inquiries (JN-014) =================
-
 export type SupportChannel = 'INSTAGRAM_DM' | 'EMAIL' | 'CUSTOM_ORDER_FORM';
 
-export type CustomOrderInquiryStatus =
-  'INQUIRY_RECEIVED' | 'QUOTED' | 'APPROVED' | 'REJECTED' | 'CONVERTED_TO_ORDER';
+// ================= Financial Ledger (JN-087) =================
+export * from './finance/ledger-entry.entity.js';
 
-export interface CustomOrderInquiry {
-  readonly id: string;
-  readonly customerName: string;
-  readonly customerEmail: string;
-  readonly productCategory: 'BOTTOMS' | 'TOPS' | 'ACCESSORIES';
-  readonly description: string;
-  readonly status: CustomOrderInquiryStatus;
-  readonly desiredFabricWeight?: string;
-  readonly referenceImageUrls?: readonly string[];
-  readonly quotedPrice?: Money;
-  readonly quotedLeadDays?: number;
-  readonly createdAt: string;
-}
+// ================= Community (JN-078, JN-079, JN-080) =================
+export * from './community/review.entity.js';
+export * from './community/question.entity.js';
+export * from './community/custom-order-request.entity.js';
 
-// ================= Domain Events =================
+// ================= Content & Memberships (JN-081, JN-082, JN-083) =================
+export * from './content/announcement.entity.js';
+export * from './content/content-page.entity.js';
+export * from './content/membership.entity.js';
 
-export interface DomainEvent<T = unknown> {
-  readonly eventId: string;
-  readonly eventType: string;
-  readonly occurredAt: string;
-  readonly payload: T;
-}
-
-export type OrderCreatedEvent = DomainEvent<{ orderId: string; orderNumber: string }>;
-export type OrderPaidEvent = DomainEvent<{ orderId: string; paymentTransactionId: string }>;
-export type ProductionJobStartedEvent = DomainEvent<{
-  jobId: string;
-  orderId: string;
-  stage: ProductionStage;
-}>;
-export type ProductionStageAdvancedEvent = DomainEvent<{
-  jobId: string;
-  previousStage: ProductionStage;
-  nextStage: ProductionStage;
-}>;
-export type OrderShippedEvent = DomainEvent<{
-  orderId: string;
-  trackingNumber: string;
-  carrier: string;
-}>;
-export type ProductPublishedEvent = DomainEvent<{ productId: string; slug: string }>;
-export type VariantSoldOutEvent = DomainEvent<{ variantId: string; sku: string }>;
-export type PaymentFailedEvent = DomainEvent<{ paymentId: string; reason: string }>;
-export type PaymentRefundedEvent = DomainEvent<{ paymentId: string; amount: Money }>;
-export type DropReturnRequestedEvent = DomainEvent<{
-  orderId: string;
-  orderLineId: string;
-  reason: string;
-}>;
-export type ShipmentPackedEvent = DomainEvent<{ shipmentId: string; orderId: string }>;
-export type ShipmentDispatchedEvent = DomainEvent<{
-  shipmentId: string;
-  trackingNumber: string;
-  carrier: string;
-}>;
-export type ShipmentDeliveredEvent = DomainEvent<{ shipmentId: string; deliveredAt: string }>;
-export type ReturnApprovedEvent = DomainEvent<{ returnId: string; orderId: string }>;
-export type ReturnRejectedEvent = DomainEvent<{ returnId: string; reason: string }>;
-export type ReturnCompletedEvent = DomainEvent<{ returnId: string; refundAmount: Money }>;
-export type CustomOrderInquiryCreatedEvent = DomainEvent<{
-  inquiryId: string;
-  customerEmail: string;
-}>;
+// ================= Domain Events (JN-084) =================
+export * from './events/domain-event.js';
 
 // ================= Standardized Errors (JN-053) =================
 export * from './errors/index.js';
