@@ -47,3 +47,27 @@ Before completing any task or pull request:
 - **Clean Code & Simplicity:** Follow [.agents/rules/coding-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/coding-rules.md). Build deep modules, enforce early guard clauses (max nesting ≤ 2), write pure functions over mutations, and avoid premature abstractions.
 - **Disciplined Refactoring:** Follow [.agents/rules/refactor-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/refactor-rules.md). Refactor in isolated atomic commits, pin behavior with green tests before editing, delete dead code immediately, and never mix structural refactorings with behavioral feature changes.
 
+---
+
+## 5. Master Rules Catalog (Context Pointers)
+
+Every specialized engineering rule lives in `.agents/rules/`. Consult the corresponding rule file before and during task execution:
+
+| Domain | Trigger Condition | Rule File Pointer |
+| :--- | :--- | :--- |
+| **Imports & Hierarchy** | Referencing cross-package imports | [.agents/rules/import-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/import-rules.md) |
+| **Domain Purity** | Writing domain entities, value objects, invariants | [.agents/rules/domain-dependency-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/domain-dependency-rules.md) |
+| **Code Simplicity** | Authoring functions, classes, data structures | [.agents/rules/coding-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/coding-rules.md) |
+| **Refactoring** | Restructuring code, cleaning dead code | [.agents/rules/refactor-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/refactor-rules.md) |
+| **Database & ORM** | Writing queries, mutations, repository ports | [.agents/rules/database-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/database-rules.md) |
+| **Client / Server** | Creating Server Actions, RSC, client state | [.agents/rules/client-server-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/client-server-rules.md) |
+| **Validation** | Parsing user inputs, DTOs, tailoring bounds | [.agents/rules/validation-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/validation-rules.md) |
+| **Errors** | Throwing or handling domain/application exceptions | [.agents/rules/error-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/error-rules.md) |
+| **Naming Conventions** | Naming files, symbols, types, domain vocabulary | [.agents/rules/naming-conventions.md](file:///home/sarakb/projects/Jeanius/.agents/rules/naming-conventions.md) |
+| **Testing Strategy** | Authoring unit, integration, or e2e tests | [.agents/rules/testing-requirements.md](file:///home/sarakb/projects/Jeanius/.agents/rules/testing-requirements.md) |
+| **Security & Auth** | Handling secrets, authentication, PII, sessions | [.agents/rules/security-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/security-rules.md) |
+| **Observability** | Structured logging, metrics, error tracing | [.agents/rules/observability-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/observability-rules.md) |
+| **Migrations** | Creating or executing database schema changes | [.agents/rules/migration-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/migration-rules.md) |
+| **Git Commits** | Authoring conventional commits, PR prep | [.agents/rules/commit-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/commit-rules.md) |
+| **Diagram Workflow** | Adding or editing architectural diagrams | [.agents/rules/diagram-workflow.md](file:///home/sarakb/projects/Jeanius/.agents/rules/diagram-workflow.md) |
+
