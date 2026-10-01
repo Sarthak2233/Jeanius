@@ -40,3 +40,10 @@ Before completing any task or pull request:
 - Run `./scripts/verify-monorepo.sh` to ensure all workspaces build and typecheck pass with 0 errors.
 - Ensure all file links use markdown relative links or valid `file:///` anchors.
 - Update [Production_Implementation.md](file:///home/sarakb/projects/Jeanius/Production_Implementation.md) with accurate task progress.
+
+---
+
+## 4. Code Quality & Refactoring Directives
+- **Clean Code & Simplicity:** Follow [.agents/rules/coding-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/coding-rules.md). Build deep modules, enforce early guard clauses (max nesting ≤ 2), write pure functions over mutations, and avoid premature abstractions.
+- **Disciplined Refactoring:** Follow [.agents/rules/refactor-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/refactor-rules.md). Refactor in isolated atomic commits, pin behavior with green tests before editing, delete dead code immediately, and never mix structural refactorings with behavioral feature changes.
+
