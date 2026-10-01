@@ -6,8 +6,10 @@ import { z } from 'zod';
 
 export const ServerEnvSchema = z.object({
   DATABASE_URL: z.string().url().default('postgres://postgres:postgres@localhost:54322/postgres'),
+  DIRECT_URL: z.string().url().optional(),
   SUPABASE_URL: z.string().url().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  SUPABASE_JWT_SECRET: z.string().min(1).optional(),
   STRIPE_SECRET_KEY: z.string().min(1).optional(),
   STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
   ESEWA_MERCHANT_CODE: z.string().optional(),
@@ -18,6 +20,8 @@ export const ServerEnvSchema = z.object({
 export const ClientEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
+  NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_ADMIN_URL: z.string().url().optional(),
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
 });
 
