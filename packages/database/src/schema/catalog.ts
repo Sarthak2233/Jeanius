@@ -11,7 +11,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
-export const commerceModelEnum = ['OM', 'DROP'] as const;
+export const commerceModelEnum = ['OM', 'DROP', 'CUSTOM_ORDER', 'PRE_ORDER'] as const;
 export const productCategoryEnum = ['BOTTOMS', 'TOPS', 'ACCESSORIES'] as const;
 export const productStatusEnum = [
   'DRAFT',
@@ -20,7 +20,13 @@ export const productStatusEnum = [
   'SOLD_OUT',
   'ARCHIVED',
 ] as const;
-export const variantStatusEnum = ['AVAILABLE', 'LOW_STOCK', 'SOLD_OUT', 'ARCHIVED'] as const;
+export const variantStatusEnum = [
+  'AVAILABLE',
+  'LOW_STOCK',
+  'SOLD_OUT',
+  'DISABLED',
+  'ARCHIVED',
+] as const;
 
 export const products = pgTable(
   'products',
