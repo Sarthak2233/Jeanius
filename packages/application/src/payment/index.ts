@@ -1,1 +1,1 @@
-export * from './payment-gateway.port';
+export * from './payment-gateway.port.js';

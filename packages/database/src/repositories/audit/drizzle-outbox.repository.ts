@@ -12,9 +12,14 @@ export class DrizzleOutboxRepository implements IOutboxRepository {
 
     await this.database.insert(outboxEvents).values(
       events.map((evt) => {
-        const id = 'eventId' in evt ? evt.eventId : evt.id;
-        const eventName = 'eventName' in evt ? evt.eventName : evt.eventType;
-        const aggregateId = 'aggregateId' in evt ? evt.aggregateId : 'aggregate_unknown';
+        const isDomainEvent = 'eventId' in evt;
+        const id = isDomainEvent ? evt.eventId : evt.id;
+        const eventName = isDomainEvent ? evt.eventType : evt.eventName;
+        const aggregateId =
+          !isDomainEvent && evt.aggregateId
+            ? evt.aggregateId
+            : (((evt.payload as Record<string, unknown>)?.['aggregateId'] as string) ??
+              'aggregate_unknown');
         const eventType = evt.eventType;
         const payload = (evt.payload as Record<string, unknown>) ?? {};
 

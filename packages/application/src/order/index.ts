@@ -1,2 +1,2 @@
-export * from './order-repository.port';
-export * from './checkout.service';
+export * from './order-repository.port.js';
+export * from './checkout.service.js';

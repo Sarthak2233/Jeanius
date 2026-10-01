@@ -9,6 +9,46 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
+    },
+    "./catalog": {
+      "types": "./src/catalog/index.ts",
+      "import": "./src/catalog/index.ts"
+    },
+    "./cart": {
+      "types": "./src/cart/index.ts",
+      "import": "./src/cart/index.ts"
+    },
+    "./order": {
+      "types": "./src/order/index.ts",
+      "import": "./src/order/index.ts"
+    },
+    "./payment": {
+      "types": "./src/payment/index.ts",
+      "import": "./src/payment/index.ts"
+    },
+    "./production": {
+      "types": "./src/production/index.ts",
+      "import": "./src/production/index.ts"
+    },
+    "./inventory": {
+      "types": "./src/inventory/index.ts",
+      "import": "./src/inventory/index.ts"
+    },
+    "./fulfillment": {
+      "types": "./src/fulfillment/index.ts",
+      "import": "./src/fulfillment/index.ts"
+    },
+    "./community": {
+      "types": "./src/community/index.ts",
+      "import": "./src/community/index.ts"
+    },
+    "./content": {
+      "types": "./src/content/index.ts",
+      "import": "./src/content/index.ts"
+    },
+    "./audit": {
+      "types": "./src/audit/index.ts",
+      "import": "./src/audit/index.ts"
     }
   },
   "scripts": {

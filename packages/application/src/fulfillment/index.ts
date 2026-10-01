@@ -1,1 +1,1 @@
-export * from './shipment-repository.port';
+export * from './shipment-repository.port.js';

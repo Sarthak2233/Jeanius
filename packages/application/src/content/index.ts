@@ -1,3 +1,3 @@
-export * from './announcement-repository.port';
-export * from './content-page-repository.port';
-export * from './membership-repository.port';
+export * from './announcement-repository.port.js';
+export * from './content-page-repository.port.js';
+export * from './membership-repository.port.js';

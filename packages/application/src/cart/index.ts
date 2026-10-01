@@ -1,2 +1,2 @@
-export * from './cart-repository.port';
-export * from './cart.service';
+export * from './cart-repository.port.js';
+export * from './cart.service.js';

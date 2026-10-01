@@ -1,2 +1,2 @@
-export * from './production-job-repository.port';
-export * from './production.service';
+export * from './production-job-repository.port.js';
+export * from './production.service.js';

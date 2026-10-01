@@ -1,2 +1,2 @@
-export * from './fabric-bolt-repository.port';
-export * from './inventory-reservation-repository.port';
+export * from './fabric-bolt-repository.port.js';
+export * from './inventory-reservation-repository.port.js';
