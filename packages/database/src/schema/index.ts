@@ -1,60 +1,223 @@
-import { pgTable, text, timestamp, integer, boolean, jsonb, uuid } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
-export const products = pgTable('products', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  slug: text('slug').notNull().unique(),
-  title: text('title').notNull(),
-  description: text('description').notNull(),
-  basePriceAmount: integer('base_price_amount').notNull(),
-  basePriceCurrency: text('base_price_currency').notNull().default('USD'),
-  commerceModel: text('commerce_model', { enum: ['OM', 'DROP'] }).notNull(),
-  category: text('category', { enum: ['BOTTOMS', 'TOPS', 'ACCESSORIES'] }).notNull(),
-  isPublished: boolean('is_published').notNull().default(false),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
+// Export all domain schema slices
+export * from './auth-profile';
+export * from './catalog';
+export * from './cart';
+export * from './order';
+export * from './payment';
+export * from './production';
+export * from './inventory';
+export * from './fulfillment';
+export * from './community';
+export * from './content';
+export * from './audit';
 
-export const productVariants = pgTable('product_variants', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  productId: uuid('product_id')
-    .notNull()
-    .references(() => products.id, { onDelete: 'cascade' }),
-  sku: text('sku').notNull().unique(),
-  options: jsonb('options').$type<Record<string, string>>().notNull(),
-  additionalPriceAmount: integer('additional_price_amount').notNull().default(0),
-  inventoryCount: integer('inventory_count').notNull().default(0),
-  isAvailable: boolean('is_available').notNull().default(true),
-});
+import { usersProfile, addresses } from './auth-profile';
+import { products, productImages, productOptions, optionValues, productVariants } from './catalog';
+import { carts, cartLines } from './cart';
+import { orders, orderLines } from './order';
+import { payments } from './payment';
+import { productionJobs } from './production';
+import { fabricBolts, boltAllocations, inventoryReservations } from './inventory';
+import { shipments, shipmentPackages } from './fulfillment';
+import { reviews, questions, customOrderRequests } from './community';
+import { memberships } from './content';
 
-export const orders = pgTable('orders', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  orderNumber: text('order_number').notNull().unique(),
-  customerId: text('customer_id'),
-  customerEmail: text('customer_email').notNull(),
-  status: text('status').notNull().default('PENDING'),
-  paymentStatus: text('payment_status').notNull().default('INITIATED'),
-  shippingAddress: jsonb('shipping_address').notNull(),
-  subtotalAmount: integer('subtotal_amount').notNull(),
-  shippingCostAmount: integer('shipping_cost_amount').notNull(),
-  totalAmount: integer('total_amount').notNull(),
-  currency: text('currency').notNull().default('USD'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-});
+// ================= Relations Definitions =================
 
-export const productionJobs = pgTable('production_jobs', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  orderId: uuid('order_id')
-    .notNull()
-    .references(() => orders.id, { onDelete: 'cascade' }),
-  orderLineId: text('order_line_id').notNull(),
-  currentStage: text('current_stage', {
-    enum: ['QUEUED', 'CUTTING', 'SEWING', 'WASHING', 'HARDWARE', 'QC', 'READY', 'SHIPPED'],
-  })
-    .notNull()
-    .default('QUEUED'),
-  targetCompletionDate: timestamp('target_completion_date').notNull(),
-  notes: jsonb('notes').$type<string[]>(),
-  delayReason: text('delay_reason'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
+export const usersProfileRelations = relations(usersProfile, ({ many }) => ({
+  addresses: many(addresses),
+  orders: many(orders),
+  memberships: many(memberships),
+  reviews: many(reviews),
+}));
+
+export const addressesRelations = relations(addresses, ({ one }) => ({
+  user: one(usersProfile, {
+    fields: [addresses.userId],
+    references: [usersProfile.id],
+  }),
+}));
+
+export const productsRelations = relations(products, ({ many }) => ({
+  images: many(productImages),
+  options: many(productOptions),
+  variants: many(productVariants),
+  reviews: many(reviews),
+  questions: many(questions),
+}));
+
+export const productImagesRelations = relations(productImages, ({ one }) => ({
+  product: one(products, {
+    fields: [productImages.productId],
+    references: [products.id],
+  }),
+}));
+
+export const productOptionsRelations = relations(productOptions, ({ one, many }) => ({
+  product: one(products, {
+    fields: [productOptions.productId],
+    references: [products.id],
+  }),
+  values: many(optionValues),
+}));
+
+export const optionValuesRelations = relations(optionValues, ({ one }) => ({
+  option: one(productOptions, {
+    fields: [optionValues.optionId],
+    references: [productOptions.id],
+  }),
+}));
+
+export const productVariantsRelations = relations(productVariants, ({ one, many }) => ({
+  product: one(products, {
+    fields: [productVariants.productId],
+    references: [products.id],
+  }),
+  reservations: many(inventoryReservations),
+}));
+
+export const cartsRelations = relations(carts, ({ one, many }) => ({
+  customer: one(usersProfile, {
+    fields: [carts.customerId],
+    references: [usersProfile.id],
+  }),
+  lines: many(cartLines),
+}));
+
+export const cartLinesRelations = relations(cartLines, ({ one }) => ({
+  cart: one(carts, {
+    fields: [cartLines.cartId],
+    references: [carts.id],
+  }),
+  product: one(products, {
+    fields: [cartLines.productId],
+    references: [products.id],
+  }),
+  variant: one(productVariants, {
+    fields: [cartLines.variantId],
+    references: [productVariants.id],
+  }),
+}));
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  customer: one(usersProfile, {
+    fields: [orders.customerId],
+    references: [usersProfile.id],
+  }),
+  lines: many(orderLines),
+  payments: many(payments),
+  productionJobs: many(productionJobs),
+  shipments: many(shipments),
+}));
+
+export const orderLinesRelations = relations(orderLines, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderLines.orderId],
+    references: [orders.id],
+  }),
+  product: one(products, {
+    fields: [orderLines.productId],
+    references: [products.id],
+  }),
+  variant: one(productVariants, {
+    fields: [orderLines.variantId],
+    references: [productVariants.id],
+  }),
+  allocatedBolt: one(fabricBolts, {
+    fields: [orderLines.allocatedBoltId],
+    references: [fabricBolts.id],
+  }),
+}));
+
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  order: one(orders, {
+    fields: [payments.orderId],
+    references: [orders.id],
+  }),
+}));
+
+export const productionJobsRelations = relations(productionJobs, ({ one }) => ({
+  order: one(orders, {
+    fields: [productionJobs.orderId],
+    references: [orders.id],
+  }),
+  orderLine: one(orderLines, {
+    fields: [productionJobs.orderLineId],
+    references: [orderLines.id],
+  }),
+  assignedArtisan: one(usersProfile, {
+    fields: [productionJobs.assignedArtisanId],
+    references: [usersProfile.id],
+  }),
+}));
+
+export const fabricBoltsRelations = relations(fabricBolts, ({ many }) => ({
+  allocations: many(boltAllocations),
+}));
+
+export const boltAllocationsRelations = relations(boltAllocations, ({ one }) => ({
+  bolt: one(fabricBolts, {
+    fields: [boltAllocations.boltId],
+    references: [fabricBolts.id],
+  }),
+}));
+
+export const inventoryReservationsRelations = relations(inventoryReservations, ({ one }) => ({
+  variant: one(productVariants, {
+    fields: [inventoryReservations.variantId],
+    references: [productVariants.id],
+  }),
+  cart: one(carts, {
+    fields: [inventoryReservations.cartId],
+    references: [carts.id],
+  }),
+}));
+
+export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
+  order: one(orders, {
+    fields: [shipments.orderId],
+    references: [orders.id],
+  }),
+  packages: many(shipmentPackages),
+}));
+
+export const shipmentPackagesRelations = relations(shipmentPackages, ({ one }) => ({
+  shipment: one(shipments, {
+    fields: [shipmentPackages.shipmentId],
+    references: [shipments.id],
+  }),
+}));
+
+export const reviewsRelations = relations(reviews, ({ one }) => ({
+  product: one(products, {
+    fields: [reviews.productId],
+    references: [products.id],
+  }),
+  customer: one(usersProfile, {
+    fields: [reviews.customerId],
+    references: [usersProfile.id],
+  }),
+}));
+
+export const questionsRelations = relations(questions, ({ one }) => ({
+  product: one(products, {
+    fields: [questions.productId],
+    references: [products.id],
+  }),
+}));
+
+export const customOrderRequestsRelations = relations(customOrderRequests, ({ one }) => ({
+  convertedOrder: one(orders, {
+    fields: [customOrderRequests.convertedOrderId],
+    references: [orders.id],
+  }),
+}));
+
+export const membershipsRelations = relations(memberships, ({ one }) => ({
+  customer: one(usersProfile, {
+    fields: [memberships.customerId],
+    references: [usersProfile.id],
+  }),
+}));

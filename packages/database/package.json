@@ -16,7 +16,9 @@
     "lint": "echo \"@jeanius/database linted\"",
     "build": "echo \"@jeanius/database ready\"",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "seed": "node --import tsx src/seed.ts"
   },
   "dependencies": {
     "@jeanius/domain": "workspace:*",

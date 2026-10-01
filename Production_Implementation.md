@@ -243,34 +243,34 @@ Create PostgreSQL schema around the domain and actual access patterns.
 
 | ID     | Task                          | Description                              | Status      |
 | ------ | ----------------------------- | ---------------------------------------- | ----------- |
-| JN-085 | Configure Supabase project    | Development environment.                 | NOT_STARTED |
-| JN-086 | Configure local Supabase      | Local database/auth/storage environment. | NOT_STARTED |
-| JN-087 | Configure Drizzle             | Database connection/configuration.       | NOT_STARTED |
-| JN-088 | Create migration system       | Version-controlled schema changes.       | NOT_STARTED |
-| JN-089 | Create users/profile schema   | Customer/member profile data.            | NOT_STARTED |
-| JN-090 | Create addresses schema       | Saved shipping addresses.                | NOT_STARTED |
-| JN-091 | Create products schema        | Product records.                         | NOT_STARTED |
-| JN-092 | Create product images schema  | Image metadata and ordering.             | NOT_STARTED |
-| JN-093 | Create product options schema | Option definitions.                      | NOT_STARTED |
-| JN-094 | Create option values schema   | Option values and availability.          | NOT_STARTED |
-| JN-095 | Create variants schema        | SKU/configuration/inventory.             | NOT_STARTED |
-| JN-096 | Create carts schema           | Persistent carts.                        | NOT_STARTED |
-| JN-097 | Create cart lines schema      | Selected configuration snapshot.         | NOT_STARTED |
-| JN-098 | Create orders schema          | Commercial transaction.                  | NOT_STARTED |
-| JN-099 | Create order lines schema     | Purchased product/configuration.         | NOT_STARTED |
-| JN-100 | Create payments schema        | Payment state and provider references.   | NOT_STARTED |
-| JN-101 | Create production jobs schema | Manufacturing workflow.                  | NOT_STARTED |
-| JN-102 | Create shipments schema       | Carrier/tracking state.                  | NOT_STARTED |
-| JN-103 | Create reviews schema         | Reviews/moderation.                      | NOT_STARTED |
-| JN-104 | Create questions schema       | Q&A.                                     | NOT_STARTED |
-| JN-105 | Create custom orders schema   | Custom-order requests.                   | NOT_STARTED |
-| JN-106 | Create content schema         | Pages/announcements.                     | NOT_STARTED |
-| JN-107 | Create membership schema      | Access control.                          | NOT_STARTED |
-| JN-108 | Create audit schema           | Critical admin/business actions.         | NOT_STARTED |
-| JN-109 | Create indexes                | Query-driven indexes.                    | NOT_STARTED |
-| JN-110 | Create constraints            | Database integrity rules.                | NOT_STARTED |
-| JN-111 | Create seed data              | Development catalog/admin data.          | NOT_STARTED |
-| JN-112 | Test migrations               | Fresh database and upgrade paths.        | NOT_STARTED |
+| JN-085 | Configure Supabase project    | Development environment.                 | DONE   |
+| JN-086 | Configure local Supabase      | Local database/auth/storage environment. | DONE   |
+| JN-087 | Configure Drizzle             | Database connection/configuration.       | DONE   |
+| JN-088 | Create migration system       | Version-controlled schema changes.       | DONE   |
+| JN-089 | Create users/profile schema   | Customer/member profile data.            | DONE   |
+| JN-090 | Create addresses schema       | Saved shipping addresses.                | DONE   |
+| JN-091 | Create products schema        | Product records.                         | DONE   |
+| JN-092 | Create product images schema  | Image metadata and ordering.             | DONE   |
+| JN-093 | Create product options schema | Option definitions.                      | DONE   |
+| JN-094 | Create option values schema   | Option values and availability.          | DONE   |
+| JN-095 | Create variants schema        | SKU/configuration/inventory.             | DONE   |
+| JN-096 | Create carts schema           | Persistent carts.                        | DONE   |
+| JN-097 | Create cart lines schema      | Selected configuration snapshot.         | DONE   |
+| JN-098 | Create orders schema          | Commercial transaction.                  | DONE   |
+| JN-099 | Create order lines schema     | Purchased product/configuration.         | DONE   |
+| JN-100 | Create payments schema        | Payment state and provider references.   | DONE   |
+| JN-101 | Create production jobs schema | Manufacturing workflow.                  | DONE   |
+| JN-102 | Create shipments schema       | Carrier/tracking state.                  | DONE   |
+| JN-103 | Create reviews schema         | Reviews/moderation.                      | DONE   |
+| JN-104 | Create questions schema       | Q&A.                                     | DONE   |
+| JN-105 | Create custom orders schema   | Custom-order requests.                   | DONE   |
+| JN-106 | Create content schema         | Pages/announcements.                     | DONE   |
+| JN-107 | Create membership schema      | Access control.                          | DONE   |
+| JN-108 | Create audit schema           | Critical admin/business actions.         | DONE   |
+| JN-109 | Create indexes                | Query-driven indexes.                    | DONE   |
+| JN-110 | Create constraints            | Database integrity rules.                | DONE   |
+| JN-111 | Create seed data              | Development catalog/admin data.          | DONE   |
+| JN-112 | Test migrations               | Fresh database and upgrade paths.        | DONE   |
 
 ---
 

@@ -23,3 +23,18 @@ enable_signup = true
 
 [storage]
 file_size_limit = "50MiB"
+
+[storage.buckets.product-media]
+public = true
+file_size_limit = "25MiB"
+allowed_mime_types = ["image/png", "image/jpeg", "image/webp"]
+
+[storage.buckets.workshop-assets]
+public = false
+file_size_limit = "50MiB"
+allowed_mime_types = ["image/png", "image/jpeg", "application/pdf"]
+
+[storage.buckets.customer-uploads]
+public = false
+file_size_limit = "15MiB"
+allowed_mime_types = ["image/png", "image/jpeg", "image/webp"]
