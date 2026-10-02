@@ -1,33 +1,33 @@
-# Jeanius Ubiquitous Language
+# Jeanius & Jewl Ubiquitous Language
 
-The canonical domain glossary for the Jeanius handmade raw denim ecommerce platform and workshop operations.
+The canonical domain glossary for the Jeanius & Jewl handmade raw denim and handcrafted artisan jewellery atelier and workshop operations.
 
 ## Commerce Models
 
 **Order-Made (OM)**:
-A made-to-order manufacturing model where garments are custom cut and assembled only after customer payment.
+A made-to-order manufacturing model where garments are custom cut and assembled, or jewellery pieces are hand-forged, sized, and engraved only after customer payment.
 _Avoid_: Made-to-measure, bespoke, pre-order, backorder
 
 **DROP**:
-A limited-batch, ready-to-ship product release produced in fixed physical inventory quantities before sale.
+A limited-batch, ready-to-ship product release produced in fixed physical inventory quantities before sale (e.g. 50 selvedge jackets, 25 numbered brass cuffs).
 _Avoid_: In-stock item, off-the-rack, standard product
 
 **Together**:
 A restricted collection or release accessible exclusively to authenticated community members.
 _Avoid_: VIP club, private portal, member's lounge
 
-## Garment & Configuration
+## Products & Configuration
 
 **Product**:
-An editorial denim style in the catalog (e.g. Lot 001 Straight Raw Selvedge).
+An editorial denim or jewellery style in the catalog (e.g. Lot 001 Straight Raw Selvedge, Lot J01 .925 Sterling Silver Signet Ring).
 _Avoid_: Item, listing, garment
 
 **ProductOption**:
-A customizable physical dimension or aesthetic choice on a Product (e.g. Waist, Inseam, Stitch Thread).
+A customizable physical dimension or aesthetic choice on a Product (e.g. Waist, Inseam, Stitch Thread for denim; Ring Size, Chain Length, Metal Alloy, Finish, Engraving for jewellery).
 _Avoid_: Attribute, property, parameter
 
 **OptionValue**:
-A concrete choice available for a ProductOption (e.g. '32' for Waist, 'Indigo' for Thread).
+A concrete choice available for a ProductOption (e.g. '32' for Waist; 'US 10' for Ring Size; 'Oxidized' for Finish).
 _Avoid_: Choice, selection, variant value
 
 **Variant**:
@@ -45,11 +45,11 @@ A customer's uncommitted intent to purchase a specific Variant with chosen confi
 _Avoid_: Basket item, cart entry
 
 **ProductionJob**:
-A workshop work order tracking the physical crafting of a single custom OM OrderLine through workshop stages.
+A workshop work order tracking the physical crafting of a single custom OM OrderLine through workshop stages (Tailor bench or Metalsmith bench).
 _Avoid_: Task, ticket, manufacture item
 
 **ProductionStage**:
-One of the eight sequential workshop stations in the OM manufacturing lifecycle.
+One of the eight sequential workshop stations in the OM manufacturing lifecycle (Queued, Cutting/Forging, Sewing/Assembly, Washing/Patina, Hardware/Polishing, QC, Ready, Shipped).
 _Avoid_: Step, phase, state
 
 **ProductionPolicy**:
@@ -57,16 +57,34 @@ A domain configuration entity defining active lead times, buffer days, and holid
 _Avoid_: SLA, timeline, schedule config
 
 **CutTicket**:
-An immutable manufacturing specification snapshot generated when cutting begins, containing exact pattern measurements and hardware.
+An immutable manufacturing specification snapshot generated when denim cutting begins, containing exact pattern measurements and hardware.
 _Avoid_: Work sheet, pattern sheet, spec sheet
+
+**BenchTicket**:
+An immutable manufacturing specification snapshot generated when jewellery crafting begins, containing exact ring mandrel size, metal alloy, finish, and custom engraving text.
+_Avoid_: Jeweller sheet, sizing card
+
+**CraftTicket**:
+The unified domain work order interface representing either a denim `CutTicket` or a jewellery `BenchTicket`.
 
 **Shipment**:
 The physical fulfillment dispatch of packed goods assigned to an international carrier with tracking.
 _Avoid_: Delivery, parcel, dispatch
 
 **InspectionWindow**:
-The strict 5-day post-delivery timeframe during which DROP garments remain eligible for inspection and return.
+The strict 5-day post-delivery timeframe during which standard DROP pieces remain eligible for inspection and return.
 _Avoid_: Return window, trial period, grace period
+
+## Materials & Artisan Craft
+
+**Patina**:
+The organic, intentional aging of raw denim (indigo fading, honeycombs, whiskers) and solid silver/brass (atmospheric oxidation, highlight polishing) resulting from everyday wear.
+
+**Hallmark**:
+The official atelier purity stamp (.925, Jeanius & Jewl emblem) struck into precious metal jewellery.
+
+**RingSize**:
+Standardized US mandrel dimension (sizes 4 to 14 in half-size increments) governing bespoke band fabrication.
 
 ## Payments & Lifecycle
 
@@ -85,7 +103,7 @@ _Avoid_: Embargo, pre-launch, future drop
 ## Actors & Roles
 
 **Customer**:
-An individual who purchases garments or tracks an order.
+An individual who purchases garments, jewellery, or tracks an order.
 _Avoid_: Client, buyer, shopper, user
 
 **Member**:
@@ -93,8 +111,14 @@ An authenticated Customer granted access privileges to restricted Together drops
 _Avoid_: Subscriber, VIP, premium user
 
 **Tailor**:
-A workshop artisan responsible for executing cutting, sewing, washing, and hardware assembly.
+A workshop artisan responsible for executing denim cutting, sewing, washing, and garment hardware assembly.
 _Avoid_: Worker, manufacturer, staff, maker
+
+**Metalsmith / Jeweller**:
+A workshop artisan responsible for melting, casting, forging, stone-setting, sizing, and hand-polishing at the jewellery bench.
+
+**Artisan**:
+The unified workshop craftsman role encompassing both Tailors and Metalsmiths.
 
 **Fulfillment Operator**:
 A staff member who inspects, packs, and registers shipments with couriers.

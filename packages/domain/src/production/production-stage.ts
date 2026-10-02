@@ -41,6 +41,23 @@ export interface CutTicket {
   readonly artisanName?: string;
 }
 
+export interface JewelleryBenchTicket {
+  readonly jobId: string;
+  readonly orderNumber: string;
+  readonly orderLineId: string;
+  readonly customerName?: string;
+  readonly ringSize?: string;
+  readonly chainLength?: string;
+  readonly metalAlloy: string;
+  readonly finish: string;
+  readonly engravingText?: string;
+  readonly gemstone?: string;
+  readonly benchStartedAt: string;
+  readonly metalsmithName?: string;
+}
+
+export type CraftTicket = CutTicket | JewelleryBenchTicket;
+
 /**
  * Validates whether a production job can transition from current to next stage.
  * Forward advancement along the pipeline is allowed.

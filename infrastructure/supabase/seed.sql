@@ -4,10 +4,11 @@
 -- 1. Workshop & Customer Users
 INSERT INTO public.users_profile (id, email, full_name, role, phone)
 VALUES
-  ('c0000000-0000-0000-0000-000000000001', 'admin@jeanius.co', 'Jeanius Workshop Admin', 'ADMIN', '+977-1-4200001'),
-  ('c0000000-0000-0000-0000-000000000002', 'mastercutter@jeanius.co', 'Pasang Master Cutter', 'TAILOR', '+977-9800000002'),
+  ('c0000000-0000-0000-0000-000000000001', 'admin@jeanius.co', 'Jeanius & Jewl Atelier Admin', 'ADMIN', '+977-1-4200001'),
+  ('c0000000-0000-0000-0000-000000000002', 'mastercutter@jeanius.co', 'Pasang Master Cutter (Denim)', 'TAILOR', '+977-9800000002'),
   ('c0000000-0000-0000-0000-000000000003', 'logistics@jeanius.co', 'Kiran Fulfillment Lead', 'FULFILLMENT', '+977-9800000003'),
-  ('c0000000-0000-0000-0000-000000000004', 'shopper@example.com', 'Alex Raw Denim Collector', 'CUSTOMER', '+1-415-555-0199')
+  ('c0000000-0000-0000-0000-000000000004', 'shopper@example.com', 'Alex Raw Denim Collector', 'CUSTOMER', '+1-415-555-0199'),
+  ('c0000000-0000-0000-0000-000000000005', 'metalsmith@jeanius.co', 'Bikash Master Jeweller (Metalsmith)', 'TAILOR', '+977-9800000005')
 ON CONFLICT (id) DO NOTHING;
 
 -- 2. Selvedge Fabric Rolls (Physical Inventory)
@@ -64,6 +65,17 @@ VALUES
     'DROP',
     'ACCESSORIES',
     'PUBLISHED'
+  ),
+  (
+    'a0000000-0000-0000-0000-000000000005',
+    'lot-j01-sterling-signet-ring',
+    'Lot J01 — .925 Sterling Silver Signet Ring',
+    'Solid .925 sterling silver signet ring with hand-chiseled crest. Made to order at our Kathmandu jewellery bench.',
+    22000,
+    'USD',
+    'OM',
+    'JEWELLERY',
+    'PUBLISHED'
   )
 ON CONFLICT (id) DO NOTHING;
 
@@ -72,7 +84,9 @@ INSERT INTO public.product_options (id, product_id, name, code, position, is_req
 VALUES
   ('e0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'Waist Size', 'waist', 1, true),
   ('e0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001', 'Inseam Length', 'inseam', 2, true),
-  ('e0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001', 'Thread Color', 'thread_color', 3, true)
+  ('e0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001', 'Thread Color', 'thread_color', 3, true),
+  ('e0000000-0000-0000-0000-000000000004', 'a0000000-0000-0000-0000-000000000005', 'Ring Size', 'ring_size', 1, true),
+  ('e0000000-0000-0000-0000-000000000005', 'a0000000-0000-0000-0000-000000000005', 'Finish', 'finish', 2, true)
 ON CONFLICT (id) DO NOTHING;
 
 -- 5. Option Values
@@ -84,7 +98,11 @@ VALUES
   ('f0000000-0000-0000-0000-000000000004', 'e0000000-0000-0000-0000-000000000002', '32', '32"', 0, 1),
   ('f0000000-0000-0000-0000-000000000005', 'e0000000-0000-0000-0000-000000000002', '34', '34"', 0, 2),
   ('f0000000-0000-0000-0000-000000000006', 'e0000000-0000-0000-0000-000000000003', 'ochre', 'Golden Ochre', 0, 1),
-  ('f0000000-0000-0000-0000-000000000007', 'e0000000-0000-0000-0000-000000000003', 'tobacco', 'Classic Tobacco', 0, 2)
+  ('f0000000-0000-0000-0000-000000000007', 'e0000000-0000-0000-0000-000000000003', 'tobacco', 'Classic Tobacco', 0, 2),
+  ('f0000000-0000-0000-0000-000000000008', 'e0000000-0000-0000-0000-000000000004', 'US8', 'US 8 (18.1mm)', 0, 1),
+  ('f0000000-0000-0000-0000-000000000009', 'e0000000-0000-0000-0000-000000000004', 'US10', 'US 10 (19.8mm)', 0, 2),
+  ('f0000000-0000-0000-0000-000000000010', 'e0000000-0000-0000-0000-000000000005', 'OXIDIZED', 'Oxidized Vintage Patina', 0, 1),
+  ('f0000000-0000-0000-0000-000000000011', 'e0000000-0000-0000-0000-000000000005', 'HIGH_POLISH', 'High Mirror Polish', 1500, 2)
 ON CONFLICT (id) DO NOTHING;
 
 -- 6. Product Variants
@@ -115,6 +133,24 @@ VALUES
     '{"waist": "32", "inseam": "34"}',
     0,
     12,
+    'AVAILABLE'
+  ),
+  (
+    'b0000000-0000-0000-0000-000000000004',
+    'a0000000-0000-0000-0000-000000000005',
+    'LOTJ01-SILVER-US8-OXIDIZED',
+    '{"ring_size": "US8", "finish": "OXIDIZED"}',
+    0,
+    10,
+    'AVAILABLE'
+  ),
+  (
+    'b0000000-0000-0000-0000-000000000005',
+    'a0000000-0000-0000-0000-000000000005',
+    'LOTJ01-SILVER-US10-OXIDIZED',
+    '{"ring_size": "US10", "finish": "OXIDIZED"}',
+    0,
+    10,
     'AVAILABLE'
   )
 ON CONFLICT (id) DO NOTHING;

@@ -1,6 +1,6 @@
-# AGENTS.md — Engineering & Documentation Rules for Jeanius
+# AGENTS.md — Engineering & Documentation Rules for Jeanius & Jewl
 
-This file defines the project-wide operational rules, architectural constraints, and workflow standards for all AI agents and human contributors working in the **Jeanius** monorepo.
+This file defines the project-wide operational rules, architectural constraints, and workflow standards for all AI agents and human contributors working in the **Jeanius & Jewl** monorepo.
 
 ---
 

@@ -1,18 +1,18 @@
-# Contributing to Jeanius
+# Contributing to Jeanius & Jewl
 
-Thank you for contributing to **Jeanius** — an artisanal handmade raw denim ecommerce platform and workshop operations system based in Kathmandu, Nepal, serving denim purists globally.
+Thank you for contributing to **Jeanius & Jewl** — a precision atelier uniting artisanal handmade raw denim and handcrafted precious metal jewellery based in Kathmandu, Nepal, serving global craft enthusiasts.
 
 ---
 
 ## 1. Monorepo Architecture & Principles
 
-Jeanius is structured as a **Domain-Driven Design (DDD) Modular Monolith** managed with Turborepo and pnpm workspaces:
+Jeanius & Jewl is structured as a **Domain-Driven Design (DDD) Modular Monolith** managed with Turborepo and pnpm workspaces:
 
 ```text
-jeanius/
+jeanius-and-jewl/
 ├── apps/
 │   ├── storefront/          # Customer-facing Next.js App Router (Public, Customer, Member)
-│   └── admin/               # Internal operations portal (Tailor, Fulfillment, Support, Admin)
+│   └── admin/               # Internal operations portal (Artisans, Fulfillment, Support, Admin)
 │
 ├── packages/
 │   ├── domain/              # Pure TypeScript business invariants (0 external dependencies)
@@ -20,7 +20,7 @@ jeanius/
 │   ├── database/            # Supabase PostgreSQL models & Drizzle ORM repository adapters
 │   ├── contracts/           # Shared Zod validation schemas and API DTOs
 │   ├── integrations/        # Provider adapters (Stripe, eSewa, DHL, SendGrid)
-│   ├── ui/                  # Restrained raw-denim design system components and tokens
+│   ├── ui/                  # Restrained atelier design system components and tokens (indigo, silver, brass)
 │   ├── config/              # Shared typed environment configuration
 │   ├── observability/       # Structured logging, correlation IDs, and error tracking
 │   └── testing/             # Shared mock factories and test utilities

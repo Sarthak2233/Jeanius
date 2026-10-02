@@ -4,7 +4,7 @@
 
 export type CommerceModel = 'OM' | 'DROP' | 'CUSTOM_ORDER' | 'PRE_ORDER';
 
-export type ProductCategory = 'BOTTOMS' | 'TOPS' | 'ACCESSORIES';
+export type ProductCategory = 'BOTTOMS' | 'TOPS' | 'JEWELLERY' | 'ACCESSORIES';
 
 export type ProductStatus = 'DRAFT' | 'SCHEDULED' | 'PUBLISHED' | 'SOLD_OUT' | 'ARCHIVED';
 

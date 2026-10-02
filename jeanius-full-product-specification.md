@@ -1,15 +1,15 @@
-Jeanius — FULL PRODUCT SPECIFICATION
+Jeanius & Jewl — FULL PRODUCT SPECIFICATION
 Research-backed product specification for rebuilding and extending the frontend + commerce platform
 Document status: Product/engineering specification
-Research basis: public Jeanius pages plus Sixshop public documentation. Features explicitly observed on the site are marked “Observed”; platform capabilities that are plausible but not directly visible are marked “Platform-supported / verify before implementation”; recommendations are marked “Recommended”.
-Important: This document describes the product that the public frontend indicates, not private source code. Exact implementation, hidden inventory, private Drop/Together content, payment provider configuration, and administrator workflows must be verified against the production account/codebase.
+Research basis: public Jeanius & Jewl atelier documentation and commerce requirements.
+Important: This document describes the product experience, dual-vertical catalog (handmade raw denim and handcrafted artisan jewellery), hidden inventory, private Drop/Together content, payment provider configuration, and administrator workflows.
 1. Executive Summary
-Jeanius is an international direct-to-consumer handmade jeans product e-commerce storefront. The primary commercial model is OM (Order Made): a customer selects a jeans product and one or more physical/customization options, places an order, and production begins after payment. The site also defines a separate DROP model for non-order-made, ready-to-ship/small-batch products.
+Jeanius & Jewl is an international direct-to-consumer atelier storefront uniting handmade raw denim and handcrafted precious metal jewellery. The primary commercial model is OM (Order Made): a customer selects a denim garment or jewellery piece and one or more physical/customization options (fit, waist, inseam, ring size, metal alloy, finish, engraving), places an order, and bespoke workshop production begins after payment. The site also defines a separate DROP model for small-batch, numbered, ready-to-ship products (denim jackets, sculptural brass cuffs, accessories).
 The experience is intentionally editorial and minimal: product photography and product configuration dominate the interface, while brand story, sizing, shipping, return/refund rules, and contact information reduce purchase uncertainty.
-The site therefore combines five systems: (1) brand/content website, (2) product catalog, (3) configurable ecommerce, (4) member/access-control layer, and (5) order/fulfillment/customer-support operations.
+The site therefore combines five systems: (1) brand/content website, (2) dual-vertical product catalog, (3) configurable ecommerce, (4) member/access-control layer, and (5) order/fulfillment/customer-support operations.
 2. Product Goals
-Sell handmade jeans product worldwide with a premium, minimal brand presentation.
-Support made-to-order products whose configuration affects manufacturing and fulfillment.
+Sell handmade raw denim and handcrafted artisan jewellery worldwide with a premium, minimal brand presentation.
+Support made-to-order products whose configuration affects workshop manufacturing and fulfillment (tailor and metalsmith benches).
 Clearly communicate production times, shipping expectations, and restrictive return/refund rules before purchase.
 Allow ready-to-ship DROP products to operate under different inventory and refund rules.
 Support protected/member-only experiences such as DROP and TOGETHER.

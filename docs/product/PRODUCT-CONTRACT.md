@@ -1,6 +1,6 @@
-# JEANIUS — PRODUCT CONTRACT & SPECIFICATION
+# JEANIUS & JEWL — PRODUCT CONTRACT & SPECIFICATION
 
-**Document Version:** 1.0.0  
+**Document Version:** 1.1.0  
 **Status:** Frozen Implementation Contract  
 **Scope:** Foundational Architecture Contracts (JN-001 to JN-005)
 
@@ -8,36 +8,38 @@
 
 ## 1. Product Scope Matrix (JN-001)
 
-The scope for Jeanius is strictly defined across three tiers to guarantee focus on high-craft execution and prevent scope creep.
+The scope for Jeanius & Jewl is strictly defined across three tiers to guarantee focus on high-craft execution across both denim and jewellery verticals:
 
 | Feature Area | MVP (Launch Target) | Phase 2 (Fast Follow) | Explicitly Excluded |
 | :--- | :--- | :--- | :--- |
-| **Catalog & Models** | • Order-Made (OM) Jeans, Jackets, Tote Bags<br/>• Small-batch Ready-to-Ship (DROP)<br/>• Dynamic OM lead-time badge | • Gated community drops (TOGETHER)<br/>• Pre-orders for upcoming fabric lots | • Multi-vendor marketplace<br/>• Digital goods / NFTs |
-| **Product Configurator** | • Fit, Waist (28–36), Inseam (30–36)<br/>• Raw rinse vs One-wash selection<br/>• Hardware finishes (Brass, Silver) | • Custom chainstitch monogramming<br/>• Bespoke pocket bag artwork | • 3D real-time mesh rendering (distracting to minimalist aesthetic) |
+| **Catalog & Models** | • Order-Made (OM) Jeans, Jackets, Sterling Silver Rings, Denim Wallet Chains<br/>• Small-batch Ready-to-Ship (DROP) denim jackets, brass cuffs, bags<br/>• Dynamic OM lead-time badge | • Gated community drops (TOGETHER)<br/>• Pre-orders for upcoming fabric lots & rare gemstone gems | • Multi-vendor marketplace<br/>• Digital goods / NFTs |
+| **Product Configurator** | • Denim: Fit, Waist (28–36), Inseam (30–36), Raw/One-wash, Thread<br/>• Jewellery: Ring Size (US 4–14), Chain Length, Metal Alloy, Finish, Engraving | • Custom chainstitch monogramming<br/>• Bespoke pocket bag artwork & gemstone settings | • 3D real-time mesh rendering (distracting to minimalist aesthetic) |
 | **Checkout & Payments** | • Single-page international address validation<br/>• Multi-rail payment (Stripe USD card rails + Nepal domestic eSewa/Khalti NPR rails)<br/>• Dynamic shipping calculation | • Split payments<br/>• Multi-currency crypto rails | • Unauthenticated / guest checkout without email confirmation |
-| **Workshop & Operations** | • 8-Stage OM Production Kanban in `apps/admin`<br/>• Cut-ticket generation & fabric batch tracking<br/>• Delay recording & notes | • Automated barcode/QR label scanning<br/>• Fabric bolt waste optimization | • Heavy third-party ERP integration (SAP, Oracle) |
+| **Workshop & Operations** | • 8-Stage OM Production Kanban in `apps/admin`<br/>• Cut-ticket (Denim) & Bench-ticket (Jewellery) tracking<br/>• Delay recording & notes | • Automated barcode/QR label scanning<br/>• Raw metal scrap recycling & yardage optimization | • Heavy third-party ERP integration (SAP, Oracle) |
 | **Fulfillment & Logistics** | • Manual tracking number assignment<br/>• Courier status synchronization (DHL / Aramex / EMS)<br/>• Military-base shipping rules | • Automated shipping rate API integration (EasyPost/Shippo)<br/>• Local pickup locker network | • Dropshipping from unverified third-party suppliers |
-| **Customer Experience** | • Order tracking & OM timeline visualization<br/>• Editorial guide (Sizing, Denim Care, About)<br/>• Direct Instagram DM / Email support | • Verified purchase reviews with photo upload<br/>• Community denim fading gallery | • AI chatbot customer support |
+| **Customer Experience** | • Order tracking & OM timeline visualization<br/>• Editorial guide (Sizing for Denim & Rings, Denim/Jewellery Care)<br/>• Direct Instagram DM / Email support | • Verified purchase reviews with photo upload<br/>• Community denim & silver fading gallery | • AI chatbot customer support |
 
 ---
 
 ## 2. Formalized Commerce Models (JN-002)
 
 ### A. Order-Made (OM) — Made to Order
-* **Core Principle:** Jeans, jackets, and accessories cut and assembled after customer payment.
-* **Inventory Behavior & Fabric Bolt Continuity:**
+* **Core Principle:** Garments and jewellery pieces custom cut, sewn, cast, or forged only after customer payment.
+* **Denim Material & Continuity:**
   * Zero finished goods inventory required. Orders lock reservations on raw fabric yardage on discrete continuous **Fabric Bolts** (e.g. 2.7m of 14oz Kurabo raw selvedge denim).
-  * **Continuous Yardage Invariant:** Selvedge denim is woven on narrow shuttle looms (28–31 inches wide). Garment panels for a single pair of jeans **must be cut from a single, continuous fabric bolt**. Splitting cuts across different bolts or dye lots is strictly prohibited to preserve patina fade and weave consistency.
+  * **Continuous Yardage Invariant:** Selvedge denim is woven on narrow shuttle looms (28–31 inches wide). Garment panels for a single pair of jeans **must be cut from a single, continuous fabric bolt** to preserve patina fade and weave consistency.
+* **Jewellery Material & Bench Fabrication:**
+  * Rings, chains, and hardware are individually cast, sized on steel mandrels, hand-finished, and stamped with official atelier hallmarks (.925 Silver, Solid Brass).
 * **Production Policy:** Governed dynamically by `ProductionPolicy` (default: 7–14 business days, automatically extending for official Nepal workshop holidays).
 * **Cancellation & Refund Contract:**
-  * **Pre-Cutting:** The customer may cancel within 24 hours of payment if the job has not entered the `CUTTING` stage (100% refund).
-  * **Post-Cutting (Point of No Return):** Once the tailor draws the pattern and precision-cuts the denim panels to the customer's waist and inseam, cancellation or return is **strictly prohibited**, except in cases of proven manufacturing defect.
+  * **Pre-Crafting:** The customer may cancel within 24 hours of payment if the job has not entered the `CUTTING` / `FORGING` stage (100% refund).
+  * **Post-Crafting (Point of No Return):** Once the tailor precision-cuts the denim panels or the metalsmith sizes and engraves the ring band, cancellation or return is **strictly prohibited**, except in cases of proven manufacturing defect.
 
 ### B. DROP — Ready-to-Ship
-* **Core Principle:** Pre-manufactured physical inventory produced in limited batches (e.g., 50 units of a limited natural indigo capsule).
+* **Core Principle:** Pre-manufactured physical inventory produced in limited numbered batches (e.g., 50 selvedge jackets, 25 hand-forged brass cuffs).
 * **Inventory Behavior:** Variant inventory count decrements immediately upon checkout confirmation. Once inventory hits 0, variant transitions to `SOLD_OUT`.
-* **Fulfillment Window:** Dispatches from the Kathmandu warehouse within 24–48 hours.
-* **Return & Refund Contract:** Customers have a 5-day inspection window from the carrier delivery timestamp. Returned goods must be unworn, with tags and selvedge ticker intact.
+* **Fulfillment Window:** Dispatches from the Kathmandu atelier within 24–48 hours.
+* **Return & Refund Contract:** Customers have a 5-day inspection window from the carrier delivery timestamp. Returned goods must be unworn, undamaged, with original tags, hallmarks, and packaging intact.
 
 ### C. Custom Atelier Inquiries (Bespoke)
 * **Core Principle:** Personalized, non-standard denim requests (custom patch placements, specialized heavyweights > 19oz).

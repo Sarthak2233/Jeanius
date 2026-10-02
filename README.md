@@ -1,19 +1,23 @@
-# JEANIUS — Precision Handmade Denim Works
+# JEANIUS & JEWL — Precision Denim & Artisan Jewellery Atelier
 
 > **Crafted in Kathmandu, Nepal. Worn Worldwide.**  
-> A bespoke direct-to-consumer denim atelier and engineering platform built on Next.js, Supabase, Drizzle ORM, and Turborepo.
+> A bespoke direct-to-consumer atelier uniting handmade raw selvedge denim and handcrafted artisan jewellery, built on Next.js, Supabase, Drizzle ORM, and Turborepo.
 
 ---
 
 ## 1. Brand & Commerce Overview
 
-**Jeanius** bridges traditional artisanal denim craftsmanship with modern, resilient commerce architecture. Operating out of Kathmandu, Nepal, and serving a global audience of denim enthusiasts, the platform is engineered around three primary commerce models:
+**Jeanius & Jewl** unites two parallel, complementary artisanal traditions under a singular aesthetic philosophy: **"Worn Together, Aged Together."** Operating out of Kathmandu, Nepal, and serving a global audience of connoisseurs, the atelier crafts:
+- **Handmade Raw Denim:** Bespoke jeans, workwear jackets, and accessories cut and sewn from shuttle-loom Japanese selvedge denim, designed to crease, fade, and patina uniquely to the wearer's life.
+- **Handcrafted Artisan Jewellery:** Heavy .925 sterling silver and solid brass signet rings, curb wallet chains, cuffs, and hardware accents that oxidize and polish organically with time and wear.
 
-* **OM (Order-Made):** Custom jeans cut and assembled to order. Customers configure their exact physical specifications—fit, waist size, inseam length, stitching thread, and custom hardware. Production begins immediately upon payment verification, governed by a dynamic `ProductionPolicy` (lead times calculated live, excluding workshop holidays).
-* **DROP (Ready-to-Ship):** Small-batch, curated runs of limited-edition jeans, denim tops, and selvedge accessories with immediate physical inventory reservation and distinct return/exchange policies.
+Both verticals operate symmetrically across three core commerce models:
+
+* **OM (Order-Made):** Custom garments and jewellery forged and tailored to order upon payment. Customers configure exact physical specifications—fit, waist, and inseam for jeans; ring sizes (US 4–14), chain lengths, metal alloys, and bespoke hand-engravings for jewellery. Production is governed by dynamic workshop policies (`ProductionPolicy`) calculating live lead times across Tailor and Metalsmith benches.
+* **DROP (Ready-to-Ship):** Small-batch, curated runs of limited-edition pieces (e.g. 50 jackets in 16oz Deadstock Kuroki denim, 25 numbered sculptural brass cuffs) with immediate physical inventory reservation and distinct return/exchange policies.
 * **TOGETHER & Membership:** Gated community releases, member-only drops, and archival projects with server-enforced access controls.
 
-The customer interface follows a **restrained, minimalist editorial aesthetic**: generous whitespace, subtle tactile borders, Japanese raw-denim tones (deep indigo, unbleached ecru, selvedge red ticker line), and high-fidelity photography with zero generic ecommerce clutter.
+The customer interface follows a **restrained, minimalist editorial aesthetic**: generous whitespace, subtle tactile borders, raw tactile tones (deep indigo, unbleached ecru, oxidized silver, warm brass), and high-fidelity photography with zero generic ecommerce clutter.
 
 ---
 
@@ -31,7 +35,7 @@ The platform is designed as a **Domain-Driven Design (DDD) Modular Monolith** ho
 | **Database & ORM** | **Supabase PostgreSQL + Drizzle ORM** | Type-safe SQL schemas, zero-cold-start queries, version-controlled migrations (`packages/database`). |
 | **Contracts & Validation**| **Zod** | Shared schemas validating API payloads, forms, and external webhooks (`packages/contracts`). |
 | **Payment Orchestrator** | **Multi-Rail Provider Gateway** | Provider abstraction routing international cards via **Stripe** and Nepal domestic rails via **eSewa / Khalti** (`packages/integrations`). |
-| **Design System** | **@jeanius/ui** | Shared tokens (indigo, ecru, selvedge red) and minimal React components (`packages/ui`). |
+| **Design System** | **@jeanius/ui** | Shared tokens (indigo, ecru, selvedge red, silver, brass) and minimal React components (`packages/ui`). |
 | **Observability** | **Structured Logger** | Request correlation IDs, order state transitions, and audit tracing (`packages/observability`). |
 
 ---
@@ -39,7 +43,7 @@ The platform is designed as a **Domain-Driven Design (DDD) Modular Monolith** ho
 ## 3. Monorepo Directory Layout
 
 ```text
-jeanius/
+jeanius-and-jewl/
 ├── apps/
 │   ├── storefront/                 # Customer-facing Next.js App Router webstore (Port 3000)
 │   │   ├── app/                    # Catalog, Product Detail (/shop/[slug]), Cart, Checkout, Policies

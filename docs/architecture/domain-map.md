@@ -1,8 +1,8 @@
-# JEANIUS — DOMAIN MAP & ARCHITECTURAL BOUNDARIES (JN-016 to JN-019)
+# JEANIUS & JEWL — DOMAIN MAP & ARCHITECTURAL BOUNDARIES (JN-016 to JN-019)
 
 ## 1. Subdomain Map & Bounded Contexts (JN-016)
 
-The Jeanius platform is architected as a **Domain-Driven Design (DDD) Modular Monolith**. Business capabilities are decomposed into 8 distinct Bounded Contexts, each maintaining its own ubiquitous language, domain models, and business invariants:
+The Jeanius & Jewl platform is architected as a **Domain-Driven Design (DDD) Modular Monolith**. Business capabilities are decomposed into 8 distinct Bounded Contexts, each maintaining its own ubiquitous language, domain models, and business invariants:
 
 ![Domain Bounded Contexts](../assets/diagrams/domain-bounded-contexts.svg)
 
@@ -12,14 +12,14 @@ The Jeanius platform is architected as a **Domain-Driven Design (DDD) Modular Mo
 ```mermaid
 graph TD
     subgraph Core Commerce Contexts
-        Catalog["Catalog and Product<br/>• Products, Options, Variants"]
+        Catalog["Catalog and Product<br/>• Denim & Jewellery, Options, Variants"]
         Cart["Cart and Checkout<br/>• CartLines, Currency, Taxes"]
         Order["Order Management<br/>• Orders, Lines, Snapshot"]
         Payment["Payment and Reconciliation<br/>• PaymentIntents, Webhooks"]
     end
 
     subgraph Operations and Fulfillment Contexts
-        Production["OM Workshop Operations<br/>• 8 Stages, Cut Tickets, Artisans"]
+        Production["OM Workshop Operations<br/>• 8 Stages, Cut & Bench Tickets, Artisans"]
         Inventory["DROP Inventory<br/>• Physical Stock, Reservations"]
         Shipping["Shipment and Logistics<br/>• Waybills, Tracking, Carriers"]
     end

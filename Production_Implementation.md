@@ -1,4 +1,4 @@
-Yes. And for **Jeanius**, I would make the backlog specifically around the product specification you provided—not simply copy the Taskora structure.
+Yes. And for **Jeanius & Jewl**, I would make the backlog specifically around the product specification you provided—not simply copy the Taskora structure.
 
 There are a few important architectural decisions I would lock into the roadmap first:
 
@@ -23,10 +23,10 @@ Below is the kind of **Production Implementation Master Roadmap** I would use.
 
 ---
 
-# JEANIUS — PRODUCTION IMPLEMENTATION MASTER TODO
+# JEANIUS & JEWL — PRODUCTION IMPLEMENTATION MASTER TODO
 
-**Product:** Jeanius
-**Target:** Production-ready global handmade denim commerce platform
+**Product:** Jeanius & Jewl
+**Target:** Production-ready global handmade raw denim and handcrafted artisan jewellery commerce platform
 **Architecture:** DDD modular monolith in a Turborepo monorepo
 **Frontend:** Next.js App Router + TypeScript
 **Database:** Supabase PostgreSQL + Drizzle ORM
@@ -392,7 +392,7 @@ Make the configurable product experience the central commerce capability.
 | ------ | ---------------------------------- | --------------------------------------------------- | ----------- |
 | JN-180 | Build product detail route         | `/shop/[slug]`.                                     | NOT_STARTED |
 | JN-181 | Build product gallery              | Responsive image gallery.                           | NOT_STARTED |
-| JN-182 | Build product facts                | Denim weight/material/etc.                          | NOT_STARTED |
+| JN-182 | Build product facts                | Denim weight, metal alloy, craft specs.             | NOT_STARTED |
 | JN-183 | Build shipping information         | Production + shipping expectations.                 | NOT_STARTED |
 | JN-184 | Build OM/DROP indicator            | Clearly distinguish commerce models.                | NOT_STARTED |
 | JN-185 | Build option schema loader         | Retrieve configurable options.                      | NOT_STARTED |
@@ -639,7 +639,7 @@ Scoped for authenticated `CUSTOMER` buyers on `apps/storefront/account`.
 | JN-320 | Build profile page               | Personal details, contact, and fit preferences.           | NOT_STARTED |
 | JN-321 | Build address management         | Saved international/domestic shipping addresses.          | NOT_STARTED |
 | JN-322 | Build order history & cancel btn | Order list with 1-click pre-cutting 24h cancel button.    | NOT_STARTED |
-| JN-323 | Build visual OM denim tracker    | Live 8-stage interactive denim progress & invoice download.| NOT_STARTED |
+| JN-323 | Build visual OM progress tracker | Live 8-stage interactive denim & jewellery progress & invoice download.| NOT_STARTED |
 | JN-324 | Build review history             | Customer reviews & fade progression uploads.              | NOT_STARTED |
 | JN-325 | Build membership state           | Member tier display & community perks.                    | NOT_STARTED |
 | JN-326 | Build account security           | Password/session controls & signout.                      | NOT_STARTED |
@@ -721,14 +721,14 @@ Scoped for VIP `MEMBER` collectors on `apps/storefront/member`.
 | JN-365 | Build admin authentication        | Privileged access with sub-path guards (`/admin/*`).       | NOT_STARTED |
 | JN-366 | Build product list                | Search/filter products across models (OM / DROP).         | NOT_STARTED |
 | JN-367 | Build product creation            | Create product with physical specifications.              | NOT_STARTED |
-| JN-368 | Build product editor              | Edit product story, denim mill, and weave specs.          | NOT_STARTED |
+| JN-368 | Build product editor              | Edit product story, denim mill / metal alloy, and craft specs.          | NOT_STARTED |
 | JN-369 | Build image management            | High-res selvedge macro image upload and gallery ordering.| NOT_STARTED |
-| JN-370 | Build option management           | Waist, inseam length, hardware alloy options.             | NOT_STARTED |
+| JN-370 | Build option management           | Waist, inseam length, ring size, metal finish, hardware alloy options. | NOT_STARTED |
 | JN-371 | Build variant management          | SKU, stock limits, and price matrix.                      | NOT_STARTED |
 | JN-372 | Build OM/DROP selector            | Configure Order-Made vs. Ready-to-Ship behavior.          | NOT_STARTED |
 | JN-373 | Build scheduling                  | Scheduled publication & capsule drop countdowns.          | NOT_STARTED |
 | JN-374 | Build access-level controls       | Assign `PUBLIC`, `MEMBER`, or `INTERNAL_STAFF` visibility.| NOT_STARTED |
-| JN-375 | Build related-products management | Curated pairing (e.g. Jeans + Denim Jacket + Tote).       | NOT_STARTED |
+| JN-375 | Build related-products management | Curated pairing (e.g. Raw Jeans + Silver Signet Ring + Wallet Chain). | NOT_STARTED |
 | JN-376 | Build SEO editor                  | OpenGraph tags, structured JSON-LD data.                  | NOT_STARTED |
 | JN-377 | Build product preview             | Visual preview before going live.                         | NOT_STARTED |
 
@@ -780,10 +780,10 @@ Scoped for `TAILOR` craftsmen on the floor and `ADMIN` operations.
 
 | ID     | Task                             | Description                                               | Status      |
 | ------ | -------------------------------- | --------------------------------------------------------- | ----------- |
-| JN-402 | Build content dashboard          | Lookbook, story, and denim care CMS.                      | NOT_STARTED |
+| JN-402 | Build content dashboard          | Lookbook, story, and denim & jewellery care CMS.          | NOT_STARTED |
 | JN-403 | Build announcement editor        | Urgent operational notices (workshop holidays, drops).    | NOT_STARTED |
 | JN-404 | Build policy editor              | Production lead-time, refund, and shipping policy text.   | NOT_STARTED |
-| JN-405 | Build sizing editor              | Fit guide and measurement tables.                         | NOT_STARTED |
+| JN-405 | Build sizing editor              | Fit guide (denim waist/inseam and jewellery ring/chain).  | NOT_STARTED |
 | JN-406 | Build contact editor             | Channel instructions (Instagram DM vs Email support).     | NOT_STARTED |
 | JN-407 | Build custom atelier inquiry desk| Review bespoke requests, draft tailor quote, send invoice.| NOT_STARTED |
 | JN-408 | Build customer 360 lookup        | Holistic customer profile (purchases, sizing, inquiries). | NOT_STARTED |

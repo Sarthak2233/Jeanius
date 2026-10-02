@@ -20,16 +20,23 @@ export async function runDatabaseSeed() {
       {
         id: 'c0000000-0000-0000-0000-000000000001',
         email: 'admin@jeanius.co',
-        fullName: 'Jeanius Workshop Admin',
+        fullName: 'Jeanius & Jewl Atelier Admin',
         role: 'ADMIN',
         phone: '+977-1-4200001',
       },
       {
         id: 'c0000000-0000-0000-0000-000000000002',
         email: 'mastercutter@jeanius.co',
-        fullName: 'Pasang Master Cutter',
+        fullName: 'Pasang Master Cutter (Denim)',
         role: 'TAILOR',
         phone: '+977-9800000002',
+      },
+      {
+        id: 'c0000000-0000-0000-0000-000000000003',
+        email: 'metalsmith@jeanius.co',
+        fullName: 'Bikash Master Jeweller (Metalsmith)',
+        role: 'TAILOR',
+        phone: '+977-9800000003',
       },
     ])
     .onConflictDoNothing();
@@ -86,6 +93,42 @@ export async function runDatabaseSeed() {
         category: 'BOTTOMS',
         status: 'PUBLISHED',
       },
+      {
+        id: 'a0000000-0000-0000-0000-000000000003',
+        slug: 'lot-j01-sterling-signet-ring',
+        title: 'Lot J01 — .925 Sterling Silver Signet Ring',
+        description:
+          'Solid .925 sterling silver signet ring with hand-chiseled crest. Made to order at our Kathmandu jewellery bench.',
+        basePriceAmount: 22000,
+        basePriceCurrency: 'USD',
+        commerceModel: 'OM',
+        category: 'JEWELLERY',
+        status: 'PUBLISHED',
+      },
+      {
+        id: 'a0000000-0000-0000-0000-000000000004',
+        slug: 'lot-j02-forged-brass-cuff',
+        title: 'Lot J02 — Hand-Forged Solid Brass Cuff',
+        description:
+          'Heavy solid brass cuff bracelet hand-hammered and heat-tempered with raw vintage patina.',
+        basePriceAmount: 18000,
+        basePriceCurrency: 'USD',
+        commerceModel: 'DROP',
+        category: 'JEWELLERY',
+        status: 'PUBLISHED',
+      },
+      {
+        id: 'a0000000-0000-0000-0000-000000000005',
+        slug: 'lot-j03-curb-denim-wallet-chain',
+        title: 'Lot J03 — Heavy Curb Denim Wallet Chain',
+        description:
+          'Solid sterling silver curb chain with hand-carved swivel clip engineered specifically for raw denim belt loops.',
+        basePriceAmount: 38000,
+        basePriceCurrency: 'USD',
+        commerceModel: 'OM',
+        category: 'JEWELLERY',
+        status: 'PUBLISHED',
+      },
     ])
     .onConflictDoNothing();
 
@@ -106,6 +149,22 @@ export async function runDatabaseSeed() {
         productId: 'a0000000-0000-0000-0000-000000000001',
         name: 'Inseam Length',
         code: 'inseam',
+        position: 2,
+        isRequired: true,
+      },
+      {
+        id: 'e0000000-0000-0000-0000-000000000003',
+        productId: 'a0000000-0000-0000-0000-000000000003',
+        name: 'Ring Size',
+        code: 'ring_size',
+        position: 1,
+        isRequired: true,
+      },
+      {
+        id: 'e0000000-0000-0000-0000-000000000004',
+        productId: 'a0000000-0000-0000-0000-000000000003',
+        name: 'Finish',
+        code: 'finish',
         position: 2,
         isRequired: true,
       },
@@ -140,6 +199,38 @@ export async function runDatabaseSeed() {
         priceDeltaAmount: 0,
         position: 1,
       },
+      {
+        id: 'f0000000-0000-0000-0000-000000000004',
+        optionId: 'e0000000-0000-0000-0000-000000000003',
+        code: 'US8',
+        label: 'US 8 (18.1mm)',
+        priceDeltaAmount: 0,
+        position: 1,
+      },
+      {
+        id: 'f0000000-0000-0000-0000-000000000005',
+        optionId: 'e0000000-0000-0000-0000-000000000003',
+        code: 'US10',
+        label: 'US 10 (19.8mm)',
+        priceDeltaAmount: 0,
+        position: 2,
+      },
+      {
+        id: 'f0000000-0000-0000-0000-000000000006',
+        optionId: 'e0000000-0000-0000-0000-000000000004',
+        code: 'OXIDIZED',
+        label: 'Oxidized Vintage Patina',
+        priceDeltaAmount: 0,
+        position: 1,
+      },
+      {
+        id: 'f0000000-0000-0000-0000-000000000007',
+        optionId: 'e0000000-0000-0000-0000-000000000004',
+        code: 'HIGH_POLISH',
+        label: 'High Mirror Polish',
+        priceDeltaAmount: 1500,
+        position: 2,
+      },
     ])
     .onConflictDoNothing();
 
@@ -165,6 +256,24 @@ export async function runDatabaseSeed() {
         inventoryCount: 20,
         status: 'AVAILABLE',
       },
+      {
+        id: 'b0000000-0000-0000-0000-000000000003',
+        productId: 'a0000000-0000-0000-0000-000000000003',
+        sku: 'LOTJ01-SILVER-US8-OXIDIZED',
+        options: { ring_size: 'US8', finish: 'OXIDIZED' },
+        additionalPriceAmount: 0,
+        inventoryCount: 10,
+        status: 'AVAILABLE',
+      },
+      {
+        id: 'b0000000-0000-0000-0000-000000000004',
+        productId: 'a0000000-0000-0000-0000-000000000003',
+        sku: 'LOTJ01-SILVER-US10-OXIDIZED',
+        options: { ring_size: 'US10', finish: 'OXIDIZED' },
+        additionalPriceAmount: 0,
+        inventoryCount: 10,
+        status: 'AVAILABLE',
+      },
     ])
     .onConflictDoNothing();
 
@@ -174,11 +283,11 @@ export async function runDatabaseSeed() {
     .values([
       {
         id: '10000000-0000-0000-0000-000000000001',
-        slug: 'kathmandu-workshop',
-        title: 'Inside the Kathmandu Workshop',
+        slug: 'kathmandu-atelier',
+        title: 'Inside the Jeanius & Jewl Atelier',
         contentMarkdown:
-          '# Handcrafted in the Himalayas\n\nEvery pair of Jeanius selvedge jeans is cut and sewn by hand.',
-        metaDescription: 'Explore artisan craftsmanship in Kathmandu.',
+          '# Handcrafted in the Himalayas\n\nEvery piece at Jeanius & Jewl—from raw selvedge jeans to hand-cast sterling silver signet rings—is crafted by master artisans in our Kathmandu atelier.',
+        metaDescription: 'Explore handmade raw denim and artisan jewellery in Kathmandu.',
         isPublished: true,
       },
     ])
@@ -190,8 +299,9 @@ export async function runDatabaseSeed() {
     .values([
       {
         id: '20000000-0000-0000-0000-000000000001',
-        title: 'Lot 002 Capsule Drop',
-        message: 'Limited run of 45 pairs available worldwide.',
+        title: 'Lot 002 & Lot J01 Capsule Drop',
+        message:
+          'Limited runs of raw selvedge denim and hand-forged sterling silver available worldwide.',
         type: 'PROMO',
         startDate: new Date(),
         priority: 10,

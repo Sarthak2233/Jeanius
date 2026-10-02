@@ -1,9 +1,9 @@
-# JEANIUS — SYSTEM ARCHITECTURE OVERVIEW
+# JEANIUS & JEWL — SYSTEM ARCHITECTURE OVERVIEW
 
 ## 1. Monorepo Structure
 
 ```text
-jeanius/
+jeanius-and-jewl/
 ├── apps/
 │   ├── storefront/                 # Customer-facing Next.js App
 │   └── admin/                      # Operations & workshop Next.js App

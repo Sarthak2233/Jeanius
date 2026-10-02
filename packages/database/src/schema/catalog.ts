@@ -12,7 +12,7 @@ import {
 import { sql } from 'drizzle-orm';
 
 export const commerceModelEnum = ['OM', 'DROP', 'CUSTOM_ORDER', 'PRE_ORDER'] as const;
-export const productCategoryEnum = ['BOTTOMS', 'TOPS', 'ACCESSORIES'] as const;
+export const productCategoryEnum = ['BOTTOMS', 'TOPS', 'JEWELLERY', 'ACCESSORIES'] as const;
 export const productStatusEnum = [
   'DRAFT',
   'PUBLISHED',
