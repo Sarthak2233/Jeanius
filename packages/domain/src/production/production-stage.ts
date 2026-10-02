@@ -4,14 +4,36 @@
 import type { CommerceModel } from '../catalog/product-type.js';
 
 export type ProductionStage =
-  'QUEUED' | 'CUTTING' | 'SEWING' | 'WASHING' | 'HARDWARE' | 'QC' | 'READY' | 'SHIPPED';
+  | 'QUEUED'
+  | 'CUTTING'
+  | 'SEWING'
+  | 'WASHING'
+  | 'HARDWARE'
+  | 'CASTING'
+  | 'SETTING'
+  | 'PATINA'
+  | 'POLISHING'
+  | 'QC'
+  | 'READY'
+  | 'SHIPPED';
 
-export const ORDERED_PRODUCTION_STAGES: readonly ProductionStage[] = [
+export const DENIM_PRODUCTION_STAGES: readonly ProductionStage[] = [
   'QUEUED',
   'CUTTING',
   'SEWING',
   'WASHING',
   'HARDWARE',
+  'QC',
+  'READY',
+  'SHIPPED',
+] as const;
+
+export const JEWELLERY_PRODUCTION_STAGES: readonly ProductionStage[] = [
+  'QUEUED',
+  'CASTING',
+  'SETTING',
+  'PATINA',
+  'POLISHING',
   'QC',
   'READY',
   'SHIPPED',
@@ -68,12 +90,24 @@ export function canAdvanceProductionStage(
   next: ProductionStage,
 ): boolean {
   if (current === next) return false;
-  if (current === 'QC' && next === 'SEWING') return true; // Dedicated artisan rework loop
+  if (current === 'QC' && next === 'SEWING') return true; // Denim rework loop
+  if (current === 'QC' && next === 'SETTING') return true; // Jewellery rework loop
 
-  const currentIndex = ORDERED_PRODUCTION_STAGES.indexOf(current);
-  const nextIndex = ORDERED_PRODUCTION_STAGES.indexOf(next);
+  const denimCurrentIndex = DENIM_PRODUCTION_STAGES.indexOf(current);
+  const denimNextIndex = DENIM_PRODUCTION_STAGES.indexOf(next);
 
-  return nextIndex === currentIndex + 1;
+  if (denimCurrentIndex !== -1 && denimNextIndex === denimCurrentIndex + 1) {
+    return true;
+  }
+
+  const jewelCurrentIndex = JEWELLERY_PRODUCTION_STAGES.indexOf(current);
+  const jewelNextIndex = JEWELLERY_PRODUCTION_STAGES.indexOf(next);
+
+  if (jewelCurrentIndex !== -1 && jewelNextIndex === jewelCurrentIndex + 1) {
+    return true;
+  }
+
+  return false;
 }
 
 /**

@@ -2,7 +2,7 @@ import { pgTable, text, timestamp, integer, jsonb, uuid, index, check } from 'dr
 import { sql } from 'drizzle-orm';
 import { usersProfile } from './auth-profile';
 import { products, productVariants, commerceModelEnum } from './catalog';
-import { fabricBolts } from './inventory';
+import { fabricBolts, metalStocks } from './inventory';
 
 export const orderStatusEnum = [
   'PENDING',
@@ -79,7 +79,11 @@ export const orderLines = pgTable(
     lineTotalCurrency: text('line_total_currency').notNull().default('USD'),
     selectedOptions: jsonb('selected_options').$type<Record<string, string>>().notNull(),
     customTailoring: jsonb('custom_tailoring').$type<Record<string, number | string>>(),
+    customSpecifications: jsonb('custom_specifications').$type<Record<string, number | string>>(),
     allocatedBoltId: uuid('allocated_bolt_id').references(() => fabricBolts.id, {
+      onDelete: 'set null',
+    }),
+    allocatedMetalStockId: uuid('allocated_metal_stock_id').references(() => metalStocks.id, {
       onDelete: 'set null',
     }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),

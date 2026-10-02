@@ -78,6 +78,8 @@ export const customOrderRequests = pgTable(
     category: text('category', { enum: productCategoryEnum }).notNull(),
     description: text('description').notNull(),
     desiredFabricWeight: text('desired_fabric_weight'),
+    desiredMetalAlloy: text('desired_metal_alloy'),
+    customSpecifications: jsonb('custom_specifications').$type<Record<string, number | string>>(),
     referenceImageUrls: jsonb('reference_image_urls').$type<string[]>().notNull().default([]),
     status: text('status', { enum: customOrderInquiryStatusEnum })
       .notNull()

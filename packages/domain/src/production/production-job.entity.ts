@@ -5,7 +5,7 @@
 import type { ProductionJobId, OrderId, OrderLineId } from '../common/entity-id.js';
 import {
   type ProductionStage,
-  type CutTicket,
+  type CraftTicket,
   canAdvanceProductionStage,
 } from './production-stage.js';
 import { DomainError } from '../errors/index.js';
@@ -16,7 +16,7 @@ export interface ProductionJobProps {
   readonly orderLineId: OrderLineId;
   readonly currentStage?: ProductionStage;
   readonly targetCompletionDate: Date;
-  readonly cutTicket?: CutTicket;
+  readonly craftTicket?: CraftTicket;
   readonly assignedArtisanId?: string;
   readonly reworkCount?: number;
   readonly delayDays?: number;
@@ -32,7 +32,7 @@ export class ProductionJob {
   readonly orderLineId: OrderLineId;
   private _currentStage: ProductionStage;
   private _targetCompletionDate: Date;
-  private _cutTicket?: CutTicket;
+  private _craftTicket?: CraftTicket;
   private _assignedArtisanId?: string;
   private _reworkCount: number;
   private _delayDays: number;
@@ -47,7 +47,7 @@ export class ProductionJob {
     this.orderLineId = props.orderLineId;
     this._currentStage = props.currentStage ?? 'QUEUED';
     this._targetCompletionDate = props.targetCompletionDate;
-    this._cutTicket = props.cutTicket;
+    this._craftTicket = props.craftTicket;
     this._assignedArtisanId = props.assignedArtisanId;
     this._reworkCount = props.reworkCount ?? 0;
     this._delayDays = props.delayDays ?? 0;
@@ -65,8 +65,8 @@ export class ProductionJob {
     return this._targetCompletionDate;
   }
 
-  get cutTicket(): CutTicket | undefined {
-    return this._cutTicket;
+  get craftTicket(): CraftTicket | undefined {
+    return this._craftTicket;
   }
 
   get assignedArtisanId(): string | undefined {
@@ -110,13 +110,13 @@ export class ProductionJob {
     this._updatedAt = new Date();
   }
 
-  recordRework(reason: string): void {
+  recordRework(reason: string, targetStage: 'SEWING' | 'SETTING' = 'SEWING'): void {
     if (this._currentStage !== 'QC') {
       throw new DomainError(
         `Rework can only be triggered from QC stage, current: ${this._currentStage}`,
       );
     }
-    this._currentStage = 'SEWING';
+    this._currentStage = targetStage;
     this._reworkCount++;
     this._notes.push(`[REWORK]: ${reason}`);
     this._updatedAt = new Date();
@@ -135,8 +135,8 @@ export class ProductionJob {
     this._updatedAt = new Date();
   }
 
-  attachCutTicket(ticket: CutTicket): void {
-    this._cutTicket = ticket;
+  attachCraftTicket(ticket: CraftTicket): void {
+    this._craftTicket = ticket;
     this._updatedAt = new Date();
   }
 }

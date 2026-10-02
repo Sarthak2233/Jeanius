@@ -6,7 +6,7 @@
 
 // ================= Actors & Roles (JN-003) =================
 export type ActorRole =
-  'GUEST' | 'CUSTOMER' | 'MEMBER' | 'TAILOR' | 'FULFILLMENT' | 'SUPPORT' | 'ADMIN';
+  'GUEST' | 'CUSTOMER' | 'MEMBER' | 'TAILOR' | 'JEWELLER' | 'FULFILLMENT' | 'SUPPORT' | 'ADMIN';
 
 export interface Actor {
   readonly id: string;
@@ -83,6 +83,7 @@ export * from './production/production-job.entity.js';
 
 // ================= Inventory & Selvedge Yardage (JN-085, JN-086) =================
 export * from './inventory/fabric-bolt.aggregate.js';
+export * from './inventory/metal-stock.aggregate.js';
 export * from './inventory/inventory-reservation.entity.js';
 
 // ================= Fulfillment & Logistics (JN-077, JN-088, JN-089) =================

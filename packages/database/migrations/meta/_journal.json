@@ -8,6 +8,13 @@
       "when": 1790851221802,
       "tag": "0000_legal_cobalt_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790966147865,
+      "tag": "0001_add_jewellery_vertical",
+      "breakpoints": true
     }
   ]
 }

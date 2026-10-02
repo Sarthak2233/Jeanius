@@ -37,6 +37,7 @@ export const cartLines = pgTable(
     customTailoringMeasurements: jsonb('custom_tailoring_measurements').$type<
       Record<string, number | string>
     >(),
+    customSpecifications: jsonb('custom_specifications').$type<Record<string, number | string>>(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },

@@ -9,10 +9,13 @@ export const ActorRoleSchema = z.enum([
   'CUSTOMER',
   'MEMBER',
   'TAILOR',
+  'JEWELLER',
   'FULFILLMENT',
   'SUPPORT',
   'ADMIN',
 ]);
+
+export const ProductCategorySchema = z.enum(['BOTTOMS', 'TOPS', 'JEWELLERY', 'ACCESSORIES']);
 
 export const CommerceModelSchema = z.enum(['OM', 'DROP', 'CUSTOM_ORDER']);
 
@@ -63,6 +66,7 @@ export const AddToCartSchema = z.object({
   variantId: z.string().uuid(),
   quantity: z.number().int().positive().max(10),
   selectedOptions: z.record(z.string()),
+  customSpecifications: z.record(z.union([z.string(), z.number()])).optional(),
 });
 
 export const CreateCheckoutSchema = z.object({
@@ -73,7 +77,20 @@ export const CreateCheckoutSchema = z.object({
 
 export const TransitionProductionStageSchema = z.object({
   jobId: z.string().uuid(),
-  stage: z.enum(['QUEUED', 'CUTTING', 'SEWING', 'WASHING', 'HARDWARE', 'QC', 'READY', 'SHIPPED']),
+  stage: z.enum([
+    'QUEUED',
+    'CUTTING',
+    'SEWING',
+    'WASHING',
+    'HARDWARE',
+    'CASTING',
+    'SETTING',
+    'PATINA',
+    'POLISHING',
+    'QC',
+    'READY',
+    'SHIPPED',
+  ]),
   notes: z.string().optional(),
 });
 
@@ -85,8 +102,10 @@ export const CancelOrderSchema = z.object({
 export const CustomOrderInquirySchema = z.object({
   customerName: z.string().min(2),
   customerEmail: z.string().email(),
-  productCategory: z.enum(['BOTTOMS', 'TOPS', 'ACCESSORIES']),
+  productCategory: ProductCategorySchema,
   desiredFabricWeight: z.string().optional(),
+  desiredMetalAlloy: z.string().optional(),
+  customSpecifications: z.record(z.union([z.string(), z.number()])).optional(),
   description: z.string().min(20, 'Please describe your custom request in detail'),
   referenceImageUrls: z.array(z.string().url()).optional(),
 });
@@ -98,7 +117,8 @@ export const DropReturnRequestSchema = z.object({
   reason: z.string().min(10, 'Please explain the reason for your return'),
   unwornConfirmation: z.literal(true, {
     errorMap: () => ({
-      message: 'You must confirm the garment is unworn and unwashed with tags intact',
+      message:
+        'You must confirm the item is unworn and in original condition with security tags and packaging intact',
     }),
   }),
 });
@@ -177,6 +197,7 @@ export const CustomOrderInquiryStatusSchema = z.enum([
 ]);
 
 export type ActorRoleDto = z.infer<typeof ActorRoleSchema>;
+export type ProductCategoryDto = z.infer<typeof ProductCategorySchema>;
 export type CommerceModelDto = z.infer<typeof CommerceModelSchema>;
 export type ProductStatusDto = z.infer<typeof ProductStatusSchema>;
 export type VariantStatusDto = z.infer<typeof VariantStatusSchema>;

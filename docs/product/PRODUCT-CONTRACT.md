@@ -137,38 +137,58 @@ The craftsmanship pipeline is the heart of Jeanius. Every pair of custom jeans p
 
 ```mermaid
 stateDiagram-v2
-    [*] --> QUEUED: Order Paid (Fabric Allocated)
+    [*] --> QUEUED: Order Paid (Job Created)
     
-    QUEUED --> CUTTING: Pattern drafted & denim cut
-    note right of CUTTING
-        POINT OF NO RETURN
-        Order cannot be cancelled
-        after entering CUTTING.
-    end note
+    state "Production Dispatch" as dispatch {
+        QUEUED
+    }
     
-    CUTTING --> SEWING: Union Special chainstitch assembly
-    SEWING --> WASHING: Raw rinse / vintage settling bath
-    WASHING --> HARDWARE: Copper rivets & donut buttons hammered
-    HARDWARE --> QC: Measurement & tolerance inspection
+    QUEUED --> CUTTING: Denim Allocated (Point of no return)
+    QUEUED --> CASTING: Metal Allocated (Point of no return)
     
-    QC --> READY: Inspection passed (±0.25" tolerance)
-    QC --> SEWING: Inspection failed (Rework required)
+    state "Denim Pipeline" as denim {
+        CUTTING --> SEWING: Panels bundled & assigned to tailor
+        SEWING --> WASHING: Assembly completed (Chainstitch)
+        WASHING --> HARDWARE: Rinse/dry complete
+        HARDWARE --> QC: Solid hardware fixed
+    }
     
-    READY --> SHIPPED: Handed over to courier with tracking
+    state "Jewellery Pipeline" as jewl {
+        CASTING --> SETTING: Rough cast cooled
+        SETTING --> PATINA: Engraving & prep complete
+        PATINA --> POLISHING: Surface oxidized/tempered
+        POLISHING --> QC: Final buffing complete
+    }
+    
+    QC --> READY: Tolerance & finish inspection passed
+    QC --> SEWING: Denim Rework
+    QC --> SETTING: Jewellery Rework
+    
+    READY --> SHIPPED: Handed to courier with packing slip & tote
     SHIPPED --> [*]
 ```
 
 </details>
 
-### Workshop Stage Details
-1. **STAGE 1 — QUEUED:** Order received. Tailor allocates raw denim roll (e.g., 14oz Japanese Kurabo selvedge) and prepares pattern cards.
-2. **STAGE 2 — CUTTING:** **[POINT OF NO RETURN]** Fabric is rolled out, chalked to customer's exact waist and inseam, and precision-cut. Cancellation is locked.
-3. **STAGE 3 — SEWING:** Construction using vintage Union Special chainstitch machines, flat-felled inseams, hidden back pocket rivets, and reinforced belt loops.
-4. **STAGE 4 — WASHING:** Optional one-wash bath to remove sizing starch while preserving raw selvedge rigidity and vertical indigo fading potential.
-5. **STAGE 5 — HARDWARE:** Solid copper burr rivets hand-hammered onto stress points; custom donut buttons pressed; vegetable-tanned leather patch branded and stitched.
-6. **STAGE 6 — QC INSPECTION:** Senior artisan verifies waist, front rise, back rise, thigh, knee, and leg opening against specifications (tolerance: ±0.25").
-7. **STAGE 7 — READY:** Passed garments folded, ironed, and packaged into dustproof canvas bags with signed artisan maker certificates.
-8. **STAGE 8 — SHIPPED:** Tracking number registered and transit updates initiated.
+### Workshop Stage Details (Denim Pipeline)
+1. **STAGE 1 — QUEUED:** Order received. Tailor allocates raw denim roll.
+2. **STAGE 2 — CUTTING:** **[POINT OF NO RETURN]** Fabric is rolled out, chalked, and precision-cut. Cancellation is locked.
+3. **STAGE 3 — SEWING:** Construction using vintage Union Special chainstitch machines.
+4. **STAGE 4 — WASHING:** Optional one-wash bath to remove sizing starch.
+5. **STAGE 5 — HARDWARE:** Solid copper burr rivets and custom donut buttons hammered.
+6. **STAGE 6 — QC INSPECTION:** Measurement and tolerance inspection.
+7. **STAGE 7 — READY:** Passed garments folded and packaged into dustproof canvas bags.
+8. **STAGE 8 — SHIPPED:** Tracking number registered.
+
+### Workshop Stage Details (Jewellery Pipeline)
+1. **STAGE 1 — QUEUED:** Order received. Jeweller allocates precious metal stock (.925 Silver, Solid Brass).
+2. **STAGE 2 — CASTING:** **[POINT OF NO RETURN]** Metal is melted and cast into the rough shape. Cancellation is locked.
+3. **STAGE 3 — SETTING:** Ring sizing on mandrel, stamping, and any stone setting.
+4. **STAGE 4 — PATINA:** Chemical oxidation or heat tempering applied for vintage finishes.
+5. **STAGE 5 — POLISHING:** Final buffing and polishing (Mirror or Matte).
+6. **STAGE 6 — QC INSPECTION:** Weight, size, and hallmark inspection.
+7. **STAGE 7 — READY:** Passed pieces placed in protective boxes.
+8. **STAGE 8 — SHIPPED:** Tracking number registered.
 
 ---
 

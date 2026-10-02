@@ -2,6 +2,7 @@ import { db } from './client';
 import {
   usersProfile,
   fabricBolts,
+  metalStocks,
   products,
   productOptions,
   optionValues,
@@ -61,6 +62,33 @@ export async function runDatabaseSeed() {
         weightOz: '15.50',
         initialLengthYards: '85.00',
         remainingLengthYards: '85.00',
+        status: 'ACTIVE',
+      },
+    ])
+    .onConflictDoNothing();
+
+  // 2.5 Metal Stocks
+  await db
+    .insert(metalStocks)
+    .values([
+      {
+        id: 'ms000000-0000-0000-0000-000000000001',
+        metalAlloy: 'STERLING_SILVER_925',
+        purity: '0.925',
+        lotNumber: 'MS-AG-01',
+        initialWeightGrams: '5000.00',
+        remainingWeightGrams: '5000.00',
+        supplier: 'Rio Grande',
+        status: 'ACTIVE',
+      },
+      {
+        id: 'ms000000-0000-0000-0000-000000000002',
+        metalAlloy: 'SOLID_BRASS',
+        purity: '1.000',
+        lotNumber: 'MS-BR-01',
+        initialWeightGrams: '10000.00',
+        remainingWeightGrams: '10000.00',
+        supplier: 'Rio Grande',
         status: 'ACTIVE',
       },
     ])

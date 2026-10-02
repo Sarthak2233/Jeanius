@@ -5,7 +5,7 @@ import {
   type OrderId,
   type OrderLineId,
   type ProductionStage,
-  type CutTicket,
+  type CraftTicket,
 } from '@jeanius/domain';
 import type { IProductionJobRepository } from '@jeanius/application';
 import { db, type Database } from '../../client';
@@ -53,7 +53,7 @@ export class DrizzleProductionJobRepository implements IProductionJobRepository 
         orderLineId: job.orderLineId,
         currentStage: job.currentStage,
         targetCompletionDate: job.targetCompletionDate,
-        cutTicket: (job.cutTicket as unknown as Record<string, unknown>) ?? undefined,
+        craftTicket: (job.craftTicket as unknown as Record<string, unknown>) ?? undefined,
         assignedArtisanId: job.assignedArtisanId,
         reworkCount: job.reworkCount,
         delayDays: job.delayDays,
@@ -84,7 +84,10 @@ export class DrizzleProductionJobRepository implements IProductionJobRepository 
       orderLineId: row.orderLineId as OrderLineId,
       currentStage: row.currentStage as ProductionStage,
       targetCompletionDate: new Date(row.targetCompletionDate),
-      cutTicket: row.cutTicket ? (row.cutTicket as unknown as CutTicket) : undefined,
+      craftTicket:
+        (row.craftTicket ?? row.cutTicket)
+          ? ((row.craftTicket ?? row.cutTicket) as unknown as CraftTicket)
+          : undefined,
       assignedArtisanId: row.assignedArtisanId ?? undefined,
       reworkCount: row.reworkCount,
       delayDays: row.delayDays,

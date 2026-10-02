@@ -1,13 +1,30 @@
 stateDiagram-v2
     [*] --> QUEUED: Order Paid (Job Created)
-    QUEUED --> CUTTING: Fabric rolls allocated & master pattern marked (POINT OF NO RETURN)
-    CUTTING --> SEWING: Panels bundled & assigned to artisan
-    SEWING --> WASHING: Assembly completed (Chainstitch, flat felled seams)
-    WASHING --> HARDWARE: Rinse/dry complete (Custom shrinkage settled)
-    HARDWARE --> QC: Solid silver/brass buttons, rivets & leather patch fixed
     
-    QC --> READY: Measurements match tolerance (±0.25")
-    QC --> SEWING: Defect identified (Rework loop)
+    state "Production Dispatch" as dispatch {
+        QUEUED
+    }
+    
+    QUEUED --> CUTTING: Denim Allocated (Point of no return)
+    QUEUED --> CASTING: Metal Allocated (Point of no return)
+    
+    state "Denim Pipeline" as denim {
+        CUTTING --> SEWING: Panels bundled & assigned to tailor
+        SEWING --> WASHING: Assembly completed (Chainstitch)
+        WASHING --> HARDWARE: Rinse/dry complete
+        HARDWARE --> QC: Solid hardware fixed
+    }
+    
+    state "Jewellery Pipeline" as jewl {
+        CASTING --> SETTING: Rough cast cooled
+        SETTING --> PATINA: Engraving & prep complete
+        PATINA --> POLISHING: Surface oxidized/tempered
+        POLISHING --> QC: Final buffing complete
+    }
+    
+    QC --> READY: Tolerance & finish inspection passed
+    QC --> SEWING: Denim Rework
+    QC --> SETTING: Jewellery Rework
     
     READY --> SHIPPED: Handed to courier with packing slip & tote
     SHIPPED --> [*]
@@ -17,6 +34,10 @@ stateDiagram-v2
     classDef sewing fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e0e7ff;
     classDef washing fill:#083344,stroke:#06b6d4,stroke-width:2px,color:#cffafe;
     classDef hardware fill:#2e1065,stroke:#8b5cf6,stroke-width:2px,color:#ede9fe;
+    classDef casting fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+    classDef setting fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e0e7ff;
+    classDef patina fill:#451a03,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef polishing fill:#083344,stroke:#06b6d4,stroke-width:2px,color:#cffafe;
     classDef qc fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
     classDef ready fill:#065f46,stroke:#34d399,stroke-width:2px,color:#ecfdf5;
     classDef shipped fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f0f9ff;
@@ -26,6 +47,10 @@ stateDiagram-v2
     class SEWING sewing;
     class WASHING washing;
     class HARDWARE hardware;
+    class CASTING casting;
+    class SETTING setting;
+    class PATINA patina;
+    class POLISHING polishing;
     class QC qc;
     class READY ready;
     class SHIPPED shipped;

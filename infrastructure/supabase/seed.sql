@@ -19,6 +19,13 @@ VALUES
   ('d0000000-0000-0000-0000-000000000003', 'Kaihara Mills Japan', 'KH-145-VIN', 14.50, 60.00, 60.00, 'ACTIVE')
 ON CONFLICT (id) DO NOTHING;
 
+-- 2.5 Precious Metal Stocks (Physical Inventory)
+INSERT INTO public.metal_stocks (id, metal_alloy, purity, lot_number, initial_weight_grams, remaining_weight_grams, supplier, status)
+VALUES
+  ('ms000000-0000-0000-0000-000000000001', 'STERLING_SILVER_925', 0.925, 'MS-AG-01', 5000.00, 5000.00, 'Rio Grande', 'ACTIVE'),
+  ('ms000000-0000-0000-0000-000000000002', 'SOLID_BRASS', 1.000, 'MS-BR-01', 10000.00, 10000.00, 'Rio Grande', 'ACTIVE')
+ON CONFLICT (id) DO NOTHING;
+
 -- 3. Core Catalog Products
 INSERT INTO public.products (id, slug, title, description, base_price_amount, base_price_currency, commerce_model, category, status)
 VALUES

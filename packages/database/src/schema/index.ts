@@ -19,7 +19,13 @@ import { carts, cartLines } from './cart';
 import { orders, orderLines } from './order';
 import { payments } from './payment';
 import { productionJobs } from './production';
-import { fabricBolts, boltAllocations, inventoryReservations } from './inventory';
+import {
+  fabricBolts,
+  boltAllocations,
+  inventoryReservations,
+  metalStocks,
+  metalAllocations,
+} from './inventory';
 import { shipments, shipmentPackages } from './fulfillment';
 import { reviews, questions, customOrderRequests } from './community';
 import { memberships } from './content';
@@ -129,6 +135,10 @@ export const orderLinesRelations = relations(orderLines, ({ one }) => ({
     fields: [orderLines.allocatedBoltId],
     references: [fabricBolts.id],
   }),
+  allocatedMetalStock: one(metalStocks, {
+    fields: [orderLines.allocatedMetalStockId],
+    references: [metalStocks.id],
+  }),
 }));
 
 export const paymentsRelations = relations(payments, ({ one }) => ({
@@ -161,6 +171,17 @@ export const boltAllocationsRelations = relations(boltAllocations, ({ one }) => 
   bolt: one(fabricBolts, {
     fields: [boltAllocations.boltId],
     references: [fabricBolts.id],
+  }),
+}));
+
+export const metalStocksRelations = relations(metalStocks, ({ many }) => ({
+  allocations: many(metalAllocations),
+}));
+
+export const metalAllocationsRelations = relations(metalAllocations, ({ one }) => ({
+  stock: one(metalStocks, {
+    fields: [metalAllocations.metalStockId],
+    references: [metalStocks.id],
   }),
 }));
 

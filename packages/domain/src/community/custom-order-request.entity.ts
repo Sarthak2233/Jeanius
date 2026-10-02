@@ -17,6 +17,8 @@ export interface CustomOrderRequestProps {
   readonly category: ProductCategory;
   readonly description: string;
   readonly desiredFabricWeight?: string;
+  readonly desiredMetalAlloy?: string;
+  readonly customSpecifications?: Readonly<Record<string, number | string>>;
   readonly referenceImageUrls?: readonly string[];
   readonly status?: CustomOrderInquiryStatus;
   readonly quotedPrice?: Money;
@@ -33,6 +35,8 @@ export class CustomOrderRequest {
   readonly category: ProductCategory;
   readonly description: string;
   readonly desiredFabricWeight?: string;
+  readonly desiredMetalAlloy?: string;
+  readonly customSpecifications?: Readonly<Record<string, number | string>>;
   readonly referenceImageUrls: readonly string[];
   private _status: CustomOrderInquiryStatus;
   private _quotedPrice?: Money;
@@ -55,6 +59,10 @@ export class CustomOrderRequest {
     this.category = props.category;
     this.description = props.description.trim();
     this.desiredFabricWeight = props.desiredFabricWeight;
+    this.desiredMetalAlloy = props.desiredMetalAlloy;
+    this.customSpecifications = props.customSpecifications
+      ? { ...props.customSpecifications }
+      : undefined;
     this.referenceImageUrls = props.referenceImageUrls ? [...props.referenceImageUrls] : [];
     this._status = props.status ?? 'INQUIRY_RECEIVED';
     this._quotedPrice = props.quotedPrice;

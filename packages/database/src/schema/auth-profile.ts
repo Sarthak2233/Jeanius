@@ -5,6 +5,7 @@ export const userRoleEnum = [
   'CUSTOMER',
   'MEMBER',
   'TAILOR',
+  'JEWELLER',
   'FULFILLMENT',
   'SUPPORT',
   'ADMIN',

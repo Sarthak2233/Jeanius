@@ -18,6 +18,7 @@ export interface CartLineProps {
   readonly quantity: number;
   readonly selectedOptions: Readonly<Record<string, string>>;
   readonly customTailoringMeasurements?: Readonly<Record<string, number | string>>;
+  readonly customSpecifications?: Readonly<Record<string, number | string>>;
 }
 
 export class CartLine {
@@ -31,6 +32,7 @@ export class CartLine {
   private _quantity: number;
   readonly selectedOptions: Readonly<Record<string, string>>;
   readonly customTailoringMeasurements?: Readonly<Record<string, number | string>>;
+  readonly customSpecifications?: Readonly<Record<string, number | string>>;
 
   constructor(props: CartLineProps) {
     if (props.quantity <= 0) {
@@ -50,6 +52,9 @@ export class CartLine {
     this.selectedOptions = { ...props.selectedOptions };
     this.customTailoringMeasurements = props.customTailoringMeasurements
       ? { ...props.customTailoringMeasurements }
+      : undefined;
+    this.customSpecifications = props.customSpecifications
+      ? { ...props.customSpecifications }
       : undefined;
   }
 
