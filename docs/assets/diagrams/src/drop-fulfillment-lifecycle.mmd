@@ -16,3 +16,17 @@ stateDiagram-v2
     RETURN_APPROVED --> RETURN_RECEIVED: Garment arrives at Kathmandu warehouse
     RETURN_RECEIVED --> RESTOCKED: QC approved (Restocked to inventory)
     RETURN_RECEIVED --> SCRAPPED: Damaged / defective
+
+    classDef cyan fill:#083344,stroke:#06b6d4,stroke-width:2px,color:#cffafe;
+    classDef amber fill:#451a03,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef indigo fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e0e7ff;
+    classDef violet fill:#2e1065,stroke:#8b5cf6,stroke-width:2px,color:#ede9fe;
+    classDef emerald fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
+    classDef rose fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+
+    class INVENTORY_STAGED cyan;
+    class RESERVED,RETURN_REQUESTED amber;
+    class PACKING indigo;
+    class SHIPPED,RETURN_APPROVED,RETURN_RECEIVED violet;
+    class DELIVERED,RESTOCKED,INSPECTION_WINDOW_ACTIVE,INSPECTION_WINDOW_EXPIRED emerald;
+    class RETURN_REJECTED,SCRAPPED rose;

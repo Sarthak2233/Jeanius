@@ -300,7 +300,7 @@ Create PostgreSQL schema around the domain and actual access patterns.
 
 ## Goal
 
-Implement the restrained Jeanius visual language before feature UI.
+Implement the restrained Jeanius & Jewl visual language before feature UI.
 
 | ID     | Task                              | Description                            | Status      |
 | ------ | --------------------------------- | -------------------------------------- | ----------- |

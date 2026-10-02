@@ -11,7 +11,7 @@ sequenceDiagram
     Webhook->>RouteHandler: POST /api/webhooks/stripe
     RouteHandler->>RouteHandler: Verify HMAC Signature
 
-    rect rgb(240, 245, 255)
+    rect rgba(30, 41, 59, 0.7)
         Note over RouteHandler,DB: Single Atomic ACID Transaction
         RouteHandler->>DB: UPDATE orders SET status = 'PAID'
         RouteHandler->>DB: INSERT INTO outbox_events (OrderPaidEvent)

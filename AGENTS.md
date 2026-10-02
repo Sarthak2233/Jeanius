@@ -25,7 +25,7 @@ Whenever creating or updating any document, specification, or ADR containing an 
      ```bash
      pnpm run diagrams:generate
      ```
-   - This produces `docs/assets/diagrams/<kebab-case-name>.svg` with a transparent background and neutral styling.
+   - This produces `docs/assets/diagrams/<kebab-case-name>.svg` with self-contained high-contrast dark atelier card styling and semantic color palettes.
 3. **Markdown Embedding:**
    - Embed the SVG via markdown image syntax with relative pathing.
    - Accompany the image with a collapsible `<details><summary>View Raw Diagram Source (.mmd)</summary>` block containing the diagram code.

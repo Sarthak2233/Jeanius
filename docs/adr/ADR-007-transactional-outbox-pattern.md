@@ -106,5 +106,46 @@ Chosen option: **Option 3 — Transactional Outbox in PostgreSQL**.
 ## Architectural & Code Verification
 - Schema Table: `packages/database/src/schema/outbox.schema.ts`
 - Port: `packages/application/src/ports/outbox-repository.port.ts`
-- Diagram: [Transactional Outbox Flow](file:///home/sarakb/projects/Jeanius/docs/assets/diagrams/transactional-outbox-flow.svg)
 - Reference: [ADR-001 Modular Monolith](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-001-modular-monolith.md)
+
+### Architectural Diagram
+
+![Transactional Outbox Flow](../assets/diagrams/transactional-outbox-flow.svg)
+
+<details>
+<summary>View Raw Diagram Source (.mmd)</summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Webhook as Payment Gateway Webhook
+    participant RouteHandler as Next.js Route Handler
+    participant DB as PostgreSQL Transaction
+    participant Worker as Outbox Event Processor
+    participant Email as SendGrid Email API
+    participant Workshop as Workshop Portal Realtime
+    participant Logistics as DHL Waybill Service
+
+    Webhook->>RouteHandler: POST /api/webhooks/stripe
+    RouteHandler->>RouteHandler: Verify HMAC Signature
+
+    rect rgba(30, 41, 59, 0.7)
+        Note over RouteHandler,DB: Single Atomic ACID Transaction
+        RouteHandler->>DB: UPDATE orders SET status = 'PAID'
+        RouteHandler->>DB: INSERT INTO outbox_events (OrderPaidEvent)
+        DB-->>RouteHandler: Transaction Committed
+    end
+
+    RouteHandler-->>Webhook: 200 OK (Instant Response)
+
+    loop Asynchronous Background Dispatch
+        Worker->>DB: SELECT FOR UPDATE SKIP LOCKED status = 'PENDING'
+        Worker->>Email: Send Order Confirmation Email
+        Worker->>Workshop: Push Order to Workshop Cutting Queue
+        Worker->>Logistics: Queue Export Commercial Invoice
+        Worker->>DB: UPDATE outbox_events SET status = 'COMPLETED'
+    end
+```
+
+</details>
+

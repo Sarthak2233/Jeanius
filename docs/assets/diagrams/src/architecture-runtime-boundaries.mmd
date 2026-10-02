@@ -25,3 +25,17 @@ graph LR
     AppCore --> ContractsCore
     DB -.->|Implements Repository Ports| AppCore
     Gateways -.->|Implements Gateway Ports| AppCore
+
+    classDef emerald fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
+    classDef cyan fill:#083344,stroke:#06b6d4,stroke-width:2px,color:#cffafe;
+    classDef indigo fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e0e7ff;
+    classDef rose fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+    classDef amber fill:#451a03,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef violet fill:#2e1065,stroke:#8b5cf6,stroke-width:2px,color:#ede9fe;
+
+    class RSC,AppCore,DomainCore,ContractsCore emerald;
+    class Client cyan;
+    class Actions indigo;
+    class Routes rose;
+    class DB amber;
+    class Gateways violet;

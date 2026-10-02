@@ -8,3 +8,15 @@ stateDiagram-v2
     PUBLISHED --> ARCHIVED: Permanently discontinued
     SOLD_OUT --> ARCHIVED: Permanently discontinued
     ARCHIVED --> [*]
+
+    classDef slate fill:#0f172a,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef amber fill:#451a03,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef emerald fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
+    classDef rose fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+    classDef violet fill:#2e1065,stroke:#8b5cf6,stroke-width:2px,color:#ede9fe;
+
+    class DRAFT slate;
+    class SCHEDULED amber;
+    class PUBLISHED emerald;
+    class SOLD_OUT rose;
+    class ARCHIVED violet;

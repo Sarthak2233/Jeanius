@@ -1,0 +1,281 @@
+/* Jeanius & Jewl Atelier High-Contrast Diagram Stylesheet */
+
+/* Root SVG container styling */
+svg {
+  background-color: #0b0f19 !important;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Sequence Diagram Elements
+   ========================================================================== */
+.actor {
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+
+rect.actor[data-look='neo'],
+rect.actor {
+  fill: #1e293b !important;
+  stroke: #38bdf8 !important;
+}
+
+text.actor > tspan,
+.actor text,
+.actor-man text {
+  fill: #f8fafc !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+}
+
+.actor-line {
+  stroke: #475569 !important;
+  stroke-width: 1.5px !important;
+}
+
+.messageLine0,
+.messageLine1 {
+  stroke: #38bdf8 !important;
+  stroke-width: 2px !important;
+}
+
+[id$='-arrowhead'] path,
+[id$='-crosshead'] path {
+  fill: #38bdf8 !important;
+  stroke: #38bdf8 !important;
+}
+
+.messageText {
+  fill: #f1f5f9 !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.sequenceNumber {
+  fill: #0b0f19 !important;
+  font-weight: 700 !important;
+}
+
+[id$='-sequencenumber'] {
+  fill: #38bdf8 !important;
+  stroke: #38bdf8 !important;
+}
+
+.labelBox {
+  fill: #1e293b !important;
+  stroke: #60a5fa !important;
+  rx: 4px;
+}
+
+.labelText,
+.labelText > tspan {
+  fill: #f8fafc !important;
+  font-weight: 600 !important;
+}
+
+.loopText,
+.loopText > tspan {
+  fill: #93c5fd !important;
+  font-weight: 500 !important;
+}
+
+.loopLine {
+  stroke: #475569 !important;
+  stroke-dasharray: 4, 4 !important;
+}
+
+.note {
+  fill: #1e1b4b !important;
+  stroke: #818cf8 !important;
+  rx: 6px !important;
+  ry: 6px !important;
+}
+
+.noteText,
+.noteText > tspan {
+  fill: #e0e7ff !important;
+  font-weight: 600 !important;
+}
+
+.activation0,
+.activation1,
+.activation2 {
+  fill: #334155 !important;
+  stroke: #38bdf8 !important;
+}
+
+/* ==========================================================================
+   Flowchart & State Diagram Elements
+   ========================================================================== */
+.node rect,
+.node circle,
+.node ellipse,
+.node polygon,
+.node path {
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+
+.node .label,
+.node text {
+  fill: #f8fafc !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.edgePath .path {
+  stroke: #60a5fa !important;
+  stroke-width: 2px !important;
+}
+
+.edgeLabel {
+  background-color: #0b0f19 !important;
+  fill: #93c5fd !important;
+  color: #93c5fd !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+}
+
+.cluster rect {
+  fill: rgba(15, 23, 42, 0.75) !important;
+  stroke: #334155 !important;
+  stroke-width: 1.5px !important;
+  rx: 12px !important;
+  ry: 12px !important;
+}
+
+.cluster text {
+  fill: #94a3b8 !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* ==========================================================================
+   Semantic Category Class Palettes
+   ========================================================================== */
+
+/* Selvedge Raw Indigo / Client & Assembly */
+.indigo > rect,
+.indigo > polygon,
+.indigo > circle,
+.indigo rect,
+.state-indigo {
+  fill: #1e1b4b !important;
+  stroke: #6366f1 !important;
+  stroke-width: 2px !important;
+}
+.indigo .label,
+.indigo text,
+.state-indigo text {
+  fill: #e0e7ff !important;
+  font-weight: 600 !important;
+}
+
+/* Emerald Selvedge / Domain Purity & Completed */
+.emerald > rect,
+.emerald > polygon,
+.emerald > circle,
+.emerald rect,
+.state-emerald {
+  fill: #064e3b !important;
+  stroke: #10b981 !important;
+  stroke-width: 2px !important;
+}
+.emerald .label,
+.emerald text,
+.state-emerald text {
+  fill: #d1fae5 !important;
+  font-weight: 600 !important;
+}
+
+/* Hand-Forged Brass & Amber / Cutting, Alert, Database */
+.amber > rect,
+.amber > polygon,
+.amber > circle,
+.amber rect,
+.state-amber {
+  fill: #451a03 !important;
+  stroke: #f59e0b !important;
+  stroke-width: 2px !important;
+}
+.amber .label,
+.amber text,
+.state-amber text {
+  fill: #fef3c7 !important;
+  font-weight: 600 !important;
+}
+
+/* Coral & Crimson / Cancel, Webhook, Point of Attention */
+.rose > rect,
+.rose > polygon,
+.rose > circle,
+.rose rect,
+.state-rose {
+  fill: #4c0519 !important;
+  stroke: #f43f5e !important;
+  stroke-width: 2px !important;
+}
+.rose .label,
+.rose text,
+.state-rose text {
+  fill: #ffe4e6 !important;
+  font-weight: 600 !important;
+}
+
+/* Royal Amethyst & Violet / Integrations, Logistics */
+.violet > rect,
+.violet > polygon,
+.violet > circle,
+.violet rect,
+.state-violet {
+  fill: #2e1065 !important;
+  stroke: #8b5cf6 !important;
+  stroke-width: 2px !important;
+}
+.violet .label,
+.violet text,
+.state-violet text {
+  fill: #ede9fe !important;
+  font-weight: 600 !important;
+}
+
+/* Electric Cyan / Transport, UI Leafs */
+.cyan > rect,
+.cyan > polygon,
+.cyan > circle,
+.cyan rect,
+.state-cyan {
+  fill: #083344 !important;
+  stroke: #06b6d4 !important;
+  stroke-width: 2px !important;
+}
+.cyan .label,
+.cyan text,
+.state-cyan text {
+  fill: #cffafe !important;
+  font-weight: 600 !important;
+}
+
+/* Sterling Silver & Slate / Shared Libraries, Initial States */
+.slate > rect,
+.slate > polygon,
+.slate > circle,
+.slate rect,
+.state-slate {
+  fill: #0f172a !important;
+  stroke: #64748b !important;
+  stroke-width: 1.5px !important;
+}
+.slate .label,
+.slate text,
+.state-slate text {
+  fill: #f8fafc !important;
+  font-weight: 500 !important;
+}

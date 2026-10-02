@@ -100,5 +100,50 @@ Chosen option: **Option 3 — Database-Level Two-Phase Atomic Reservation (Claim
 ## Architectural & Code Verification
 - Domain Entity: `packages/domain/src/inventory/inventory-reservation.entity.ts`
 - Database Repository: `packages/database/src/repositories/drizzle-inventory.repository.ts`
-- Diagram: [Two-Phase Inventory Reservation Flow](file:///home/sarakb/projects/Jeanius/docs/assets/diagrams/two-phase-inventory-reservation.svg)
 - Reference: [ADR-002 Supabase PostgreSQL + Drizzle ORM](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-002-drizzle-and-supabase.md)
+
+### Architectural Diagram
+
+![Two-Phase Inventory Reservation Flow](../assets/diagrams/two-phase-inventory-reservation.svg)
+
+<details>
+<summary>View Raw Diagram Source (.mmd)</summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Customer
+    participant Storefront as Next.js Storefront
+    participant ServerAction as Server Action
+    participant Database as Supabase PostgreSQL
+    participant Gateway as Payment Gateway
+    participant Sweeper as Expired Hold Sweeper
+
+    Customer->>Storefront: Click Proceed to Checkout
+    Storefront->>ServerAction: submitCheckout(cartId, idempotencyKey)
+    ServerAction->>Database: Atomic SQL Hold (available - reserved >= qty)
+    alt Stock Available
+        Database-->>ServerAction: Hold Granted (expires in 10 minutes)
+        ServerAction->>Gateway: Create Payment Intent
+        Gateway-->>ServerAction: clientSecret / paymentUrl
+        ServerAction-->>Storefront: Proceed to Payment Form
+    else Stock Exhausted
+        Database-->>ServerAction: Zero Units Available
+        ServerAction-->>Storefront: Return Out of Stock Notice
+    end
+
+    alt Successful Payment within 10m
+        Customer->>Gateway: Submit Card / Wallet Payment
+        Gateway->>ServerAction: Webhook payment_intent.succeeded
+        ServerAction->>Database: Commit Inventory (total - 1, reserved - 1)
+        ServerAction-->>Customer: Order Confirmation
+    else Payment Abandoned or Expired
+        Customer-xGateway: Closes browser or payment fails
+        Note over Sweeper,Database: Runs every 60s or on-demand
+        Sweeper->>Database: Release Expired Holds (reserved - 1)
+        Database-->>Database: Stock returned to available pool
+    end
+```
+
+</details>
+

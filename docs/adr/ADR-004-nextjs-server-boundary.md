@@ -78,4 +78,57 @@ Chosen option: **Option 2 — Next.js App Router Server Boundaries (Server Actio
 ## Architectural & Code Verification
 - Monorepo package: `apps/storefront/app/`, `apps/admin/app/`
 - Reference: [ADR-001 Modular Monolith](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-001-modular-monolith.md)
-- Reference: [Architecture Runtime Boundaries](file:///home/sarakb/projects/Jeanius/docs/assets/diagrams/architecture-runtime-boundaries.svg)
+
+### Architectural Diagram
+
+![Architecture Runtime Boundaries](../assets/diagrams/architecture-runtime-boundaries.svg)
+
+<details>
+<summary>View Raw Diagram Source (.mmd)</summary>
+
+```mermaid
+graph LR
+    subgraph Next.js Frontend and API Runtimes
+        RSC["Server Components (RSC)<br/>• Direct Application Reads<br/>• Zero client bundle impact"]
+        Client["Client Components (use client)<br/>• Interactive UI leaves<br/>• Zustand store subscriptions"]
+        Actions["Server Actions (use server)<br/>• Mutations and form submissions<br/>• Zod contract validation"]
+        Routes["Route Handlers (/api/webhooks)<br/>• External Webhooks (Stripe / eSewa / DHL)<br/>• Public XML sitemaps"]
+    end
+
+    subgraph Application and Domain Core
+        AppCore["packages/application<br/>• Use Cases and Ports"]
+        DomainCore["packages/domain<br/>• Pure DDD Entities and Invariants"]
+        ContractsCore["packages/contracts<br/>• Zod Schemas and DTOs"]
+    end
+
+    subgraph Infrastructure Adapters
+        DB["packages/database<br/>• Drizzle ORM + Supabase PostgreSQL"]
+        Gateways["packages/integrations<br/>• Stripe, Nepal Wallets, Carriers"]
+    end
+
+    RSC --> AppCore
+    Client -->|Invokes| Actions
+    Actions --> AppCore
+    Routes --> AppCore
+    AppCore --> DomainCore
+    AppCore --> ContractsCore
+    DB -.->|Implements Repository Ports| AppCore
+    Gateways -.->|Implements Gateway Ports| AppCore
+
+    classDef emerald fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
+    classDef cyan fill:#083344,stroke:#06b6d4,stroke-width:2px,color:#cffafe;
+    classDef indigo fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e0e7ff;
+    classDef rose fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+    classDef amber fill:#451a03,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef violet fill:#2e1065,stroke:#8b5cf6,stroke-width:2px,color:#ede9fe;
+
+    class RSC,AppCore,DomainCore,ContractsCore emerald;
+    class Client cyan;
+    class Actions indigo;
+    class Routes rose;
+    class DB amber;
+    class Gateways violet;
+```
+
+</details>
+

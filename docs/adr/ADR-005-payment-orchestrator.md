@@ -93,5 +93,42 @@ Chosen option: **Option 3 — Decoupled Payment Orchestrator**.
 ## Architectural & Code Verification
 - Port interface: `packages/application/src/ports/payment-gateway.port.ts`
 - Adapters: `packages/integrations/src/payment/`
-- Diagram: [Payment Lifecycle](file:///home/sarakb/projects/Jeanius/docs/assets/diagrams/payment-lifecycle.svg)
 - Reference: [Product Contract Payment Lifecycle](file:///home/sarakb/projects/Jeanius/docs/product/PRODUCT-CONTRACT.md#6-payment-lifecycle)
+
+### Architectural Diagram
+
+![Payment Lifecycle](../assets/diagrams/payment-lifecycle.svg)
+
+<details>
+<summary>View Raw Diagram Source (.mmd)</summary>
+
+```mermaid
+stateDiagram-v2
+    [*] --> INITIATED: PaymentIntent created with correlation ID
+    INITIATED --> PENDING: Customer redirected to payment rail
+    PENDING --> EXPIRED: Session timed out (30m TTL)
+    PENDING --> FAILED: Card declined or user abandoned
+    PENDING --> PAID: Webhook verified & signature validated
+    
+    PAID --> REFUNDED: Full refund issued (Pre-cutting OM or approved DROP return)
+    PAID --> PARTIALLY_REFUNDED: Partial credit / shipping adjustment
+    
+    EXPIRED --> [*]
+    FAILED --> [*]
+    REFUNDED --> [*]
+
+    classDef slate fill:#0f172a,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef amber fill:#451a03,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef emerald fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
+    classDef rose fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+    classDef violet fill:#2e1065,stroke:#8b5cf6,stroke-width:2px,color:#ede9fe;
+
+    class INITIATED slate;
+    class PENDING amber;
+    class PAID emerald;
+    class EXPIRED,FAILED rose;
+    class REFUNDED,PARTIALLY_REFUNDED violet;
+```
+
+</details>
+

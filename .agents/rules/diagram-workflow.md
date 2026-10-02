@@ -9,7 +9,7 @@ This rule defines the mandatory workflow for adding, modifying, or referencing a
 **Never use raw inline Mermaid code blocks as the sole diagram rendering mechanism in markdown files.**
 Inline Mermaid blocks often fail to render or break unpredictably across different viewers, IDE extensions, and GitHub previews when complex characters (parentheses, brackets, quotes) are present.
 
-Instead, all diagrams must be compiled into high-fidelity, transparent vector SVGs and embedded as images, with the raw source preserved in an adjacent collapsible block.
+Instead, all diagrams must be compiled into high-fidelity, high-contrast dark atelier card vector SVGs and embedded as images, with the raw source preserved in an adjacent collapsible block.
 
 ---
 
@@ -23,11 +23,11 @@ Whenever a document or specification is created or updated that contains a diagr
 - Use kebab-case descriptive naming (e.g. `order-checkout-sequence.mmd`, `production-pipeline.mmd`).
 
 ### 2. Compile to Centralized Vector SVG
-- Compile the `.mmd` source to a transparent vector `.svg` in `docs/assets/diagrams/`:
+- Compile the `.mmd` source to a self-contained vector `.svg` in `docs/assets/diagrams/`:
   ```bash
   pnpm run diagrams:generate
   ```
-  *(This runs `scripts/generate-diagrams.ts` using `@mermaid-js/mermaid-cli` with `-b transparent -t neutral`)*.
+  *(This runs `scripts/generate-diagrams.ts` with central dark theme config, custom atelier CSS, and high-contrast styling)*.
 - The compiled output will automatically be created at:
   `docs/assets/diagrams/<kebab-case-name>.svg`
 

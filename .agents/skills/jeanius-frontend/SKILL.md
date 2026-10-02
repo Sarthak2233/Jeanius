@@ -41,7 +41,7 @@ while keeping implementation original.
 
 The site consistently exposes:
 
-- brand/logo link: `Jeanius`;
+- brand/logo link: `Jeanius & Jewls`;
 - `ABOUT/GUIDE`;
 - `SHOP(OM)`;
 - `DROP`;

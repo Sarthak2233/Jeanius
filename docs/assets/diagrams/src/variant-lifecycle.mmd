@@ -8,3 +8,15 @@ stateDiagram-v2
     SOLD_OUT --> AVAILABLE: Restocked
     SOLD_OUT --> ARCHIVED: Permanently removed from matrix
     DISABLED --> ARCHIVED: Permanently removed from matrix
+
+    classDef emerald fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
+    classDef amber fill:#451a03,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef rose fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+    classDef slate fill:#0f172a,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef violet fill:#2e1065,stroke:#8b5cf6,stroke-width:2px,color:#ede9fe;
+
+    class AVAILABLE emerald;
+    class LOW_STOCK amber;
+    class SOLD_OUT rose;
+    class DISABLED slate;
+    class ARCHIVED violet;

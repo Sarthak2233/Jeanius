@@ -80,5 +80,69 @@ Chosen option: **Option 3 — Modular Monolith (DDD within Turborepo)**.
 
 ## Architectural & Code Verification
 - Monorepo package: `packages/domain`, `packages/application`, `packages/database`
-- Diagram: [Architecture Component Layers](file:///home/sarakb/projects/Jeanius/docs/assets/diagrams/architecture-component-layers.svg)
 - Reference: [Domain Map](file:///home/sarakb/projects/Jeanius/docs/architecture/domain-map.md)
+
+### Architectural Diagram
+
+![Architecture Component Layers](../assets/diagrams/architecture-component-layers.svg)
+
+<details>
+<summary>View Raw Diagram Source (.mmd)</summary>
+
+```mermaid
+graph TD
+    subgraph Frontend & API Runtimes
+        Storefront["apps/storefront (Next.js)<br/>• Server Components<br/>• Zustand Stores<br/>• Server Actions<br/>• Route Handlers (Webhooks)"]
+        Admin["apps/admin (Next.js)<br/>• Operations Board<br/>• Workshop Stages<br/>• Server Actions"]
+    end
+
+    subgraph Core Application & Business Logic
+        AppLayer["packages/application<br/>• Use Cases (Catalog, Cart, Checkout, Production)<br/>• Ports (IProductRepository, IPaymentGateway)"]
+        Domain["packages/domain<br/>• Entities (Product, Order, ProductionJob)<br/>• Value Objects (Money, Address, ProductionPolicy)<br/>• Zero External Dependencies"]
+        Contracts["packages/contracts<br/>• Zod Validation Schemas<br/>• Shared DTO Types"]
+    end
+
+    subgraph Infrastructure & Adapters
+        Database["packages/database<br/>• Drizzle ORM Schema<br/>• Supabase PostgreSQL<br/>• Repository Implementations"]
+        Integrations["packages/integrations<br/>• PaymentOrchestrator<br/>• Stripe Adapter<br/>• Nepal Domestic (eSewa/Khalti) Adapter"]
+    end
+
+    subgraph Shared Libraries
+        UI["packages/ui (Design Tokens & React Components)"]
+        Config["packages/config (Env Validation)"]
+        Obs["packages/observability (Structured Logging)"]
+        Testing["packages/testing (Domain Fixture Factories)"]
+    end
+
+    Storefront --> AppLayer
+    Storefront --> Domain
+    Storefront --> Contracts
+    Storefront --> UI
+    Storefront --> Config
+
+    Admin --> AppLayer
+    Admin --> Domain
+    Admin --> UI
+
+    AppLayer --> Domain
+    AppLayer --> Contracts
+
+    Database -.->|Implements Ports| AppLayer
+    Database --> Domain
+
+    Integrations -.->|Implements Gateways| AppLayer
+    Integrations --> Domain
+
+    classDef indigo fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e0e7ff;
+    classDef emerald fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
+    classDef amber fill:#451a03,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef slate fill:#0f172a,stroke:#64748b,stroke-width:2px,color:#f8fafc;
+
+    class Storefront,Admin indigo;
+    class AppLayer,Domain,Contracts core;
+    class Database,Integrations infra;
+    class UI,Config,Obs,Testing shared;
+```
+
+</details>
+
