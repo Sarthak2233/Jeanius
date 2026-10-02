@@ -122,8 +122,15 @@ text.actor > tspan,
 }
 
 .node .label,
-.node text {
+.node text,
+.nodeLabel,
+.nodeLabel p,
+.nodeLabel span,
+.nodeLabel em,
+.nodeLabel b,
+.nodeLabel strong {
   fill: #f8fafc !important;
+  color: #f8fafc !important;
   font-weight: 500 !important;
   font-size: 14px !important;
 }
@@ -149,8 +156,11 @@ text.actor > tspan,
   ry: 12px !important;
 }
 
-.cluster text {
+.cluster text,
+.cluster span,
+.cluster span p {
   fill: #94a3b8 !important;
+  color: #94a3b8 !important;
   font-weight: 600 !important;
   font-size: 14px !important;
   text-transform: uppercase !important;
@@ -173,8 +183,12 @@ text.actor > tspan,
 }
 .indigo .label,
 .indigo text,
+.indigo .nodeLabel,
+.indigo .nodeLabel p,
+.indigo .nodeLabel span,
 .state-indigo text {
   fill: #e0e7ff !important;
+  color: #e0e7ff !important;
   font-weight: 600 !important;
 }
 
@@ -190,8 +204,12 @@ text.actor > tspan,
 }
 .emerald .label,
 .emerald text,
+.emerald .nodeLabel,
+.emerald .nodeLabel p,
+.emerald .nodeLabel span,
 .state-emerald text {
   fill: #d1fae5 !important;
+  color: #d1fae5 !important;
   font-weight: 600 !important;
 }
 
@@ -207,8 +225,12 @@ text.actor > tspan,
 }
 .amber .label,
 .amber text,
+.amber .nodeLabel,
+.amber .nodeLabel p,
+.amber .nodeLabel span,
 .state-amber text {
   fill: #fef3c7 !important;
+  color: #fef3c7 !important;
   font-weight: 600 !important;
 }
 
@@ -224,8 +246,12 @@ text.actor > tspan,
 }
 .rose .label,
 .rose text,
+.rose .nodeLabel,
+.rose .nodeLabel p,
+.rose .nodeLabel span,
 .state-rose text {
   fill: #ffe4e6 !important;
+  color: #ffe4e6 !important;
   font-weight: 600 !important;
 }
 
@@ -241,8 +267,12 @@ text.actor > tspan,
 }
 .violet .label,
 .violet text,
+.violet .nodeLabel,
+.violet .nodeLabel p,
+.violet .nodeLabel span,
 .state-violet text {
   fill: #ede9fe !important;
+  color: #ede9fe !important;
   font-weight: 600 !important;
 }
 
@@ -258,8 +288,12 @@ text.actor > tspan,
 }
 .cyan .label,
 .cyan text,
+.cyan .nodeLabel,
+.cyan .nodeLabel p,
+.cyan .nodeLabel span,
 .state-cyan text {
   fill: #cffafe !important;
+  color: #cffafe !important;
   font-weight: 600 !important;
 }
 
@@ -275,7 +309,11 @@ text.actor > tspan,
 }
 .slate .label,
 .slate text,
+.slate .nodeLabel,
+.slate .nodeLabel p,
+.slate .nodeLabel span,
 .state-slate text {
   fill: #f8fafc !important;
+  color: #f8fafc !important;
   font-weight: 500 !important;
 }
