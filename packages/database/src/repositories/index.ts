@@ -5,3 +5,6 @@ export * from './production/drizzle-production-job.repository';
 export * from './inventory/drizzle-fabric-bolt.repository';
 export * from './inventory/drizzle-inventory-reservation.repository';
 export * from './audit/drizzle-outbox.repository';
+export * from './audit/drizzle-audit-log.repository';
+export * from './auth/drizzle-user-profile.repository';
+export * from './auth/drizzle-address.repository';

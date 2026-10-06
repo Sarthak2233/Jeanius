@@ -26,7 +26,7 @@ Dependencies flow strictly **inward toward pure business abstractions**, never o
 ### 1. `packages/domain` (Total Isolation)
 - **Rule:** `packages/domain` contains zero external dependencies.
 - **PROHIBITED:**
-  - ❌ Cannot import from `@jeanius/database`, `@jeanius/application`, `@jeanius/integrations`, or `@jeanius/ui`.
+  - ❌ Cannot import from `@jeanius/database`, `@jeanius/application`, or `@jeanius/integrations`.
   - ❌ Cannot import ORMs, HTTP clients, Next.js, or React (`drizzle-orm`, `react`, `next`, `axios`, `fetch`).
   - ❌ Pure TypeScript standard library only.
 
@@ -37,7 +37,7 @@ Dependencies flow strictly **inward toward pure business abstractions**, never o
   - ❌ Application services must depend only on Port interfaces (e.g. `IOrderRepository`, `IPaymentGateway`).
 
 ### 3. `apps/storefront` & `apps/admin` (Next.js Delivery Boundaries)
-- **Allowed:** Imports `@jeanius/application`, `@jeanius/contracts`, `@jeanius/domain`, `@jeanius/ui`, `@jeanius/config`, `@jeanius/observability`.
+- **Allowed:** Imports `@jeanius/application`, `@jeanius/contracts`, `@jeanius/domain`, `@jeanius/config`, `@jeanius/observability`. (All UI components and tokens are application-local per [.agents/rules/ui-architecture-rules.md](file:///home/sarakb/projects/Jeanius/.agents/rules/ui-architecture-rules.md)).
 - **PROHIBITED:**
   - ❌ Direct database queries: Pages, Server Components, and Route Handlers **cannot** import `packages/database` queries directly. All mutations and fetches must call use-cases in `packages/application`.
   - ❌ Client Components (`'use client'`) **cannot** import `@jeanius/database`, server actions secrets, or private environment variables.

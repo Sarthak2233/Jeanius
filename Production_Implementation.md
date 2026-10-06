@@ -133,7 +133,7 @@ jeanius/
 | JN-035 | Create `packages/database`       | Drizzle schema and repository implementations.     | DONE        |
 | JN-036 | Create `packages/contracts`      | Zod/API/event contracts.                           | DONE        |
 | JN-037 | Create `packages/integrations`   | Payment, shipping, email and external adapters.    | DONE        |
-| JN-038 | Create `packages/ui`             | Shared design-system components.                   | DONE        |
+| JN-038 | Application-Local UI Architecture | Decouple UI: removed `packages/ui` in favor of application-local components (`apps/storefront/components`, `apps/admin/components`) per JN-052. | DONE        |
 | JN-039 | Create `packages/config`         | Shared typed configuration.                        | DONE        |
 | JN-040 | Create `packages/observability`  | Logging/metrics primitives.                        | DONE        |
 | JN-041 | Create `packages/testing`        | Shared test utilities.                             | DONE        |
@@ -276,23 +276,23 @@ Create PostgreSQL schema around the domain and actual access patterns.
 
 # STATE 05 — SUPABASE AUTH & SECURITY
 
-| ID     | Task                          | Description                       | Status      |
-| ------ | ----------------------------- | --------------------------------- | ----------- |
-| JN-113 | Configure Supabase Auth       | Authentication foundation.        | NOT_STARTED |
-| JN-114 | Implement sign-up             | Customer registration.            | NOT_STARTED |
-| JN-115 | Implement login               | Email/password login.             | NOT_STARTED |
-| JN-116 | Implement logout              | Secure logout.                    | NOT_STARTED |
-| JN-117 | Implement password reset      | Recovery flow.                    | NOT_STARTED |
-| JN-118 | Implement email verification  | Verification state.               | NOT_STARTED |
-| JN-119 | Implement session handling    | Server/client session management. | NOT_STARTED |
-| JN-120 | Implement customer profile    | Profile management.               | NOT_STARTED |
-| JN-121 | Implement protected routes    | Authentication middleware.        | NOT_STARTED |
-| JN-122 | Implement authorization       | Server-side role/access checks.   | NOT_STARTED |
-| JN-123 | Configure Row Level Security  | RLS policies for user-owned data. | NOT_STARTED |
-| JN-124 | Test RLS                      | Attempt cross-user access.        | NOT_STARTED |
-| JN-125 | Configure admin authorization | Separate privileged access.       | NOT_STARTED |
-| JN-126 | Implement membership access   | DROP/TOGETHER authorization.      | NOT_STARTED |
-| JN-127 | Audit privileged actions      | Record administrative changes.    | NOT_STARTED |
+| ID     | Task                          | Description                       | Status |
+| ------ | ----------------------------- | --------------------------------- | ------ |
+| JN-113 | Configure Supabase Auth       | Authentication foundation.        | DONE   |
+| JN-114 | Implement sign-up             | Customer registration.            | DONE   |
+| JN-115 | Implement login               | Email/password login.             | DONE   |
+| JN-116 | Implement logout              | Secure logout.                    | DONE   |
+| JN-117 | Implement password reset      | Recovery flow.                    | DONE   |
+| JN-118 | Implement email verification  | Verification state.               | DONE   |
+| JN-119 | Implement session handling    | Server/client session management. | DONE   |
+| JN-120 | Implement customer profile    | Profile management.               | DONE   |
+| JN-121 | Implement protected routes    | Authentication middleware.        | DONE   |
+| JN-122 | Implement authorization       | Server-side role/access checks.   | DONE   |
+| JN-123 | Configure Row Level Security  | RLS policies for user-owned data. | DONE   |
+| JN-124 | Test RLS                      | Attempt cross-user access.        | DONE   |
+| JN-125 | Configure admin authorization | Separate privileged access.       | DONE   |
+| JN-126 | Implement membership access   | DROP/TOGETHER authorization.      | DONE   |
+| JN-127 | Audit privileged actions      | Record administrative changes.    | DONE   |
 
 ---
 
@@ -304,42 +304,42 @@ Implement the restrained Jeanius & Jewl visual language before feature UI.
 
 | ID     | Task                              | Description                            | Status      |
 | ------ | --------------------------------- | -------------------------------------- | ----------- |
-| JN-128 | Define typography                 | Establish type scale and fonts.        | NOT_STARTED |
-| JN-129 | Define color tokens               | Neutral brand palette.                 | NOT_STARTED |
-| JN-130 | Define spacing tokens             | Consistent layout system.              | NOT_STARTED |
-| JN-131 | Define border tokens              | Thin editorial borders.                | NOT_STARTED |
-| JN-132 | Define motion tokens              | Minimal animation/reduced motion.      | NOT_STARTED |
-| JN-133 | Create button components          | Shared actions.                        | NOT_STARTED |
-| JN-134 | Create input components           | Forms/selectors.                       | NOT_STARTED |
-| JN-135 | Create product-image components   | Responsive image presentation.         | NOT_STARTED |
-| JN-136 | Create gallery components         | Product gallery/lightbox.              | NOT_STARTED |
-| JN-137 | Create option-selector components | Reusable configuration UI.             | NOT_STARTED |
-| JN-138 | Create price components           | Currency/price display.                | NOT_STARTED |
-| JN-139 | Create status components          | Stock/production/order status.         | NOT_STARTED |
-| JN-140 | Create modal/drawer components    | Shared overlays.                       | NOT_STARTED |
-| JN-141 | Create notification/toast system  | Client feedback.                       | NOT_STARTED |
-| JN-142 | Create loading states             | Skeleton/spinner patterns.             | NOT_STARTED |
-| JN-143 | Create empty/error states         | Standardized UX.                       | NOT_STARTED |
-| JN-144 | Accessibility audit design system | Keyboard/focus/contrast/touch targets. | NOT_STARTED |
+| JN-128 | Define typography                 | Establish type scale and fonts.        | DONE        |
+| JN-129 | Define color tokens               | Neutral brand palette.                 | DONE        |
+| JN-130 | Define spacing tokens             | Consistent layout system.              | DONE        |
+| JN-131 | Define border tokens              | Thin editorial borders.                | DONE        |
+| JN-132 | Define motion tokens              | Minimal animation/reduced motion.      | DONE        |
+| JN-133 | Create button components          | Shared actions.                        | DONE        |
+| JN-134 | Create input components           | Forms/selectors.                       | DONE        |
+| JN-135 | Create product-image components   | Responsive image presentation.         | DONE        |
+| JN-136 | Create gallery components         | Product gallery/lightbox.              | DONE        |
+| JN-137 | Create option-selector components | Reusable configuration UI.             | DONE        |
+| JN-138 | Create price components           | Currency/price display.                | DONE        |
+| JN-139 | Create status components          | Stock/production/order status.         | DONE        |
+| JN-140 | Create modal/drawer components    | Shared overlays.                       | DONE        |
+| JN-141 | Create notification/toast system  | Client feedback.                       | DONE        |
+| JN-142 | Create loading states             | Skeleton/spinner patterns.             | DONE        |
+| JN-143 | Create empty/error states         | Standardized UX.                       | DONE        |
+| JN-144 | Accessibility audit design system | Keyboard/focus/contrast/touch targets. | DONE        |
 
 ---
 
 # STATE 07 — STORE FRONTEND SHELL
 
-| ID     | Task                          | Description                         | Status      |
-| ------ | ----------------------------- | ----------------------------------- | ----------- |
-| JN-145 | Configure storefront metadata | SEO/social defaults.                | NOT_STARTED |
-| JN-146 | Build root layout             | Global layout.                      | NOT_STARTED |
-| JN-147 | Build desktop header          | Brand/navigation/search/login/cart. | NOT_STARTED |
-| JN-148 | Build mobile header           | Mobile navigation.                  | NOT_STARTED |
-| JN-149 | Build mobile drawer           | Accessible navigation drawer.       | NOT_STARTED |
-| JN-150 | Build footer                  | Legal/contact/social/navigation.    | NOT_STARTED |
-| JN-151 | Build search trigger          | Header search interaction.          | NOT_STARTED |
-| JN-152 | Build account state           | Login/account representation.       | NOT_STARTED |
-| JN-153 | Build cart indicator          | Item count/state.                   | NOT_STARTED |
-| JN-154 | Build announcement component  | Operational notice.                 | NOT_STARTED |
-| JN-155 | Implement responsive shell    | Mobile-first behavior.              | NOT_STARTED |
-| JN-156 | Implement keyboard navigation | Full shell accessibility.           | NOT_STARTED |
+| ID     | Task                          | Description                         | Status |
+| ------ | ----------------------------- | ----------------------------------- | ------ |
+| JN-145 | Configure storefront metadata | SEO/social defaults.                | DONE   |
+| JN-146 | Build root layout             | Global layout.                      | DONE   |
+| JN-147 | Build desktop header          | Brand/navigation/search/login/cart. | DONE   |
+| JN-148 | Build mobile header           | Mobile navigation.                  | DONE   |
+| JN-149 | Build mobile drawer           | Accessible navigation drawer.       | DONE   |
+| JN-150 | Build footer                  | Legal/contact/social/navigation.    | DONE   |
+| JN-151 | Build search trigger          | Header search interaction.          | DONE   |
+| JN-152 | Build account state           | Login/account representation.       | DONE   |
+| JN-153 | Build cart indicator          | Item count/state.                   | DONE   |
+| JN-154 | Build announcement component  | Operational notice.                 | DONE   |
+| JN-155 | Implement responsive shell    | Mobile-first behavior.              | DONE   |
+| JN-156 | Implement keyboard navigation | Full shell accessibility.           | DONE   |
 
 ---
 
@@ -569,29 +569,29 @@ PaymentOrchestrator
 
 ---
 
-# STATE 17 — OM MANUFACTURING PIPELINE (TAILOR WORKSHOP)
+# STATE 17 — OM MANUFACTURING PIPELINE (TAILOR & JEWELLER WORKSHOP)
 
-This is what differentiates Jeanius from a generic ecommerce implementation. Scoped primarily for the `TAILOR` craftsman actor in Kathmandu.
+This is what differentiates Jeanius & Jewl from a generic ecommerce implementation. Scoped for the `TAILOR` (denim atelier) and `JEWELLER` (metalsmith bench atelier) craftsman actors in Kathmandu.
 
 | ID     | Task                                | Description                                               | Status      |
 | ------ | ----------------------------------- | --------------------------------------------------------- | ----------- |
-| JN-284 | Create ProductionJob                | Manufacturing work order entity.                          | NOT_STARTED |
-| JN-285 | Freeze production specification     | Exact customer configuration & pattern measurements.       | NOT_STARTED |
-| JN-286 | Create production queue             | `TAILOR` workshop manufacturing queue.                    | NOT_STARTED |
-| JN-287 | Build Cutting stage                 | Pattern cut ticket & continuous fabric bolt allocation.   | NOT_STARTED |
-| JN-288 | Build Sewing stage                  | Assembly workflow & chainstitch construction.             | NOT_STARTED |
-| JN-289 | Build Washing stage                 | Raw rinse vs. one-wash processing.                        | NOT_STARTED |
-| JN-290 | Build Hardware stage                | Rivets, copper buttons & leather patch debossing.         | NOT_STARTED |
-| JN-291 | Build QC stage                      | Quality inspection (tolerance ±0.25" check).              | NOT_STARTED |
-| JN-292 | Build Ready stage                   | Ready for fulfillment handover.                           | NOT_STARTED |
-| JN-293 | Build production status transitions | Controlled state machine (`Queued` to `Ready`).           | NOT_STARTED |
-| JN-294 | Calculate production deadline       | Configurable lead time/calendar (Nepal holidays).         | NOT_STARTED |
-| JN-295 | Support production notes            | Internal tailor notes & garment identification.           | NOT_STARTED |
-| JN-296 | Track production timestamps         | Stage start/completion telemetry.                         | NOT_STARTED |
-| JN-297 | Track production delays             | `TAILOR` delay logging & fabric defect tagging.           | NOT_STARTED |
-| JN-298 | Build craftsman floor board         | `TAILOR` touchscreen tablet board in `apps/admin/workshop`.| NOT_STARTED |
-| JN-299 | Build order-to-production link      | Traceability linking order lines to garment tickets.      | NOT_STARTED |
-| JN-300 | Test production transitions         | Valid/invalid state changes & tailor permission checks.   | NOT_STARTED |
+| JN-284 | Create ProductionJob                | Manufacturing work order entity supporting CutTicket & BenchTicket. | NOT_STARTED |
+| JN-285 | Freeze production specification     | Exact customer configuration & pattern measurements (denim waist/inseam, ring mandrel size, metal alloy). | NOT_STARTED |
+| JN-286 | Create production queues            | Dual workshop manufacturing queues for `TAILOR` and `JEWELLER`. | NOT_STARTED |
+| JN-287 | Build Cutting & Casting stages      | Point of no return: pattern cut ticket & bolt allocation (denim) vs. casting grain allocation & mold prep (jewellery). | NOT_STARTED |
+| JN-288 | Build Sewing & Setting stages       | Assembly workflow: chainstitch construction (denim) vs. stone setting, sizing & hallmark stamping (jewellery). | NOT_STARTED |
+| JN-289 | Build Washing & Patina stages       | Surface treatment: raw rinse / one-wash (denim) vs. chemical oxidation / heat patina tempering (jewellery). | NOT_STARTED |
+| JN-290 | Build Hardware & Polishing stages   | Finishing details: rivets & copper buttons (denim) vs. rotary buffing & mirror/matte polish (jewellery). | NOT_STARTED |
+| JN-291 | Build QC stage                      | Quality inspection: dimensional tolerance (±0.25") for denim vs. weight (g), ring sizing, & hallmark audit for jewellery. | NOT_STARTED |
+| JN-292 | Build Ready stage                   | Handover packaging: dustproof canvas bags (denim) vs. protective velvet/wooden presentation boxes (jewellery). | NOT_STARTED |
+| JN-293 | Build production status transitions | Controlled dual state machines (`Queued` to `Ready`).     | NOT_STARTED |
+| JN-294 | Calculate production deadline       | Configurable lead time/calendar per craft vertical (Nepal holidays). | NOT_STARTED |
+| JN-295 | Support production notes            | Internal craftsman notes: tailor garment notes & jeweller bench notes. | NOT_STARTED |
+| JN-296 | Track production timestamps         | Stage start/completion telemetry across tailoring stations and silversmith benches. | NOT_STARTED |
+| JN-297 | Track production delays             | Delay logging & defect tagging (`TAILOR` fabric flaws vs. `JEWELLER` casting porosity / inclusions). | NOT_STARTED |
+| JN-298 | Build craftsman floor board         | Dual touch tablet board for `TAILOR` and `JEWELLER` in `apps/admin/workshop`. | NOT_STARTED |
+| JN-299 | Build order-to-production link      | Traceability linking order lines to CutTickets & BenchTickets. | NOT_STARTED |
+| JN-300 | Test production transitions         | Valid/invalid state changes & role permission checks for `TAILOR` and `JEWELLER`. | NOT_STARTED |
 
 ---
 
@@ -717,7 +717,7 @@ Scoped for VIP `MEMBER` collectors on `apps/storefront/member`.
 
 | ID     | Task                              | Description                                               | Status      |
 | ------ | --------------------------------- | --------------------------------------------------------- | ----------- |
-| JN-364 | Build admin shell & RBAC menus    | Scoped navigation trees for `TAILOR`, `FULFILLMENT`, `SUPPORT`, `ADMIN`. | NOT_STARTED |
+| JN-364 | Build admin shell & RBAC menus    | Scoped navigation trees for `TAILOR`, `JEWELLER`, `FULFILLMENT`, `SUPPORT`, `ADMIN`. | NOT_STARTED |
 | JN-365 | Build admin authentication        | Privileged access with sub-path guards (`/admin/*`).       | NOT_STARTED |
 | JN-366 | Build product list                | Search/filter products across models (OM / DROP).         | NOT_STARTED |
 | JN-367 | Build product creation            | Create product with physical specifications.              | NOT_STARTED |
@@ -746,7 +746,7 @@ Scoped for the `SUPPORT` customer care specialist and `ADMIN`.
 | JN-381 | Build production status view      | Monitor live workshop stage progression.                  | NOT_STARTED |
 | JN-382 | Build shipping & split packages   | Multi-package status (Package 1 DROP vs Package 2 OM).    | NOT_STARTED |
 | JN-383 | Build support & audit notes       | Customer care history & staff-only notes.                 | NOT_STARTED |
-| JN-384 | Build pre-cutting edit/cancel     | Modify address/inseam or cancel *before* `CUTTING` stage. | NOT_STARTED |
+| JN-384 | Build pre-cutting / pre-casting cancel | Modify address/sizing or cancel *before* point of no return (`CUTTING` for denim, `CASTING` for jewellery). | NOT_STARTED |
 | JN-385 | Build DROP return claim review    | Review 5-day return requests, photos, & issue refund.     | NOT_STARTED |
 | JN-386 | Build tracking management         | Manual override / update tracking carrier.                | NOT_STARTED |
 | JN-387 | Build order export                | Export compliant commercial data for customs/tax.         | NOT_STARTED |
@@ -754,25 +754,25 @@ Scoped for the `SUPPORT` customer care specialist and `ADMIN`.
 
 ---
 
-# STATE 27 — WORKSHOP FLOOR & INVENTORY (TAILOR & ADMIN)
+# STATE 27 — WORKSHOP FLOOR & INVENTORY (TAILOR, JEWELLER & ADMIN)
 
-Scoped for `TAILOR` craftsmen on the floor and `ADMIN` operations.
+Scoped for `TAILOR` and `JEWELLER` craftsmen on the floor and `ADMIN` operations across both the denim atelier and jewellery silversmith bench.
 
 | ID     | Task                             | Description                                               | Status      |
 | ------ | -------------------------------- | --------------------------------------------------------- | ----------- |
-| JN-389 | Build inventory dashboard        | Raw fabric bolt yardage and DROP stock overview.          | NOT_STARTED |
-| JN-390 | Build bolt inventory adjustment  | Register new fabric bolts, continuous lengths & shrinkage.| NOT_STARTED |
-| JN-391 | Build low-stock & remnant view   | Track remnant fabric scraps under minimum cut length.     | NOT_STARTED |
-| JN-392 | Build Craftsman Floor Mode       | `TAILOR` touch tablet interface in `apps/admin/workshop`. | NOT_STARTED |
-| JN-393 | Build Cut-Ticket print station   | Print physical tickets with bolt ID and tailor dimensions.| NOT_STARTED |
-| JN-394 | Build QR routing scan station    | Scan garment tag for rapid stage advancement.             | NOT_STARTED |
-| JN-395 | Build Sewing queue               | Active assembly pipeline.                                 | NOT_STARTED |
-| JN-396 | Build Washing queue              | Rinsing and tumble finishing.                             | NOT_STARTED |
-| JN-397 | Build Hardware queue             | Button fly, copper rivets, and leather patch debossing.   | NOT_STARTED |
-| JN-398 | Build QC inspection station      | Tolerance checks (waist ±0.25", inseam ±0.25").           | NOT_STARTED |
-| JN-399 | Build completed-production queue | Handover queue to Fulfillment dispatch.                   | NOT_STARTED |
-| JN-400 | Add tailor operational notes     | Craftsman notes attached to specific garment run.         | NOT_STARTED |
-| JN-401 | Add delay & defect logging       | Log weave flaws, machine downtime, or panel recuts.       | NOT_STARTED |
+| JN-389 | Build inventory dashboard        | Raw fabric bolt yardage, precious metal casting grain stocks (.925 Silver, Solid Brass, 18K Gold), and DROP stock overview. | NOT_STARTED |
+| JN-390 | Build raw inventory adjustment   | Register new fabric bolts (lengths & shrinkage) and precious metal lots (weight in grams, alloy, purity & supplier). | NOT_STARTED |
+| JN-391 | Build remnant & scrap view       | Track denim remnant cuts and jewellery scrap/filings weight for smelter reclamation. | NOT_STARTED |
+| JN-392 | Build Craftsman Floor Mode       | Touch-friendly tablet UI for `TAILOR` (cutting/sewing bench) and `JEWELLER` (silversmith bench) in `apps/admin/workshop`. | NOT_STARTED |
+| JN-393 | Build Cut-Ticket & Bench-Ticket print station | Thermal/slip printing for Cut-Tickets (denim pattern) and Bench-Tickets (ring sizes, alloy, hallmark, custom engravings). | NOT_STARTED |
+| JN-394 | Build QR routing scan station    | Scan garment tags and jewellery job trays for rapid stage advancement on the floor. | NOT_STARTED |
+| JN-395 | Build Sewing & Setting queues    | Active assembly pipeline: garment chainstitch queue and jeweller stone/hallmark bench queue. | NOT_STARTED |
+| JN-396 | Build Washing & Patina queues    | Garment rinsing/drying queue and jewellery chemical patina/oxidation queue. | NOT_STARTED |
+| JN-397 | Build Hardware & Polishing queues| Garment copper rivets/button fly station and jewellery buffing/polishing station (mirror vs matte). | NOT_STARTED |
+| JN-398 | Build QC inspection station      | Dual inspection stations: garment measurements (waist/inseam ±0.25") and jewellery precision checks (weight in grams, ring mandrel, setting security). | NOT_STARTED |
+| JN-399 | Build completed-production queue | Dual atelier handover queue to Fulfillment dispatch with protective packaging checks. | NOT_STARTED |
+| JN-400 | Add artisan operational notes    | Craftsman bench notes for tailors and jewellers attached to specific job runs. | NOT_STARTED |
+| JN-401 | Add delay & defect logging       | Log weave flaws, machine downtime, casting porosity, metal inclusions, or resize reworks. | NOT_STARTED |
 
 ---
 
@@ -785,7 +785,7 @@ Scoped for `TAILOR` craftsmen on the floor and `ADMIN` operations.
 | JN-404 | Build policy editor              | Production lead-time, refund, and shipping policy text.   | NOT_STARTED |
 | JN-405 | Build sizing editor              | Fit guide (denim waist/inseam and jewellery ring/chain).  | NOT_STARTED |
 | JN-406 | Build contact editor             | Channel instructions (Instagram DM vs Email support).     | NOT_STARTED |
-| JN-407 | Build custom atelier inquiry desk| Review bespoke requests, draft tailor quote, send invoice.| NOT_STARTED |
+| JN-407 | Build custom atelier inquiry desk| Review bespoke requests, draft tailor/jeweller quote, send invoice.| NOT_STARTED |
 | JN-408 | Build customer 360 lookup        | Holistic customer profile (purchases, sizing, inquiries). | NOT_STARTED |
 | JN-409 | Build support resolution log     | Track issue resolution times and customer satisfaction.   | NOT_STARTED |
 

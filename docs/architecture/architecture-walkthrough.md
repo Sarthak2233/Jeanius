@@ -32,7 +32,6 @@ graph TD
     end
 
     subgraph Shared Libraries
-        UI["packages/ui (Design Tokens & React Components)"]
         Config["packages/config (Env Validation)"]
         Obs["packages/observability (Structured Logging)"]
         Testing["packages/testing (Domain Fixture Factories)"]
@@ -41,12 +40,10 @@ graph TD
     Storefront --> AppLayer
     Storefront --> Domain
     Storefront --> Contracts
-    Storefront --> UI
     Storefront --> Config
 
     Admin --> AppLayer
     Admin --> Domain
-    Admin --> UI
 
     AppLayer --> Domain
     AppLayer --> Contracts

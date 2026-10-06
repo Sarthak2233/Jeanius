@@ -12,4 +12,5 @@ export interface AuditLogRecord {
 
 export interface IAuditLogRepository {
   record(log: AuditLogRecord): Promise<void>;
+  findRecent(limit?: number): Promise<AuditLogRecord[]>;
 }

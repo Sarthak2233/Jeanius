@@ -1,21 +1,280 @@
-@layer base {
-  :root {
-    --background: #fdfbf7;
-    --foreground: #0f172a;
-    --border: #e2e8f0;
-  }
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+/**
+ * @jeanius/storefront design system tokens & foundation
+ * Warm monochrome luxury atelier aesthetic: editorial typography, natural ecru,
+ * raw denim indigo, selvedge red, brass, silver, and restrained micro-motion.
+ */
+
+:root {
+  /* =========================================================================
+     JN-128: Typography Tokens
+     ========================================================================= */
+  --font-serif: 'Playfair Display', Didot, 'Bodoni MT', 'Cinzel', Georgia, serif;
+  --font-sans:
+    'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace;
+
+  /* Type Scale */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-md: 1.125rem; /* 18px */
+  --font-size-lg: 1.25rem; /* 20px */
+  --font-size-xl: 1.5rem; /* 24px */
+  --font-size-2xl: 2rem; /* 32px */
+  --font-size-3xl: 2.5rem; /* 40px */
+  --font-size-hero: clamp(2.25rem, 5vw, 3.75rem);
+
+  /* Tracking (Letter Spacing) */
+  --tracking-tighter: -0.04em;
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.05em;
+  --tracking-widest: 0.15em;
+
+  /* Leading (Line Height) */
+  --leading-none: 1;
+  --leading-tight: 1.1;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* =========================================================================
+     JN-129: Color Tokens (Neutral Luxury Atelier Palette)
+     ========================================================================= */
+  /* Substrates & Canvas */
+  --color-bg-canvas: #fdfbf7;
+  --color-bg-surface: #ffffff;
+  --color-bg-elevated: #faf8f4;
+  --color-bg-dark: #0f172a;
+  --color-bg-overlay: rgba(15, 23, 42, 0.65);
+
+  /* Typography / Foregrounds */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748b;
+  --color-text-subtle: #94a3b8;
+  --color-text-inverse: #fdfbf7;
+  --color-text-on-dark: #f8fafc;
+
+  /* Raw Selvedge Denim Indigo */
+  --color-indigo-dark: #121826;
+  --color-indigo-deep: #1e293b;
+  --color-indigo-raw: #243048;
+
+  /* Selvedge Line Red */
+  --color-selvedge-red: #b91c1c;
+  --color-selvedge-red-subtle: #fef2f2;
+
+  /* Atelier Brass & Gold */
+  --color-brass: #d97706;
+  --color-brass-dark: #92400e;
+  --color-brass-subtle: #fffbeb;
+
+  /* Sterling Silver (925) */
+  --color-silver: #94a3b8;
+  --color-silver-light: #f1f5f9;
+
+  /* Semantic Status Badges & Commerce Tags (Muted Pastels) */
+  --color-om-bg: #fffbeb;
+  --color-om-text: #92400e;
+  --color-om-border: #d97706;
+
+  --color-drop-bg: #eff6ff;
+  --color-drop-text: #1e40af;
+  --color-drop-border: #3b82f6;
+
+  --color-success-bg: #ecfdf5;
+  --color-success-text: #065f46;
+  --color-success-border: #10b981;
+
+  --color-neutral-bg: #f8fafc;
+  --color-neutral-text: #334155;
+  --color-neutral-border: #cbd5e1;
+
+  /* Backward Compatibility Aliases */
+  --background: var(--color-bg-canvas);
+  --foreground: var(--color-text-primary);
+  --border: var(--border-subtle);
+
+  /* =========================================================================
+     JN-130: Spacing Tokens (8px Modular Rhythm)
+     ========================================================================= */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* Layout Containers */
+  --container-max-width: 1280px;
+  --container-padding-inline: clamp(1rem, 4vw, 2.5rem);
+  --header-height: 64px;
+  --announcement-height: 36px;
+
+  /* =========================================================================
+     JN-131: Border & Radius Tokens (Thin Editorial Borders)
+     ========================================================================= */
+  --border-width-hairline: 1px;
+  --border-width-thick: 2px;
+
+  --border-subtle: #e2e8f0;
+  --border-default: #cbd5e1;
+  --border-strong: #94a3b8;
+  --border-dark: #334155;
+
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-pill: 9999px;
+
+  /* =========================================================================
+     JN-132: Motion Tokens (The 150ms–250ms Rule & Reduced Motion)
+     ========================================================================= */
+  --duration-micro: 150ms;
+  --duration-normal: 200ms;
+  --duration-reveal: 250ms;
+
+  --ease-out-cubic: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* GPU-Composited Pre-Packaged Transitions */
+  --transition-interactive:
+    transform var(--duration-micro) var(--ease-out-cubic),
+    opacity var(--duration-micro) var(--ease-out-cubic),
+    border-color var(--duration-micro) var(--ease-out-cubic);
+  --transition-transform: transform var(--duration-micro) var(--ease-out-cubic);
+  --transition-fade: opacity var(--duration-micro) var(--ease-out-cubic);
+  --transition-reveal:
+    transform var(--duration-reveal) var(--ease-out-cubic),
+    opacity var(--duration-reveal) var(--ease-out-cubic);
+}
+
+/* =========================================================================
+   Base Resets & Global Application Setup
+   ========================================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background-color: var(--background);
-  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--leading-normal);
+  background-color: var(--color-bg-canvas);
+  color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+  margin-top: 0;
+}
+
+/* =========================================================================
+   Interactive Feedback & Tactile Controls
+   ========================================================================= */
+button:active {
+  transform: scale(0.98);
+}
+
+a {
+  color: inherit;
+  transition: opacity var(--duration-micro) var(--ease-out-cubic);
+}
+
+a:hover {
+  opacity: 0.85;
+}
+
+/* =========================================================================
+   Mandatory Accessibility Override: Reduced Motion
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================================================
+   Accessibility Utilities: Skip Link
+   ========================================================================= */
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-bg-dark, #0f172a);
+  color: var(--color-text-inverse, #fdfbf7);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  border-radius: var(--radius-sm, 2px);
+  text-decoration: none;
+  outline: 2px solid var(--color-brass, #d97706);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: 1rem;
+  left: 1rem;
+}
+
+/* =========================================================================
+   JN-155: Responsive Shell Breakpoints
+   ========================================================================= */
+.header-desktop-view {
+  display: flex !important;
+  width: 100%;
+}
+
+.header-mobile-view {
+  display: none !important;
+  width: 100%;
+}
+
+@media (max-width: 1023px) {
+  .header-desktop-view {
+    display: none !important;
+  }
+  .header-mobile-view {
+    display: flex !important;
+  }
 }

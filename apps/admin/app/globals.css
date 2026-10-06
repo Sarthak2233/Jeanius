@@ -1,21 +1,216 @@
-@layer base {
-  :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-    --border: #334155;
-  }
+/**
+ * @jeanius/admin design system tokens & foundation
+ * Industrial brutalism & tactical telemetry interface:
+ * Dark CRT slate substrate, high-density tabular typography, 1px division grid,
+ * and instantaneous keyboard-driven micro-interactions.
+ */
+
+:root {
+  /* =========================================================================
+     JN-128: Typography Tokens
+     ========================================================================= */
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* High-Density Type Scale */
+  --font-size-2xs: 0.65rem; /* 10.4px - micro telemetry metadata */
+  --font-size-xs: 0.75rem; /* 12px - badges, table headers */
+  --font-size-sm: 0.85rem; /* 13.6px - secondary telemetry copy */
+  --font-size-base: 0.95rem; /* 15.2px - standard body / row text */
+  --font-size-lg: 1.15rem; /* 18.4px - bench headings */
+  --font-size-xl: 1.4rem; /* 22.4px - workbench stage headers */
+  --font-size-2xl: 1.75rem; /* 28px - console header */
+
+  /* Tracking (Letter Spacing) */
+  --tracking-mono: 0.05em;
+  --tracking-wide: 0.1em;
+  --tracking-tight: -0.02em;
+
+  /* Leading (Line Height) */
+  --leading-none: 1;
+  --leading-tight: 1.2;
+  --leading-normal: 1.45;
+  --leading-relaxed: 1.6;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 800;
+
+  /* =========================================================================
+     JN-129: Color Tokens (Tactical Telemetry & Slate Substrates)
+     ========================================================================= */
+  /* Substrates & Workbench Surfaces */
+  --bg-terminal: #0b0f19;
+  --bg-surface: #121826;
+  --bg-bench: #1e293b;
+  --bg-row-alt: #162032;
+  --bg-overlay: rgba(11, 15, 25, 0.85);
+
+  /* Typography / Foregrounds */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  /* Telemetry Status & Functional Signals */
+  --color-telemetry: #38bdf8;
+  --color-telemetry-subtle: rgba(56, 189, 248, 0.15);
+
+  --color-hazard: #ef4444;
+  --color-hazard-subtle: rgba(239, 68, 68, 0.15);
+
+  --color-craft-om: #f59e0b;
+  --color-craft-om-subtle: rgba(245, 158, 11, 0.15);
+
+  --color-qc-pass: #10b981;
+  --color-qc-pass-subtle: rgba(16, 185, 129, 0.15);
+
+  --color-jewel-silver: #e2e8f0;
+  --color-stage-neutral: #64748b;
+
+  /* Backward Compatibility Aliases */
+  --background: var(--bg-terminal);
+  --foreground: var(--text-primary);
+  --border: var(--border-grid);
+
+  /* =========================================================================
+     JN-130: Spacing Tokens (Dense 4px Rhythm)
+     ========================================================================= */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Layout Containers */
+  --container-max-width: 1600px;
+  --container-padding-inline: 2rem;
+
+  /* =========================================================================
+     JN-131: Border & Radius Tokens (1px Structural Division Hairlines)
+     ========================================================================= */
+  --border-width-hairline: 1px;
+  --border-width-thick: 2px;
+
+  --border-grid: #334155;
+  --border-active: #475569;
+  --border-focus: #38bdf8;
+  --border-hazard: #ef4444;
+
+  --radius-none: 0px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  /* =========================================================================
+     JN-132: Motion Tokens (Instantaneous Telemetry Response)
+     ========================================================================= */
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+
+  --ease-terminal: cubic-bezier(0, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --transition-interactive:
+    transform var(--duration-fast) var(--ease-terminal),
+    border-color var(--duration-fast) var(--ease-terminal),
+    background-color var(--duration-fast) var(--ease-terminal);
+  --transition-transform: transform var(--duration-fast) var(--ease-terminal);
+  --transition-fade: opacity var(--duration-fast) var(--ease-terminal);
+}
+
+/* =========================================================================
+   Base Resets & Global Application Setup
+   ========================================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background-color: var(--background);
-  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--leading-normal);
+  background-color: var(--bg-terminal);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-black);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-mono);
+  color: var(--text-primary);
+  margin-top: 0;
+}
+
+/* Tabular Figures for Numbers, Tables, and Telemetry */
+table,
+.tabular,
+code,
+pre,
+kbd {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  font-size: var(--font-size-2xs);
+  line-height: 1;
+  color: var(--color-telemetry);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-grid);
+  border-radius: var(--radius-xs);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* =========================================================================
+   Interactive Feedback & Tactile Controls
+   ========================================================================= */
+button:active {
+  transform: scale(0.98);
+}
+
+a {
+  color: inherit;
+  transition: opacity var(--duration-fast) var(--ease-terminal);
+}
+
+a:hover {
+  opacity: 0.85;
+}
+
+/* =========================================================================
+   Mandatory Accessibility Override: Reduced Motion
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

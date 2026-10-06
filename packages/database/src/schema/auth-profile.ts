@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, uuid, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, uuid, index, jsonb } from 'drizzle-orm/pg-core';
 
 export const userRoleEnum = [
   'GUEST',
@@ -20,6 +20,8 @@ export const usersProfile = pgTable(
     role: text('role', { enum: userRoleEnum }).notNull().default('CUSTOMER'),
     phone: text('phone'),
     avatarUrl: text('avatar_url'),
+    denimPreferences: jsonb('denim_preferences').$type<Record<string, unknown>>(),
+    jewelleryPreferences: jsonb('jewellery_preferences').$type<Record<string, unknown>>(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },

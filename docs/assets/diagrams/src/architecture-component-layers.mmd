@@ -1,7 +1,7 @@
 graph TD
     subgraph Frontend & API Runtimes
-        Storefront["apps/storefront (Next.js)<br/>• Server Components<br/>• Zustand Stores<br/>• Server Actions<br/>• Route Handlers (Webhooks)"]
-        Admin["apps/admin (Next.js)<br/>• Operations Board<br/>• Workshop Stages<br/>• Server Actions"]
+        Storefront["apps/storefront (Next.js)<br/>• Server Components<br/>• Local UI Components & Tokens<br/>• Zustand Stores<br/>• Server Actions<br/>• Route Handlers (Webhooks)"]
+        Admin["apps/admin (Next.js)<br/>• Operations Board<br/>• Local UI Components & Tokens<br/>• Workshop Stages<br/>• Server Actions"]
     end
 
     subgraph Core Application & Business Logic
@@ -16,7 +16,6 @@ graph TD
     end
 
     subgraph Shared Libraries
-        UI["packages/ui (Design Tokens & React Components)"]
         Config["packages/config (Env Validation)"]
         Obs["packages/observability (Structured Logging)"]
         Testing["packages/testing (Domain Fixture Factories)"]
@@ -25,12 +24,10 @@ graph TD
     Storefront --> AppLayer
     Storefront --> Domain
     Storefront --> Contracts
-    Storefront --> UI
     Storefront --> Config
 
     Admin --> AppLayer
     Admin --> Domain
-    Admin --> UI
 
     AppLayer --> Domain
     AppLayer --> Contracts
@@ -49,4 +46,4 @@ graph TD
     class Storefront,Admin indigo;
     class AppLayer,Domain,Contracts emerald;
     class Database,Integrations amber;
-    class UI,Config,Obs,Testing slate;
+    class Config,Obs,Testing slate;

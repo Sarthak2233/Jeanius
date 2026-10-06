@@ -196,6 +196,133 @@ export const CustomOrderInquiryStatusSchema = z.enum([
   'CONVERTED_TO_ORDER',
 ]);
 
+export const SignUpSchema = z.object({
+  email: z.string().email('Valid email address is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  fullName: z.string().min(2, 'Full name is required'),
+  phone: z.string().optional(),
+});
+
+export const LoginSchema = z.object({
+  email: z.string().email('Valid email address is required'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+export const RequestPasswordResetSchema = z.object({
+  email: z.string().email('Valid email address is required'),
+});
+
+export const ResetPasswordSchema = z.object({
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+export const BottomsMeasurementsSchema = z.object({
+  waistInches: z.number().min(24).max(52).optional(),
+  inseamInches: z.number().min(24).max(42).optional(),
+  riseInches: z.number().min(8).max(18).optional(),
+  thighInches: z.number().min(16).max(36).optional(),
+  kneeInches: z.number().min(12).max(28).optional(),
+  legOpeningInches: z.number().min(10).max(26).optional(),
+  silhouette: z
+    .enum(['STRAIGHT', 'SLIM_TAPERED', 'WIDE_LEG', 'RELAXED_TAPERED', 'BOOTCUT'])
+    .optional(),
+  hemAllowanceInches: z.number().min(0).max(4).optional(),
+});
+
+export const TopsMeasurementsSchema = z.object({
+  chestInches: z.number().min(30).max(60).optional(),
+  shoulderWidthInches: z.number().min(14).max(28).optional(),
+  sleeveLengthInches: z.number().min(20).max(34).optional(),
+  backLengthInches: z.number().min(20).max(38).optional(),
+  neckInches: z.number().min(12).max(22).optional(),
+  fitPreference: z.enum(['SLIM', 'REGULAR', 'BOXY', 'OVERSIZED']).optional(),
+});
+
+export const DenimPreferencesSchema = z.object({
+  bottoms: BottomsMeasurementsSchema.optional(),
+  tops: TopsMeasurementsSchema.optional(),
+  // Flat / legacy compatibility
+  waistInches: z.number().min(24).max(52).optional(),
+  inseamInches: z.number().min(24).max(42).optional(),
+  silhouette: z
+    .enum(['STRAIGHT', 'SLIM_TAPERED', 'WIDE_LEG', 'RELAXED_TAPERED', 'BOOTCUT'])
+    .optional(),
+  hemAllowanceInches: z.number().min(0).max(4).optional(),
+});
+
+export const RingMeasurementsSchema = z.object({
+  ringSizeUs: z.string().optional(),
+  ringMandrelMm: z.number().min(12).max(26).optional(),
+  knuckleClearanceMm: z.number().min(12).max(28).optional(),
+  preferredFinger: z.enum(['INDEX', 'MIDDLE', 'RING', 'PINKY', 'THUMB']).optional(),
+});
+
+export const WristMeasurementsSchema = z.object({
+  wristCircumferenceInches: z.number().min(4.5).max(11).optional(),
+  cuffGapMm: z.number().min(15).max(50).optional(),
+  braceletFit: z.enum(['SNUG', 'COMFORT', 'LOOSE']).optional(),
+});
+
+export const NecklaceMeasurementsSchema = z.object({
+  neckCircumferenceInches: z.number().min(11).max(24).optional(),
+  preferredChainLengthInches: z.number().min(14).max(36).optional(),
+  chainStyle: z.enum(['CABLE', 'CURB', 'ROPE', 'BOX', 'FIGARO']).optional(),
+});
+
+export const MetalPreferencesSchema = z.object({
+  preferredAlloy: z
+    .enum(['STERLING_SILVER_925', 'SOLID_BRASS', 'GOLD_18K', 'WHITE_GOLD_14K'])
+    .optional(),
+  preferredFinish: z
+    .enum(['HIGH_POLISH', 'SATIN_MATTE', 'OXIDIZED_PATINA', 'HAMMERED_RAW'])
+    .optional(),
+});
+
+export const JewelleryPreferencesSchema = z.object({
+  rings: RingMeasurementsSchema.optional(),
+  wrists: WristMeasurementsSchema.optional(),
+  necklaces: NecklaceMeasurementsSchema.optional(),
+  metals: MetalPreferencesSchema.optional(),
+  // Flat / legacy compatibility
+  ringSizeUs: z.string().optional(),
+  ringMandrelMm: z.number().min(12).max(26).optional(),
+  wristCircumferenceInches: z.number().min(4.5).max(11).optional(),
+  preferredAlloy: z
+    .enum(['STERLING_SILVER_925', 'SOLID_BRASS', 'GOLD_18K', 'WHITE_GOLD_14K'])
+    .optional(),
+  preferredFinish: z
+    .enum(['HIGH_POLISH', 'SATIN_MATTE', 'OXIDIZED_PATINA', 'HAMMERED_RAW'])
+    .optional(),
+});
+
+export const AutoFillContextSchema = z.object({
+  category: ProductCategorySchema,
+  subcategory: z.string().optional(),
+});
+
+export const ResolvedCustomizationDefaultsSchema = z.object({
+  category: ProductCategorySchema,
+  subcategory: z.string().optional(),
+  measurements: z.record(z.union([z.string(), z.number(), z.boolean()])),
+  materialPreferences: z.record(z.string()),
+  isComplete: z.boolean(),
+  missingFields: z.array(z.string()),
+  appliedFromVault: z.boolean(),
+});
+
+export const UpdateProfileSchema = z.object({
+  fullName: z.string().min(2).optional(),
+  phone: z.string().optional(),
+  avatarUrl: z.string().url().optional(),
+  denimPreferences: DenimPreferencesSchema.optional(),
+  jewelleryPreferences: JewelleryPreferencesSchema.optional(),
+});
+
+export const CreateAddressInputSchema = AddressSchema.extend({
+  isDefaultShipping: z.boolean().default(false),
+  isDefaultBilling: z.boolean().default(false),
+});
+
 export type ActorRoleDto = z.infer<typeof ActorRoleSchema>;
 export type ProductCategoryDto = z.infer<typeof ProductCategorySchema>;
 export type CommerceModelDto = z.infer<typeof CommerceModelSchema>;
@@ -221,3 +348,19 @@ export type RejectReturnDto = z.infer<typeof RejectReturnSchema>;
 export type AccessLevelDto = z.infer<typeof AccessLevelSchema>;
 export type SupportChannelDto = z.infer<typeof SupportChannelSchema>;
 export type CustomOrderInquiryStatusDto = z.infer<typeof CustomOrderInquiryStatusSchema>;
+export type SignUpDto = z.infer<typeof SignUpSchema>;
+export type LoginDto = z.infer<typeof LoginSchema>;
+export type RequestPasswordResetDto = z.infer<typeof RequestPasswordResetSchema>;
+export type ResetPasswordDto = z.infer<typeof ResetPasswordSchema>;
+export type BottomsMeasurementsDto = z.infer<typeof BottomsMeasurementsSchema>;
+export type TopsMeasurementsDto = z.infer<typeof TopsMeasurementsSchema>;
+export type DenimPreferencesDto = z.infer<typeof DenimPreferencesSchema>;
+export type RingMeasurementsDto = z.infer<typeof RingMeasurementsSchema>;
+export type WristMeasurementsDto = z.infer<typeof WristMeasurementsSchema>;
+export type NecklaceMeasurementsDto = z.infer<typeof NecklaceMeasurementsSchema>;
+export type MetalPreferencesDto = z.infer<typeof MetalPreferencesSchema>;
+export type JewelleryPreferencesDto = z.infer<typeof JewelleryPreferencesSchema>;
+export type AutoFillContextDto = z.infer<typeof AutoFillContextSchema>;
+export type ResolvedCustomizationDefaultsDto = z.infer<typeof ResolvedCustomizationDefaultsSchema>;
+export type UpdateProfileDto = z.infer<typeof UpdateProfileSchema>;
+export type CreateAddressInputDto = z.infer<typeof CreateAddressInputSchema>;

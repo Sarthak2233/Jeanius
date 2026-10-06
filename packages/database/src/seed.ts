@@ -36,8 +36,36 @@ export async function runDatabaseSeed() {
         id: 'c0000000-0000-0000-0000-000000000003',
         email: 'metalsmith@jeanius.co',
         fullName: 'Bikash Master Jeweller (Metalsmith)',
-        role: 'TAILOR',
+        role: 'JEWELLER',
         phone: '+977-9800000003',
+      },
+      {
+        id: 'c0000000-0000-0000-0000-000000000004',
+        email: 'logistics@jeanius.co',
+        fullName: 'Kiran Fulfillment Lead',
+        role: 'FULFILLMENT',
+        phone: '+977-9800000004',
+      },
+      {
+        id: 'c0000000-0000-0000-0000-000000000005',
+        email: 'care@jeanius.co',
+        fullName: 'Sita Customer Care Lead',
+        role: 'SUPPORT',
+        phone: '+977-9800000005',
+      },
+      {
+        id: 'c0000000-0000-0000-0000-000000000006',
+        email: 'shopper@example.com',
+        fullName: 'Alex Raw Denim Collector',
+        role: 'CUSTOMER',
+        phone: '+1-415-555-0199',
+      },
+      {
+        id: 'c0000000-0000-0000-0000-000000000007',
+        email: 'vip@example.com',
+        fullName: 'Elena VIP Atelier Patron',
+        role: 'MEMBER',
+        phone: '+1-212-555-0188',
       },
     ])
     .onConflictDoNothing();
@@ -72,7 +100,7 @@ export async function runDatabaseSeed() {
     .insert(metalStocks)
     .values([
       {
-        id: 'ms000000-0000-0000-0000-000000000001',
+        id: 'e0000000-0000-0000-0000-000000000001',
         metalAlloy: 'STERLING_SILVER_925',
         purity: '0.925',
         lotNumber: 'MS-AG-01',
@@ -82,7 +110,7 @@ export async function runDatabaseSeed() {
         status: 'ACTIVE',
       },
       {
-        id: 'ms000000-0000-0000-0000-000000000002',
+        id: 'e0000000-0000-0000-0000-000000000002',
         metalAlloy: 'SOLID_BRASS',
         purity: '1.000',
         lotNumber: 'MS-BR-01',
@@ -338,4 +366,15 @@ export async function runDatabaseSeed() {
     .onConflictDoNothing();
 
   console.log('Database seeded successfully.');
+}
+
+if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('seed.ts')) {
+  runDatabaseSeed()
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('Seed execution failed:', err);
+      process.exit(1);
+    });
 }

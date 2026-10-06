@@ -162,3 +162,10 @@ export class CourierApiError extends InfrastructureError {
     super(`Courier service [${carrier}] error: ${message}`, { carrier, ...details });
   }
 }
+
+export class AuthServiceError extends InfrastructureError {
+  public override readonly code = 'AUTH_SERVICE_ERROR';
+  constructor(service: string, message: string, details?: Record<string, unknown>) {
+    super(`Authentication service [${service}] error: ${message}`, { service, ...details });
+  }
+}

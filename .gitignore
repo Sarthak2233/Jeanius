@@ -22,6 +22,7 @@ build/
 # Supabase
 .supabase/
 supabase/.temp/
+supabase/.branches/
 
 # Logs
 npm-debug.log*

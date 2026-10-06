@@ -32,7 +32,7 @@ A key architectural question was whether to adopt an independent microservice ar
 ## Considered Options
 1. **Microservices Architecture:** Independent deployable services (NestJS/Go/Hono) communicating via HTTP/gRPC/Kafka.
 2. **Traditional Monolith:** A single Next.js or Node.js codebase where UI, database queries, and business logic are intermingled in route handlers.
-3. **Modular Monolith (DDD within Turborepo):** A single repository organized into strictly bounded packages (`packages/domain`, `packages/application`, `packages/database`, `packages/integrations`, `packages/contracts`, `packages/ui`) consumed by runtime frontends (`apps/storefront`, `apps/admin`).
+3. **Modular Monolith (DDD within Turborepo):** A single repository organized into strictly bounded packages (`packages/domain`, `packages/application`, `packages/database`, `packages/integrations`, `packages/contracts`) consumed by runtime frontends (`apps/storefront`, `apps/admin`), with application-local UI presentation per JN-052.
 
 ---
 
@@ -108,7 +108,6 @@ graph TD
     end
 
     subgraph Shared Libraries
-        UI["packages/ui (Design Tokens & React Components)"]
         Config["packages/config (Env Validation)"]
         Obs["packages/observability (Structured Logging)"]
         Testing["packages/testing (Domain Fixture Factories)"]
@@ -117,12 +116,10 @@ graph TD
     Storefront --> AppLayer
     Storefront --> Domain
     Storefront --> Contracts
-    Storefront --> UI
     Storefront --> Config
 
     Admin --> AppLayer
     Admin --> Domain
-    Admin --> UI
 
     AppLayer --> Domain
     AppLayer --> Contracts
@@ -139,9 +136,9 @@ graph TD
     classDef slate fill:#0f172a,stroke:#64748b,stroke-width:2px,color:#f8fafc;
 
     class Storefront,Admin indigo;
-    class AppLayer,Domain,Contracts core;
-    class Database,Integrations infra;
-    class UI,Config,Obs,Testing shared;
+    class AppLayer,Domain,Contracts emerald;
+    class Database,Integrations amber;
+    class Config,Obs,Testing slate;
 ```
 
 </details>

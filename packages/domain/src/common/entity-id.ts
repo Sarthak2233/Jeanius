@@ -34,6 +34,7 @@ export type ContentPageId = EntityId<'ContentPage'>;
 export type MembershipId = EntityId<'Membership'>;
 export type CustomerId = EntityId<'Customer'>;
 export type ActorId = EntityId<'Actor'>;
+export type UserProfileId = EntityId<'UserProfile'>;
 
 /**
  * Creates and validates a strongly typed entity ID.

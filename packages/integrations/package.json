@@ -17,8 +17,9 @@
     "build": "echo \"@jeanius/integrations ready\""
   },
   "dependencies": {
+    "@jeanius/application": "workspace:*",
     "@jeanius/domain": "workspace:*",
-    "@jeanius/application": "workspace:*"
+    "@supabase/supabase-js": "^2.117.2"
   },
   "devDependencies": {
     "typescript": "^5.7.3"

@@ -49,12 +49,17 @@
     "./audit": {
       "types": "./src/audit/index.ts",
       "import": "./src/audit/index.ts"
+    },
+    "./auth": {
+      "types": "./src/auth/index.ts",
+      "import": "./src/auth/index.ts"
     }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "echo \"@jeanius/application linted\"",
-    "build": "echo \"@jeanius/application ready\""
+    "build": "echo \"@jeanius/application ready\"",
+    "test": "npx tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@jeanius/domain": "workspace:*",

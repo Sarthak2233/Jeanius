@@ -15,3 +15,4 @@ export * from './fulfillment/index.js';
 export * from './community/index.js';
 export * from './content/index.js';
 export * from './audit/index.js';
+export * from './auth/index.js';

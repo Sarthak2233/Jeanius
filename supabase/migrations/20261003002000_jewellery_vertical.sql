@@ -1,0 +1,1 @@
+../../packages/database/migrations/0001_add_jewellery_vertical.sql

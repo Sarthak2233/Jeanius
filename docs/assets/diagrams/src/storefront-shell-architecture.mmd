@@ -1,0 +1,53 @@
+flowchart TD
+    classDef server fill:#18181b,stroke:#a1a1aa,stroke-width:1.5px,color:#f4f4f5;
+    classDef client fill:#1e1b4b,stroke:#818cf8,stroke-width:1.5px,color:#e0e7ff;
+    classDef overlay fill:#451a03,stroke:#fb923c,stroke-width:1.5px,color:#ffedd5;
+    classDef store fill:#14532d,stroke:#4ade80,stroke-width:1.5px,color:#dcfce7;
+    classDef data fill:#2e1065,stroke:#c084fc,stroke-width:1.5px,color:#f3e8ff;
+
+    subgraph ServerShell ["Storefront Server Shell (apps/storefront/app/layout.tsx)"]
+        SkipLink["Skip to Content Link<br/>(#main-content with :focus-visible)"]:::server
+        Announce["Announcement Bar<br/>(OM lead times, sizing locking notice)"]:::server
+        Header["Storefront Header<br/>(Sticky, Server-Rendered Shell)"]:::server
+        MainArea["Main Page Content Slot<br/>(<main id='main-content' tabIndex='-1'>)"]:::server
+        Footer["Storefront Footer<br/>(Brand manifesto, 4-col bento, legal, social)"]:::server
+
+        SkipLink --> Announce --> Header --> MainArea --> Footer
+    end
+
+    subgraph HeaderSegments ["Responsive Header Segments (apps/storefront/components)"]
+        DesktopNav["Desktop Navigation (lg:flex)<br/>• Brand Wordmark: JEANIUS & JEWL<br/>• Links: ABOUT, SHOP(OM), DROP, TOGETHER, SIZING, CONTACT<br/>• Utilities: Search, Currency, Account, Cart"]:::server
+        MobileBar["Mobile Header Bar (lg:hidden)<br/>• Hamburger Toggle (44px target)<br/>• Centered Monogram / Wordmark<br/>• Search Button & Cart Indicator"]:::server
+        Header --> DesktopNav
+        Header --> MobileBar
+    end
+
+    subgraph ClientStores ["Zustand Client UI Stores (apps/storefront/stores)"]
+        UiStore["useUiStore<br/>• isMobileNavOpen<br/>• isSearchOpen<br/>• toggleMobileNav()<br/>• openSearch() / closeSearch()"]:::store
+        CartStore["useCartStore<br/>• isCartDrawerOpen<br/>• openCartDrawer() / closeCartDrawer()<br/>• totalCount"]:::store
+    end
+
+    subgraph Overlays ["Accessible Modal & Drawer Overlays (JN-140, JN-149, JN-151, JN-153)"]
+        MobileDrawer["Mobile Navigation Drawer<br/>• Slide-over from left (side='left')<br/>• Full nav hierarchy & VIP lock<br/>• Escape & click-outside dismiss"]:::overlay
+        SearchModal["Global Search Modal<br/>• Native <dialog> with closedby='any'<br/>• Keyboard shortcut ('/' or Cmd+K)<br/>• Instant search input & quick suggestions"]:::overlay
+        CartDrawer["Cart Quick-Bag Drawer<br/>• Slide-over from right (side='right')<br/>• Active items / EmptyState<br/>• Subtotal & Checkout action"]:::overlay
+    end
+
+    subgraph SessionData ["Session & Identity Context (Server Layer)"]
+        SupabaseSession["Supabase Server Session<br/>(createClient() in server component)"]:::data
+        ProfileData["User Profile & Role<br/>• Role: COLLECTOR / MEMBER / ADMIN<br/>• Name: Collector / Full Name<br/>• VIP Access Gate (DROP & Salon)"]:::data
+        SupabaseSession --> ProfileData
+    end
+
+    MobileBar -->|Click Hamburger| UiStore
+    DesktopNav -->|Click Search / Press '/'| UiStore
+    MobileBar -->|Click Search| UiStore
+    DesktopNav -->|Click Cart Bag| CartStore
+    MobileBar -->|Click Cart Bag| CartStore
+
+    UiStore -->|isMobileNavOpen: true| MobileDrawer
+    UiStore -->|isSearchOpen: true| SearchModal
+    CartStore -->|isCartDrawerOpen: true| CartDrawer
+
+    ProfileData -->|Hydrate Navigation Badges| DesktopNav
+    ProfileData -->|Hydrate Mobile Menu Account| MobileDrawer

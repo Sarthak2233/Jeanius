@@ -10,4 +10,6 @@ coverage
 pnpm-lock.yaml
 .agents
 docs/assets/diagrams/*.svg
+docs/assets/diagrams/src/*.mmd
+*.mmd
 *.md

@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Code Simplicity & Clean Implementation Rules
 
 This rule defines the core coding standards, simplicity imperatives, module depth principles, and readability requirements across all packages and apps in the Jeanius monorepo.

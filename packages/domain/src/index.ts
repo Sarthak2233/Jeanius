@@ -182,8 +182,13 @@ export * from './content/announcement.entity.js';
 export * from './content/content-page.entity.js';
 export * from './content/membership.entity.js';
 
-// ================= Domain Events (JN-084) =================
+// ================= User & Profiles (JN-114, JN-120) =================
+export * from './user/user-profile.entity.js';
+export * from './user/customization-resolver.js';
+
+// ================= Domain Events (JN-084, JN-114) =================
 export * from './events/domain-event.js';
+export * from './events/auth.events.js';
 
 // ================= Standardized Errors (JN-053) =================
 export * from './errors/index.js';

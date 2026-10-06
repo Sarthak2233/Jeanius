@@ -35,7 +35,7 @@ The platform is designed as a **Domain-Driven Design (DDD) Modular Monolith** ho
 | **Database & ORM** | **Supabase PostgreSQL + Drizzle ORM** | Type-safe SQL schemas, zero-cold-start queries, version-controlled migrations (`packages/database`). |
 | **Contracts & Validation**| **Zod** | Shared schemas validating API payloads, forms, and external webhooks (`packages/contracts`). |
 | **Payment Orchestrator** | **Multi-Rail Provider Gateway** | Provider abstraction routing international cards via **Stripe** and Nepal domestic rails via **eSewa / Khalti** (`packages/integrations`). |
-| **Design System** | **@jeanius/ui** | Shared tokens (indigo, ecru, selvedge red, silver, brass) and minimal React components (`packages/ui`). |
+| **UI Architecture** | **Application-Local Components** | Dedicated presentation components and tokens per app (`apps/storefront/components`, `apps/admin/components`). |
 | **Observability** | **Structured Logger** | Request correlation IDs, order state transitions, and audit tracing (`packages/observability`). |
 
 ---
@@ -47,10 +47,12 @@ jeanius-and-jewl/
 ├── apps/
 │   ├── storefront/                 # Customer-facing Next.js App Router webstore (Port 3000)
 │   │   ├── app/                    # Catalog, Product Detail (/shop/[slug]), Cart, Checkout, Policies
+│   │   ├── components/             # Storefront UI primitives (PriceDisplay, StatusBadge, Header)
 │   │   ├── stores/                 # Zustand client stores (cart-store, configurator-store, ui-store)
 │   │   └── package.json
 │   └── admin/                      # Internal workshop & fulfillment Next.js application (Port 3001)
 │       ├── app/                    # OM Manufacturing Pipeline Kanban, Orders, Inventory
+│       ├── components/             # Admin UI primitives (AdminNav, StatusBadge, PriceDisplay)
 │       └── package.json
 │
 ├── packages/
@@ -63,7 +65,6 @@ jeanius-and-jewl/
 │   │   └── migrations/             # Generated SQL schema migrations
 │   ├── contracts/                  # Zod validation schemas and shared DTO types
 │   ├── integrations/               # External adapters: PaymentOrchestrator (Stripe & eSewa/Khalti)
-│   ├── ui/                         # Design system tokens and shared React UI components
 │   ├── config/                     # Typed server and client environment validation
 │   ├── observability/              # Structured JSON logging and correlation context
 │   └── testing/                    # Test fixtures and domain entity mock factories
