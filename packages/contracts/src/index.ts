@@ -216,25 +216,64 @@ export const ResetPasswordSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
+export const GenderProfileSchema = z.enum(['MEN', 'WOMEN', 'UNISEX']);
+export const MeasurementMethodSchema = z.enum(['GARMENT_FLAT', 'BODY_ANATOMICAL']);
+export const MeasurementUnitSchema = z.enum(['INCHES', 'CM']);
+export const StomachProfileSchema = z.enum(['FLAT', 'AVERAGE', 'ROUNDED', 'STOUT']);
+export const SeatProfileSchema = z.enum(['FLAT', 'AVERAGE', 'ROUNDED', 'STOUT']);
+export const RisePreferenceSchema = z.enum(['HIGH_RISE', 'MID_RISE', 'LOW_RISE']);
+
 export const BottomsMeasurementsSchema = z.object({
-  waistInches: z.number().min(24).max(52).optional(),
-  inseamInches: z.number().min(24).max(42).optional(),
-  riseInches: z.number().min(8).max(18).optional(),
-  thighInches: z.number().min(16).max(36).optional(),
-  kneeInches: z.number().min(12).max(28).optional(),
-  legOpeningInches: z.number().min(10).max(26).optional(),
+  gender: GenderProfileSchema.optional(),
+  measurementMethod: MeasurementMethodSchema.optional(),
+  waistInches: z.number().min(20).max(60).optional(),
+  waistFlatInches: z.number().min(10).max(30).optional(),
+  naturalWaistInches: z.number().min(20).max(60).optional(),
+  hipsInches: z.number().min(26).max(70).optional(),
+  hipsFlatInches: z.number().min(13).max(35).optional(),
+  thighInches: z.number().min(14).max(42).optional(),
+  thighFlatInches: z.number().min(7).max(21).optional(),
+  kneeInches: z.number().min(10).max(32).optional(),
+  kneeFlatInches: z.number().min(5).max(16).optional(),
+  legOpeningInches: z.number().min(8).max(30).optional(),
+  legOpeningFlatInches: z.number().min(4).max(15).optional(),
+  inseamInches: z.number().min(20).max(45).optional(),
+  outseamInches: z.number().min(28).max(55).optional(),
+  frontRiseInches: z.number().min(7).max(20).optional(),
+  backRiseInches: z.number().min(10).max(25).optional(),
+  crotchTotalInches: z.number().min(18).max(40).optional(),
   silhouette: z
     .enum(['STRAIGHT', 'SLIM_TAPERED', 'WIDE_LEG', 'RELAXED_TAPERED', 'BOOTCUT'])
     .optional(),
+  risePreference: RisePreferenceSchema.optional(),
+  fitCut: z.enum(['SLIM', 'NORMAL', 'LOOSE']).optional(),
+  stomachProfile: StomachProfileSchema.optional(),
+  seatProfile: SeatProfileSchema.optional(),
   hemAllowanceInches: z.number().min(0).max(4).optional(),
 });
 
 export const TopsMeasurementsSchema = z.object({
-  chestInches: z.number().min(30).max(60).optional(),
-  shoulderWidthInches: z.number().min(14).max(28).optional(),
-  sleeveLengthInches: z.number().min(20).max(34).optional(),
-  backLengthInches: z.number().min(20).max(38).optional(),
-  neckInches: z.number().min(12).max(22).optional(),
+  gender: GenderProfileSchema.optional(),
+  measurementMethod: MeasurementMethodSchema.optional(),
+  chestInches: z.number().min(28).max(65).optional(),
+  chestFlatInches: z.number().min(14).max(32.5).optional(),
+  bustInches: z.number().min(28).max(65).optional(),
+  underBustInches: z.number().min(24).max(55).optional(),
+  breastPointInches: z.number().min(7).max(18).optional(),
+  waistPointInches: z.number().min(12).max(25).optional(),
+  frontBustWidthInches: z.number().min(12).max(28).optional(),
+  naturalWaistInches: z.number().min(20).max(55).optional(),
+  stomachInches: z.number().min(24).max(60).optional(),
+  shoulderWidthInches: z.number().min(13).max(30).optional(),
+  shoulderSeamInches: z.number().min(4).max(12).optional(),
+  sleeveLengthInches: z.number().min(18).max(38).optional(),
+  shortSleeveLengthInches: z.number().min(6).max(18).optional(),
+  bicepInches: z.number().min(9).max(26).optional(),
+  wristInches: z.number().min(5).max(12).optional(),
+  armholeInches: z.number().min(14).max(30).optional(),
+  collarInches: z.number().min(11).max(24).optional(),
+  neckInches: z.number().min(11).max(24).optional(),
+  backLengthInches: z.number().min(18).max(42).optional(),
   fitPreference: z.enum(['SLIM', 'REGULAR', 'BOXY', 'OVERSIZED']).optional(),
 });
 
@@ -242,8 +281,8 @@ export const DenimPreferencesSchema = z.object({
   bottoms: BottomsMeasurementsSchema.optional(),
   tops: TopsMeasurementsSchema.optional(),
   // Flat / legacy compatibility
-  waistInches: z.number().min(24).max(52).optional(),
-  inseamInches: z.number().min(24).max(42).optional(),
+  waistInches: z.number().min(20).max(60).optional(),
+  inseamInches: z.number().min(20).max(45).optional(),
   silhouette: z
     .enum(['STRAIGHT', 'SLIM_TAPERED', 'WIDE_LEG', 'RELAXED_TAPERED', 'BOOTCUT'])
     .optional(),
@@ -252,21 +291,29 @@ export const DenimPreferencesSchema = z.object({
 
 export const RingMeasurementsSchema = z.object({
   ringSizeUs: z.string().optional(),
-  ringMandrelMm: z.number().min(12).max(26).optional(),
-  knuckleClearanceMm: z.number().min(12).max(28).optional(),
+  insideDiameterMm: z.number().min(13).max(28).optional(),
+  insideCircumferenceMm: z.number().min(40).max(85).optional(),
+  ringMandrelMm: z.number().min(12).max(28).optional(),
+  knuckleClearanceMm: z.number().min(12).max(32).optional(),
+  bandWidthMm: z.number().min(1).max(20).optional(),
+  comfortFit: z.boolean().optional(),
+  dominantHand: z.enum(['LEFT', 'RIGHT']).optional(),
   preferredFinger: z.enum(['INDEX', 'MIDDLE', 'RING', 'PINKY', 'THUMB']).optional(),
 });
 
 export const WristMeasurementsSchema = z.object({
   wristCircumferenceInches: z.number().min(4.5).max(11).optional(),
+  wristBreadthMm: z.number().min(35).max(95).optional(),
+  wristThicknessMm: z.number().min(25).max(75).optional(),
   cuffGapMm: z.number().min(15).max(50).optional(),
   braceletFit: z.enum(['SNUG', 'COMFORT', 'LOOSE']).optional(),
 });
 
 export const NecklaceMeasurementsSchema = z.object({
-  neckCircumferenceInches: z.number().min(11).max(24).optional(),
+  neckCircumferenceInches: z.number().min(11).max(26).optional(),
   preferredChainLengthInches: z.number().min(14).max(36).optional(),
   chainStyle: z.enum(['CABLE', 'CURB', 'ROPE', 'BOX', 'FIGARO']).optional(),
+  pendantDropMm: z.number().min(0).max(100).optional(),
 });
 
 export const MetalPreferencesSchema = z.object({
@@ -277,6 +324,64 @@ export const MetalPreferencesSchema = z.object({
     .enum(['HIGH_POLISH', 'SATIN_MATTE', 'OXIDIZED_PATINA', 'HAMMERED_RAW'])
     .optional(),
 });
+
+// ================= Content & CMS Schemas =================
+
+export const ContentPageStatusSchema = z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']);
+export const AnnouncementTypeSchema = z.enum(['INFO', 'WARNING', 'ALERT', 'PROMO']);
+
+export const ContentPageSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string().min(1),
+  title: z.string().min(1),
+  contentMarkdown: z.string(),
+  metaDescription: z.string().optional(),
+  status: ContentPageStatusSchema,
+  isPublished: z.boolean(),
+  publishedAt: z.date().optional(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const CreateContentPageSchema = z.object({
+  slug: z
+    .string()
+    .min(1)
+    .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
+  title: z.string().min(1, 'Title is required'),
+  contentMarkdown: z.string().min(1, 'Content cannot be empty'),
+  metaDescription: z.string().optional(),
+  status: ContentPageStatusSchema.default('DRAFT'),
+});
+
+export const UpdateContentPageSchema = z.object({
+  title: z.string().min(1).optional(),
+  contentMarkdown: z.string().min(1).optional(),
+  metaDescription: z.string().optional(),
+  status: ContentPageStatusSchema.optional(),
+});
+
+export const AnnouncementSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string().min(1),
+  message: z.string().min(1),
+  type: AnnouncementTypeSchema,
+  startDate: z.date(),
+  endDate: z.date().optional(),
+  priority: z.number().int(),
+  createdAt: z.date(),
+});
+
+export const CreateAnnouncementSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  message: z.string().min(1, 'Message is required'),
+  type: AnnouncementTypeSchema.default('INFO'),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date().optional(),
+  priority: z.number().int().default(0),
+});
+
+export const UpdateAnnouncementSchema = CreateAnnouncementSchema.partial();
 
 export const JewelleryPreferencesSchema = z.object({
   rings: RingMeasurementsSchema.optional(),
@@ -364,3 +469,17 @@ export type AutoFillContextDto = z.infer<typeof AutoFillContextSchema>;
 export type ResolvedCustomizationDefaultsDto = z.infer<typeof ResolvedCustomizationDefaultsSchema>;
 export type UpdateProfileDto = z.infer<typeof UpdateProfileSchema>;
 export type CreateAddressInputDto = z.infer<typeof CreateAddressInputSchema>;
+export type GenderProfileDto = z.infer<typeof GenderProfileSchema>;
+export type MeasurementMethodDto = z.infer<typeof MeasurementMethodSchema>;
+export type MeasurementUnitDto = z.infer<typeof MeasurementUnitSchema>;
+export type StomachProfileDto = z.infer<typeof StomachProfileSchema>;
+export type SeatProfileDto = z.infer<typeof SeatProfileSchema>;
+export type RisePreferenceDto = z.infer<typeof RisePreferenceSchema>;
+export type ContentPageStatusDto = z.infer<typeof ContentPageStatusSchema>;
+export type AnnouncementTypeDto = z.infer<typeof AnnouncementTypeSchema>;
+export type ContentPageDto = z.infer<typeof ContentPageSchema>;
+export type CreateContentPageDto = z.infer<typeof CreateContentPageSchema>;
+export type UpdateContentPageDto = z.infer<typeof UpdateContentPageSchema>;
+export type AnnouncementDto = z.infer<typeof AnnouncementSchema>;
+export type CreateAnnouncementDto = z.infer<typeof CreateAnnouncementSchema>;
+export type UpdateAnnouncementDto = z.infer<typeof UpdateAnnouncementSchema>;

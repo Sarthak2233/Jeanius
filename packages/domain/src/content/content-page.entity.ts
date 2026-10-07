@@ -5,12 +5,15 @@
 import type { ContentPageId } from '../common/entity-id.js';
 import { DomainError } from '../errors/index.js';
 
+export type ContentPageStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+
 export interface ContentPageProps {
   readonly id: ContentPageId;
   readonly slug: string;
   readonly title: string;
   readonly contentMarkdown: string;
   readonly metaDescription?: string;
+  readonly status?: ContentPageStatus;
   readonly isPublished?: boolean;
   readonly publishedAt?: Date;
   readonly createdAt?: Date;
@@ -23,7 +26,7 @@ export class ContentPage {
   readonly title: string;
   readonly contentMarkdown: string;
   readonly metaDescription?: string;
-  private _isPublished: boolean;
+  private _status: ContentPageStatus;
   private _publishedAt?: Date;
   readonly createdAt: Date;
   private _updatedAt: Date;
@@ -41,14 +44,28 @@ export class ContentPage {
     this.title = props.title.trim();
     this.contentMarkdown = props.contentMarkdown ?? '';
     this.metaDescription = props.metaDescription?.trim();
-    this._isPublished = props.isPublished ?? false;
-    this._publishedAt = props.publishedAt;
+
+    // Default status handling with backward compatibility for isPublished
+    if (props.status) {
+      this._status = props.status;
+    } else if (props.isPublished) {
+      this._status = 'PUBLISHED';
+    } else {
+      this._status = 'DRAFT';
+    }
+
+    this._publishedAt =
+      props.publishedAt ?? (this._status === 'PUBLISHED' ? new Date() : undefined);
     this.createdAt = props.createdAt ?? new Date();
     this._updatedAt = props.updatedAt ?? new Date();
   }
 
+  get status(): ContentPageStatus {
+    return this._status;
+  }
+
   get isPublished(): boolean {
-    return this._isPublished;
+    return this._status === 'PUBLISHED';
   }
 
   get publishedAt(): Date | undefined {
@@ -60,13 +77,18 @@ export class ContentPage {
   }
 
   publish(at: Date = new Date()): void {
-    this._isPublished = true;
+    this._status = 'PUBLISHED';
     this._publishedAt = at;
     this._updatedAt = at;
   }
 
+  archive(): void {
+    this._status = 'ARCHIVED';
+    this._updatedAt = new Date();
+  }
+
   unpublish(): void {
-    this._isPublished = false;
+    this._status = 'DRAFT';
     this._updatedAt = new Date();
   }
 }

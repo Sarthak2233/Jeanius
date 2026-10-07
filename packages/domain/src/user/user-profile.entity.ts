@@ -3,28 +3,69 @@ import type { ActorRole } from '../index.js';
 
 // ================= Tailoring (Denim / Garments) =================
 
+export type GenderProfile = 'MEN' | 'WOMEN' | 'UNISEX';
+export type MeasurementMethod = 'GARMENT_FLAT' | 'BODY_ANATOMICAL';
+export type MeasurementUnit = 'INCHES' | 'CM';
+export type StomachProfile = 'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT';
+export type SeatProfile = 'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT';
+export type RisePreference = 'HIGH_RISE' | 'MID_RISE' | 'LOW_RISE';
+export type FitCutType = 'SLIM' | 'NORMAL' | 'LOOSE';
+
 export type BottomsSilhouette =
   'STRAIGHT' | 'SLIM_TAPERED' | 'WIDE_LEG' | 'RELAXED_TAPERED' | 'BOOTCUT';
 
 export type TopsFitPreference = 'SLIM' | 'REGULAR' | 'BOXY' | 'OVERSIZED';
 
 export interface BottomsMeasurements {
+  readonly gender?: GenderProfile;
+  readonly measurementMethod?: MeasurementMethod;
   readonly waistInches?: number;
-  readonly inseamInches?: number;
-  readonly riseInches?: number;
+  readonly waistFlatInches?: number;
+  readonly naturalWaistInches?: number;
+  readonly hipsInches?: number;
+  readonly hipsFlatInches?: number;
   readonly thighInches?: number;
+  readonly thighFlatInches?: number;
   readonly kneeInches?: number;
+  readonly kneeFlatInches?: number;
   readonly legOpeningInches?: number;
+  readonly legOpeningFlatInches?: number;
+  readonly inseamInches?: number;
+  readonly outseamInches?: number;
+  readonly riseInches?: number;
+  readonly frontRiseInches?: number;
+  readonly backRiseInches?: number;
+  readonly crotchTotalInches?: number;
   readonly silhouette?: BottomsSilhouette;
+  readonly risePreference?: RisePreference;
+  readonly fitCut?: FitCutType;
+  readonly stomachProfile?: StomachProfile;
+  readonly seatProfile?: SeatProfile;
   readonly hemAllowanceInches?: number;
 }
 
 export interface TopsMeasurements {
+  readonly gender?: GenderProfile;
+  readonly measurementMethod?: MeasurementMethod;
   readonly chestInches?: number;
+  readonly chestFlatInches?: number;
+  readonly bustInches?: number;
+  readonly underBustInches?: number;
+  readonly breastPointInches?: number;
+  readonly waistPointInches?: number;
+  readonly frontBustWidthInches?: number;
+  readonly naturalWaistInches?: number;
+  readonly stomachInches?: number;
   readonly shoulderWidthInches?: number;
+  readonly shoulderSeamInches?: number;
   readonly sleeveLengthInches?: number;
-  readonly backLengthInches?: number;
+  readonly shortSleeveLengthInches?: number;
+  readonly bicepInches?: number;
+  readonly wristInches?: number;
+  readonly armholeInches?: number;
+  readonly collarInches?: number;
   readonly neckInches?: number;
+  readonly backLengthInches?: number;
   readonly fitPreference?: TopsFitPreference;
 }
 
@@ -48,13 +89,20 @@ export type JewelleryFinish = 'HIGH_POLISH' | 'SATIN_MATTE' | 'OXIDIZED_PATINA' 
 
 export interface RingMeasurements {
   readonly ringSizeUs?: string;
+  readonly insideDiameterMm?: number;
+  readonly insideCircumferenceMm?: number;
   readonly ringMandrelMm?: number;
   readonly knuckleClearanceMm?: number;
+  readonly bandWidthMm?: number;
+  readonly comfortFit?: boolean;
+  readonly dominantHand?: 'LEFT' | 'RIGHT';
   readonly preferredFinger?: FingerType;
 }
 
 export interface WristMeasurements {
   readonly wristCircumferenceInches?: number;
+  readonly wristBreadthMm?: number;
+  readonly wristThicknessMm?: number;
   readonly cuffGapMm?: number;
   readonly braceletFit?: BraceletFitType;
 }
@@ -63,6 +111,7 @@ export interface NecklaceMeasurements {
   readonly neckCircumferenceInches?: number;
   readonly preferredChainLengthInches?: number;
   readonly chainStyle?: ChainStyleType;
+  readonly pendantDropMm?: number;
 }
 
 export interface MetalPreferences {

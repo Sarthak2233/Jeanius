@@ -345,19 +345,19 @@ Implement the restrained Jeanius & Jewl visual language before feature UI.
 
 # STATE 08 — CONTENT & CMS-LIKE SYSTEM
 
-| ID     | Task                          | Description                      | Status      |
-| ------ | ----------------------------- | -------------------------------- | ----------- |
-| JN-157 | Build content repository      | Content retrieval abstraction.   | NOT_STARTED |
-| JN-158 | Build announcement management | Admin-editable notices.          | NOT_STARTED |
-| JN-159 | Add announcement scheduling   | Start/end dates.                 | NOT_STARTED |
-| JN-160 | Build About content           | Brand story.                     | NOT_STARTED |
-| JN-161 | Build Guide content           | OM/DROP/shipping education.      | NOT_STARTED |
-| JN-162 | Build Sizing content          | Measurement guidance.            | NOT_STARTED |
-| JN-163 | Build Contact content         | Support instructions.            | NOT_STARTED |
-| JN-164 | Build return/refund content   | Policy pages.                    | NOT_STARTED |
-| JN-165 | Build legal content           | Terms/privacy/etc.               | NOT_STARTED |
-| JN-166 | Add content publishing state  | Draft/published/archived.        | NOT_STARTED |
-| JN-167 | Add content preview           | Admin preview before publishing. | NOT_STARTED |
+| ID     | Task                          | Description                      | Status |
+| ------ | ----------------------------- | -------------------------------- | ------ |
+| JN-157 | Build content repository      | Content retrieval abstraction.   | DONE   |
+| JN-158 | Build announcement management | Admin-editable notices.          | DONE   |
+| JN-159 | Add announcement scheduling   | Start/end dates.                 | DONE   |
+| JN-160 | Build About content           | Brand story.                     | DONE   |
+| JN-161 | Build Guide content           | OM/DROP/shipping education.      | DONE   |
+| JN-162 | Build Sizing content          | Measurement guidance.            | DONE   |
+| JN-163 | Build Contact content         | Support instructions.            | DONE   |
+| JN-164 | Build return/refund content   | Policy pages.                    | DONE   |
+| JN-165 | Build legal content           | Terms/privacy/etc.               | DONE   |
+| JN-166 | Add content publishing state  | Draft/published/archived.        | DONE   |
+| JN-167 | Add content preview           | Admin preview before publishing. | DONE   |
 
 ---
 

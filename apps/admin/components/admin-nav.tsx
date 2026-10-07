@@ -4,7 +4,7 @@ import { adminLogoutAction } from '../actions/admin-auth.actions';
 import { createClient } from '../lib/supabase/server';
 
 export interface AdminNavProps {
-  readonly currentBench?: 'DIRECTOR' | 'TAILOR' | 'JEWELLER' | 'FULFILLMENT' | 'SUPPORT';
+  readonly currentBench?: 'DIRECTOR' | 'TAILOR' | 'JEWELLER' | 'FULFILLMENT' | 'SUPPORT' | 'CMS';
 }
 
 export async function AdminNav({ currentBench = 'DIRECTOR' }: AdminNavProps) {
@@ -58,6 +58,22 @@ export async function AdminNav({ currentBench = 'DIRECTOR' }: AdminNavProps) {
               }}
             >
               Director
+            </Link>
+          )}
+
+          {(isAdmin || role === 'SUPPORT') && (
+            <Link
+              href="/content"
+              style={{
+                textDecoration: 'none',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: currentBench === 'CMS' ? '#38bdf8' : '#94a3b8',
+                borderBottom: currentBench === 'CMS' ? '2px solid #38bdf8' : 'none',
+                paddingBottom: '0.2rem',
+              }}
+            >
+              CMS &amp; Storytelling
             </Link>
           )}
 

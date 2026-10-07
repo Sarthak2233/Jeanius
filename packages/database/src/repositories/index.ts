@@ -8,3 +8,5 @@ export * from './audit/drizzle-outbox.repository';
 export * from './audit/drizzle-audit-log.repository';
 export * from './auth/drizzle-user-profile.repository';
 export * from './auth/drizzle-address.repository';
+export * from './content/drizzle-content-page.repository';
+export * from './content/drizzle-announcement.repository';

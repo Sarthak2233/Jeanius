@@ -37,6 +37,8 @@ export const announcements = pgTable(
   ],
 );
 
+export const contentStatusEnum = ['DRAFT', 'PUBLISHED', 'ARCHIVED'] as const;
+
 export const contentPages = pgTable(
   'content_pages',
   {
@@ -45,6 +47,7 @@ export const contentPages = pgTable(
     title: text('title').notNull(),
     contentMarkdown: text('content_markdown').notNull(),
     metaDescription: text('meta_description'),
+    status: text('status', { enum: contentStatusEnum }).notNull().default('DRAFT'),
     isPublished: boolean('is_published').notNull().default(false),
     publishedAt: timestamp('published_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -52,6 +55,7 @@ export const contentPages = pgTable(
   },
   (table) => [
     index('idx_content_pages_slug').on(table.slug),
+    index('idx_content_pages_status').on(table.status),
     index('idx_content_pages_is_published').on(table.isPublished),
   ],
 );

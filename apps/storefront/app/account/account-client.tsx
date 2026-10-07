@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type {
   BottomsSilhouette,
@@ -63,12 +64,32 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
   const necklaces = jewel.necklaces || {};
   const metals = jewel.metals || {};
 
-  // Denim Bottoms
+  // Denim Bottoms (Wholesome Modern Tailor Points A–Q)
+  const [gender, setGender] = useState<'MEN' | 'WOMEN' | 'UNISEX'>(
+    (bottoms.gender as 'MEN' | 'WOMEN' | 'UNISEX') || 'MEN',
+  );
   const [waist, setWaist] = useState<string>(
     bottoms.waistInches?.toString() || denim.waistInches?.toString() || '32',
   );
   const [inseam, setInseam] = useState<string>(
     bottoms.inseamInches?.toString() || denim.inseamInches?.toString() || '34',
+  );
+  const [thigh, setThigh] = useState<string>(bottoms.thighInches?.toString() || '23');
+  const [knee, setKnee] = useState<string>(bottoms.kneeInches?.toString() || '17');
+  const [legOpening, setLegOpening] = useState<string>(
+    bottoms.legOpeningInches?.toString() || '16',
+  );
+  const [frontRise, setFrontRise] = useState<string>(bottoms.frontRiseInches?.toString() || '11');
+  const [backRise, setBackRise] = useState<string>(bottoms.backRiseInches?.toString() || '14.5');
+  const [naturalWaist, setNaturalWaist] = useState<string>(
+    bottoms.naturalWaistInches?.toString() || '28',
+  );
+  const [hips, setHips] = useState<string>(bottoms.hipsInches?.toString() || '38');
+  const [risePreference, setRisePreference] = useState<'HIGH_RISE' | 'MID_RISE' | 'LOW_RISE'>(
+    (bottoms.risePreference as 'HIGH_RISE' | 'MID_RISE' | 'LOW_RISE') || 'MID_RISE',
+  );
+  const [seatProfile, setSeatProfile] = useState<'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT'>(
+    (bottoms.seatProfile as 'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT') || 'AVERAGE',
   );
   const [silhouette, setSilhouette] = useState<BottomsSilhouette>(
     bottoms.silhouette || denim.silhouette || 'STRAIGHT',
@@ -87,6 +108,7 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
 
   // Jewellery
   const [ringSize, setRingSize] = useState<string>(rings.ringSizeUs || jewel.ringSizeUs || '10');
+  const [bandWidth, setBandWidth] = useState<string>(rings.bandWidthMm?.toString() || '8');
   const [wristCirc, setWristCirc] = useState<string>(
     wrists.wristCircumferenceInches?.toString() ||
       jewel.wristCircumferenceInches?.toString() ||
@@ -125,8 +147,18 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
       const payload = {
         denimPreferences: {
           bottoms: {
+            gender,
             waistInches: parseFloat(waist) || 32,
             inseamInches: parseFloat(inseam) || 34,
+            thighInches: parseFloat(thigh) || undefined,
+            kneeInches: parseFloat(knee) || undefined,
+            legOpeningInches: parseFloat(legOpening) || undefined,
+            frontRiseInches: parseFloat(frontRise) || undefined,
+            backRiseInches: parseFloat(backRise) || undefined,
+            naturalWaistInches: parseFloat(naturalWaist) || undefined,
+            hipsInches: parseFloat(hips) || undefined,
+            risePreference,
+            seatProfile,
             silhouette,
             hemAllowanceInches: parseFloat(hemAllowance) || 1,
           },
@@ -143,6 +175,7 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
         jewelleryPreferences: {
           rings: {
             ringSizeUs: ringSize,
+            bandWidthMm: parseFloat(bandWidth) || undefined,
             preferredFinger: 'RING' as const,
           },
           wrists: {
@@ -383,16 +416,133 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
                 1. Denim Tailoring Vault
               </h2>
 
-              <h3
+              <div
                 style={{
-                  fontSize: '0.85rem',
-                  color: '#64748b',
-                  textTransform: 'uppercase',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                   margin: '1rem 0 0.5rem 0',
                 }}
               >
-                Lower Body (Jeans & Trousers)
-              </h3>
+                <h3
+                  style={{
+                    fontSize: '0.85rem',
+                    color: '#64748b',
+                    textTransform: 'uppercase',
+                    margin: 0,
+                  }}
+                >
+                  Lower Body (Jeans & Trousers)
+                </h3>
+                <Link
+                  href="/sizing"
+                  target="_blank"
+                  style={{
+                    fontSize: '0.72rem',
+                    color: '#b91c1c',
+                    textDecoration: 'underline',
+                    fontWeight: 600,
+                  }}
+                >
+                  Need Guidance? Sizing Studio ↗
+                </Link>
+              </div>
+
+              {/* Gender Cut & Rise Profile */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr 1fr',
+                  gap: '1rem',
+                  marginBottom: '1rem',
+                }}
+              >
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                    }}
+                  >
+                    Anatomical Pattern Cut
+                  </label>
+                  <select
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value as 'MEN' | 'WOMEN' | 'UNISEX')}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    <option value="MEN">Men’s Pattern (Pelvic Anchor)</option>
+                    <option value="WOMEN">Women’s Pattern (Lordosis Curve)</option>
+                    <option value="UNISEX">Unisex / Vintage Straight</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                    }}
+                  >
+                    Rise Preference
+                  </label>
+                  <select
+                    value={risePreference}
+                    onChange={(e) =>
+                      setRisePreference(e.target.value as 'HIGH_RISE' | 'MID_RISE' | 'LOW_RISE')
+                    }
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    <option value="MID_RISE">Mid Rise (Classic)</option>
+                    <option value="HIGH_RISE">High Rise (Torso Anchor)</option>
+                    <option value="LOW_RISE">Low Rise (Hip Hugger)</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                    }}
+                  >
+                    Point Q: Seat Profile
+                  </label>
+                  <select
+                    value={seatProfile}
+                    onChange={(e) =>
+                      setSeatProfile(e.target.value as 'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT')
+                    }
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    <option value="AVERAGE">Average Posture</option>
+                    <option value="FLAT">Flat Seat</option>
+                    <option value="ROUNDED">Rounded / Prominent</option>
+                    <option value="STOUT">Stout Fork</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Point A & Point H: Waist & Inseam */}
               <div
                 style={{
                   display: 'grid',
@@ -410,7 +560,7 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
                       color: '#475569',
                     }}
                   >
-                    Waist (Inches)
+                    Point A: Waist (Inches)
                   </label>
                   <input
                     type="number"
@@ -434,7 +584,7 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
                       color: '#475569',
                     }}
                   >
-                    Inseam (Inches)
+                    Point H: Inseam (Inches)
                   </label>
                   <input
                     type="number"
@@ -451,6 +601,223 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
                 </div>
               </div>
 
+              {/* Points C, D & E: Thigh, Knee & Leg Opening */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr 1fr',
+                  gap: '1rem',
+                  marginBottom: '1rem',
+                }}
+              >
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                    }}
+                  >
+                    Point C: Thigh (Inches)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    value={thigh}
+                    onChange={(e) => setThigh(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                    }}
+                  >
+                    Point D: Knee (Inches)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    value={knee}
+                    onChange={(e) => setKnee(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                    }}
+                  >
+                    Point E: Hem Opening (Inches)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    value={legOpening}
+                    onChange={(e) => setLegOpening(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Points F & G: Front & Back Rise */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '1rem',
+                  marginBottom: '1rem',
+                }}
+              >
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                    }}
+                  >
+                    Point F: Front Rise (Inches)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.25"
+                    value={frontRise}
+                    onChange={(e) => setFrontRise(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                    }}
+                  >
+                    Point G: Back Rise (Inches)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.25"
+                    value={backRise}
+                    onChange={(e) => setBackRise(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Women's Specific Points L & B */}
+              {gender === 'WOMEN' && (
+                <div
+                  style={{
+                    backgroundColor: '#fff7ed',
+                    border: '1px solid #fed7aa',
+                    padding: '0.75rem',
+                    borderRadius: '4px',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      color: '#9a3412',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
+                    FEMALE ANATOMY CALIBRATION (POINTS L &amp; B)
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    <div>
+                      <label
+                        style={{
+                          display: 'block',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                          color: '#475569',
+                        }}
+                      >
+                        Point L: Natural Waist (Ribs)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.5"
+                        value={naturalWaist}
+                        onChange={(e) => setNaturalWaist(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '0.4rem',
+                          border: '1px solid #cbd5e1',
+                          borderRadius: '4px',
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        style={{
+                          display: 'block',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                          color: '#475569',
+                        }}
+                      >
+                        Point B: Hips Fullest
+                      </label>
+                      <input
+                        type="number"
+                        step="0.5"
+                        value={hips}
+                        onChange={(e) => setHips(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '0.4rem',
+                          border: '1px solid #cbd5e1',
+                          borderRadius: '4px',
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Silhouette & Hem Allowance */}
               <div
                 style={{
                   display: 'grid',
@@ -672,9 +1039,9 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
+                  gridTemplateColumns: '1fr 1fr 1fr',
                   gap: '1rem',
-                  marginBottom: '1rem',
+                  marginBottom: '0.75rem',
                 }}
               >
                 <div>
@@ -710,6 +1077,32 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
                       color: '#475569',
                     }}
                   >
+                    Band Width (mm)
+                  </label>
+                  <input
+                    type="number"
+                    step="1"
+                    min="3"
+                    max="16"
+                    value={bandWidth}
+                    onChange={(e) => setBandWidth(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#475569',
+                    }}
+                  >
                     Wrist Circumference
                   </label>
                   <input
@@ -726,6 +1119,22 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
                   />
                 </div>
               </div>
+
+              {parseFloat(bandWidth) >= 8 && (
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#92400e',
+                    backgroundColor: '#fef3c7',
+                    padding: '0.4rem 0.75rem',
+                    borderRadius: '4px',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  ⚡ Wide Shank Rule: Bands ≥ 8mm automatically receive +0.5 size compensation
+                  during lost-wax casting.
+                </div>
+              )}
 
               <div
                 style={{

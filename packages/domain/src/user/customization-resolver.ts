@@ -39,14 +39,28 @@ export function resolveAtelierCustomizationDefaults(
       const bottoms = profile?.bottomsPreferences;
 
       if (bottoms) {
+        if (bottoms.gender !== undefined) measurements['gender'] = bottoms.gender;
+        if (bottoms.measurementMethod !== undefined)
+          measurements['measurementMethod'] = bottoms.measurementMethod;
         if (bottoms.waistInches !== undefined) {
           measurements['waistInches'] = bottoms.waistInches;
           appliedFromVault = true;
         }
+        if (bottoms.waistFlatInches !== undefined)
+          measurements['waistFlatInches'] = bottoms.waistFlatInches;
+        if (bottoms.naturalWaistInches !== undefined)
+          measurements['naturalWaistInches'] = bottoms.naturalWaistInches;
+        if (bottoms.hipsInches !== undefined) measurements['hipsInches'] = bottoms.hipsInches;
+        if (bottoms.hipsFlatInches !== undefined)
+          measurements['hipsFlatInches'] = bottoms.hipsFlatInches;
         if (bottoms.inseamInches !== undefined) {
           measurements['inseamInches'] = bottoms.inseamInches;
+          // Unsanforized raw selvedge shrinks 3% on initial wash; calculate master tailor cutting target
+          measurements['rawCutInseamInches'] = Number((bottoms.inseamInches * 1.03).toFixed(2));
           appliedFromVault = true;
         }
+        if (bottoms.outseamInches !== undefined)
+          measurements['outseamInches'] = bottoms.outseamInches;
         if (bottoms.silhouette !== undefined) {
           measurements['silhouette'] = bottoms.silhouette;
           appliedFromVault = true;
@@ -55,18 +69,36 @@ export function resolveAtelierCustomizationDefaults(
           measurements['riseInches'] = bottoms.riseInches;
           appliedFromVault = true;
         }
+        if (bottoms.frontRiseInches !== undefined)
+          measurements['frontRiseInches'] = bottoms.frontRiseInches;
+        if (bottoms.backRiseInches !== undefined)
+          measurements['backRiseInches'] = bottoms.backRiseInches;
+        if (bottoms.crotchTotalInches !== undefined)
+          measurements['crotchTotalInches'] = bottoms.crotchTotalInches;
+        if (bottoms.risePreference !== undefined)
+          measurements['risePreference'] = bottoms.risePreference;
         if (bottoms.thighInches !== undefined) {
           measurements['thighInches'] = bottoms.thighInches;
           appliedFromVault = true;
         }
+        if (bottoms.thighFlatInches !== undefined)
+          measurements['thighFlatInches'] = bottoms.thighFlatInches;
         if (bottoms.kneeInches !== undefined) {
           measurements['kneeInches'] = bottoms.kneeInches;
           appliedFromVault = true;
         }
+        if (bottoms.kneeFlatInches !== undefined)
+          measurements['kneeFlatInches'] = bottoms.kneeFlatInches;
         if (bottoms.legOpeningInches !== undefined) {
           measurements['legOpeningInches'] = bottoms.legOpeningInches;
           appliedFromVault = true;
         }
+        if (bottoms.legOpeningFlatInches !== undefined)
+          measurements['legOpeningFlatInches'] = bottoms.legOpeningFlatInches;
+        if (bottoms.fitCut !== undefined) measurements['fitCut'] = bottoms.fitCut;
+        if (bottoms.stomachProfile !== undefined)
+          measurements['stomachProfile'] = bottoms.stomachProfile;
+        if (bottoms.seatProfile !== undefined) measurements['seatProfile'] = bottoms.seatProfile;
         if (bottoms.hemAllowanceInches !== undefined) {
           measurements['hemAllowanceInches'] = bottoms.hemAllowanceInches;
           appliedFromVault = true;
@@ -80,18 +112,43 @@ export function resolveAtelierCustomizationDefaults(
       const tops = profile?.topsPreferences;
 
       if (tops) {
+        if (tops.gender !== undefined) measurements['gender'] = tops.gender;
+        if (tops.measurementMethod !== undefined)
+          measurements['measurementMethod'] = tops.measurementMethod;
         if (tops.chestInches !== undefined) {
           measurements['chestInches'] = tops.chestInches;
           appliedFromVault = true;
         }
+        if (tops.chestFlatInches !== undefined)
+          measurements['chestFlatInches'] = tops.chestFlatInches;
+        if (tops.bustInches !== undefined) measurements['bustInches'] = tops.bustInches;
+        if (tops.underBustInches !== undefined)
+          measurements['underBustInches'] = tops.underBustInches;
+        if (tops.breastPointInches !== undefined)
+          measurements['breastPointInches'] = tops.breastPointInches;
+        if (tops.waistPointInches !== undefined)
+          measurements['waistPointInches'] = tops.waistPointInches;
+        if (tops.frontBustWidthInches !== undefined)
+          measurements['frontBustWidthInches'] = tops.frontBustWidthInches;
+        if (tops.naturalWaistInches !== undefined)
+          measurements['naturalWaistInches'] = tops.naturalWaistInches;
+        if (tops.stomachInches !== undefined) measurements['stomachInches'] = tops.stomachInches;
         if (tops.shoulderWidthInches !== undefined) {
           measurements['shoulderWidthInches'] = tops.shoulderWidthInches;
           appliedFromVault = true;
         }
+        if (tops.shoulderSeamInches !== undefined)
+          measurements['shoulderSeamInches'] = tops.shoulderSeamInches;
         if (tops.sleeveLengthInches !== undefined) {
           measurements['sleeveLengthInches'] = tops.sleeveLengthInches;
           appliedFromVault = true;
         }
+        if (tops.shortSleeveLengthInches !== undefined)
+          measurements['shortSleeveLengthInches'] = tops.shortSleeveLengthInches;
+        if (tops.bicepInches !== undefined) measurements['bicepInches'] = tops.bicepInches;
+        if (tops.wristInches !== undefined) measurements['wristInches'] = tops.wristInches;
+        if (tops.armholeInches !== undefined) measurements['armholeInches'] = tops.armholeInches;
+        if (tops.collarInches !== undefined) measurements['collarInches'] = tops.collarInches;
         if (tops.backLengthInches !== undefined) {
           measurements['backLengthInches'] = tops.backLengthInches;
           appliedFromVault = true;
@@ -142,6 +199,10 @@ export function resolveAtelierCustomizationDefaults(
             measurements['ringSizeUs'] = ring.ringSizeUs;
             appliedFromVault = true;
           }
+          if (ring.insideDiameterMm !== undefined)
+            measurements['insideDiameterMm'] = ring.insideDiameterMm;
+          if (ring.insideCircumferenceMm !== undefined)
+            measurements['insideCircumferenceMm'] = ring.insideCircumferenceMm;
           if (ring.ringMandrelMm !== undefined) {
             measurements['ringMandrelMm'] = ring.ringMandrelMm;
             appliedFromVault = true;
@@ -150,6 +211,15 @@ export function resolveAtelierCustomizationDefaults(
             measurements['knuckleClearanceMm'] = ring.knuckleClearanceMm;
             appliedFromVault = true;
           }
+          if (ring.bandWidthMm !== undefined) {
+            measurements['bandWidthMm'] = ring.bandWidthMm;
+            // Cigar bands >= 8mm require +0.5 US size compensation
+            if (ring.bandWidthMm >= 8) {
+              measurements['wideBandCompensationApplied'] = true;
+            }
+          }
+          if (ring.comfortFit !== undefined) measurements['comfortFit'] = ring.comfortFit;
+          if (ring.dominantHand !== undefined) measurements['dominantHand'] = ring.dominantHand;
           if (ring.preferredFinger !== undefined) {
             measurements['preferredFinger'] = ring.preferredFinger;
             appliedFromVault = true;
@@ -165,6 +235,10 @@ export function resolveAtelierCustomizationDefaults(
             measurements['wristCircumferenceInches'] = wrist.wristCircumferenceInches;
             appliedFromVault = true;
           }
+          if (wrist.wristBreadthMm !== undefined)
+            measurements['wristBreadthMm'] = wrist.wristBreadthMm;
+          if (wrist.wristThicknessMm !== undefined)
+            measurements['wristThicknessMm'] = wrist.wristThicknessMm;
           if (wrist.cuffGapMm !== undefined) {
             measurements['cuffGapMm'] = wrist.cuffGapMm;
             appliedFromVault = true;

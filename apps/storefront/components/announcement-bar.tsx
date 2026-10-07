@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { getActiveAnnouncementsAction, type AnnouncementDto } from '../actions/content.actions';
 
 export interface AnnouncementBarProps {
   readonly message?: string;
@@ -11,12 +12,14 @@ export interface AnnouncementBarProps {
 }
 
 export function AnnouncementBar({
-  message = 'Order-Made (OM) pieces require 14–21 workshop days. Precision sizing is locked once cutting begins.',
-  linkText = 'Learn more →',
-  linkHref = '/about',
+  message:
+    defaultMessage = 'Order-Made (OM) pieces require 14–21 workshop days. Precision sizing is locked once cutting begins.',
+  linkText: defaultLinkText = 'Learn more →',
+  linkHref: defaultLinkHref = '/about',
   storageKey = 'jj_announcement_dismissed',
 }: AnnouncementBarProps) {
   const [isDismissed, setIsDismissed] = useState<boolean>(true); // default true for SSR stability
+  const [activeAnnouncement, setActiveAnnouncement] = useState<AnnouncementDto | null>(null);
 
   useEffect(() => {
     try {
@@ -27,6 +30,18 @@ export function AnnouncementBar({
     } catch {
       setIsDismissed(false);
     }
+
+    // Dynamically fetch active scheduled announcements from CMS
+    getActiveAnnouncementsAction()
+      .then((res) => {
+        const first = res.data?.[0];
+        if (res.success && first) {
+          setActiveAnnouncement(first);
+        }
+      })
+      .catch(() => {
+        // Graceful fallback to static props
+      });
   }, [storageKey]);
 
   if (isDismissed) {
@@ -69,11 +84,15 @@ export function AnnouncementBar({
           position: 'relative',
         }}
       >
-        <span style={{ fontWeight: 500 }}>{message}</span>
+        <span style={{ fontWeight: 500 }}>
+          {activeAnnouncement
+            ? `${activeAnnouncement.title}: ${activeAnnouncement.message}`
+            : defaultMessage}
+        </span>
 
-        {linkHref && linkText && (
+        {defaultLinkHref && defaultLinkText && (
           <Link
-            href={linkHref}
+            href={defaultLinkHref}
             style={{
               color: '#0f172a',
               fontWeight: 600,
@@ -82,7 +101,7 @@ export function AnnouncementBar({
               whiteSpace: 'nowrap',
             }}
           >
-            {linkText}
+            {defaultLinkText}
           </Link>
         )}
 

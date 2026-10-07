@@ -1,0 +1,58 @@
+graph TD
+    classDef clientLayer fill:#1e293b,stroke:#38bdf8,stroke-width:1.5px,color:#f8fafc;
+    classDef appLayer fill:#0f172a,stroke:#818cf8,stroke-width:1.5px,color:#f8fafc;
+    classDef domainLayer fill:#18181b,stroke:#e2e8f0,stroke-width:1.5px,color:#f8fafc;
+    classDef dataLayer fill:#1e1e24,stroke:#34d399,stroke-width:1.5px,color:#f8fafc;
+    classDef engineLayer fill:#2a1b18,stroke:#f97316,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph Storefront["apps/storefront (Customer Dynamic Surface)"]
+        Pages["Dynamic CMS Routes<br/>/about, /sizing, /contact<br/>/guide, /returns, /terms, /privacy"]:::clientLayer
+        SizingStudio["Interactive Sizing Studio<br/>• Men vs. Women Anatomical Contours<br/>• Garment Flat Points A-Q vs Body Tape<br/>• Inches / CM Live Toggle"]:::engineLayer
+        ShrinkEngine["Selvedge Warp Shrinkage Engine<br/>• Loomstate Raw +3% Inseam Buffer<br/>• Zero-Elastane Thigh Ease (+1.0 in)"]:::engineLayer
+        JewelMandrel["Jewellery Mandrel & Shank Compensator<br/>• US / UK / EU Mandrel Table<br/>• Bands 8mm+ (+0.5 US Size Compensation)"]:::engineLayer
+        AtelierVault["Atelier Measurements Vault<br/>• Points A-Q Profile Storage<br/>• 1-Click Vault Save / Copy Spec"]:::clientLayer
+        NoticeBar["AnnouncementBar<br/>• Dynamic Active Notice Polling"]:::clientLayer
+    end
+
+    subgraph AdminApp["apps/admin (Operations Workbench)"]
+        AdminCMS["Content & CMS Workbench (/content)<br/>• Author, Edit, Preview Markdown<br/>• Publish, Archive Lifecycle<br/>• Scheduled Announcements Manager"]:::clientLayer
+    end
+
+    subgraph AppLayerBoundary["packages/application (Use-Case Ports & Services)"]
+        ContentSvc["ContentService<br/>• getPageBySlug(slug, allowDraft)<br/>• listPublishedPages() / listAllPages()<br/>• savePage() / publishPage() / archive()<br/>• getActiveAnnouncements()"]:::appLayer
+        VaultUseCase["CustomerProfileUseCase & CustomizationResolver<br/>• Dual-Craft Vault Preservation<br/>• Shrinkage Buffer Parameterization"]:::appLayer
+        ContentPort["IContentPageRepository"]:::appLayer
+        NoticePort["IAnnouncementRepository"]:::appLayer
+    end
+
+    subgraph DomainBoundary["packages/domain & contracts (Pure Entities & Schemas)"]
+        PageEntity["ContentPage Entity<br/>(DRAFT / PUBLISHED / ARCHIVED)"]:::domainLayer
+        NoticeEntity["Announcement Entity<br/>(Active Time-Window, Priority, Type)"]:::domainLayer
+        MeasurementSchemas["BottomsMeasurements (Points A-Q)<br/>TopsMeasurements & RingMeasurements<br/>GenderProfile & RisePreference"]:::domainLayer
+    end
+
+    subgraph DatabaseLayer["packages/database (Supabase Postgres & Drizzle ORM)"]
+        PageRepo["DrizzleContentPageRepository"]:::dataLayer
+        NoticeRepo["DrizzleAnnouncementRepository"]:::dataLayer
+        Tables["Tables: content_pages & announcements<br/>Indexes on slug, status, dates, priority"]:::dataLayer
+    end
+
+    %% Wiring
+    Pages --> ContentSvc
+    NoticeBar --> ContentSvc
+    AdminCMS --> ContentSvc
+    SizingStudio --> ShrinkEngine
+    SizingStudio --> JewelMandrel
+    SizingStudio --> AtelierVault
+    AtelierVault --> VaultUseCase
+
+    ContentSvc --> ContentPort
+    ContentSvc --> NoticePort
+    ContentPort --> PageRepo
+    NoticePort --> NoticeRepo
+    PageRepo --> Tables
+    NoticeRepo --> Tables
+
+    ContentSvc -.-> PageEntity
+    ContentSvc -.-> NoticeEntity
+    VaultUseCase -.-> MeasurementSchemas
