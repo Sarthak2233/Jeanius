@@ -69,11 +69,15 @@ export class DrizzleUserProfileRepository implements IUserProfileRepository {
     if (updates.phone !== undefined) valuesToUpdate.phone = updates.phone;
     if (updates.avatarUrl !== undefined) valuesToUpdate.avatarUrl = updates.avatarUrl;
     if (updates.role !== undefined) valuesToUpdate.role = updates.role;
-    if (updates.denimPreferences !== undefined) {
-      valuesToUpdate.denimPreferences = updates.denimPreferences as Record<string, unknown>;
+    if ('denimPreferences' in updates) {
+      valuesToUpdate.denimPreferences = updates.denimPreferences
+        ? (updates.denimPreferences as Record<string, unknown>)
+        : null;
     }
-    if (updates.jewelleryPreferences !== undefined) {
-      valuesToUpdate.jewelleryPreferences = updates.jewelleryPreferences as Record<string, unknown>;
+    if ('jewelleryPreferences' in updates) {
+      valuesToUpdate.jewelleryPreferences = updates.jewelleryPreferences
+        ? (updates.jewelleryPreferences as Record<string, unknown>)
+        : null;
     }
 
     const [updated] = await this.db

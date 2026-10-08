@@ -454,6 +454,33 @@ export function ContentWorkbenchClient({
                             Archive
                           </button>
                         )}
+                        {p.status === 'PUBLISHED' && (
+                          <a
+                            href={
+                              ['about', 'guide', 'terms', 'privacy', 'returns'].includes(
+                                p.slug.toLowerCase(),
+                              )
+                                ? `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/${p.slug}`
+                                : `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/pages/${p.slug}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              backgroundColor: '#1e293b',
+                              color: '#38bdf8',
+                              border: '1px solid #334155',
+                              padding: '0.35rem 0.65rem',
+                              borderRadius: '4px',
+                              fontSize: '0.75rem',
+                              textDecoration: 'none',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.25rem',
+                            }}
+                          >
+                            View Live ↗
+                          </a>
+                        )}
                       </div>
                     </td>
                   </tr>

@@ -12,6 +12,10 @@ import type {
   JewelleryFinish,
   DenimMeasurements,
   JewelleryMeasurements,
+  StomachProfile,
+  SeatProfile,
+  FitCutType,
+  RisePreference,
 } from '@jeanius/domain';
 import type { ResolvedCustomizationDefaultsDto } from '@jeanius/contracts';
 import {
@@ -28,6 +32,7 @@ export interface AccountClientProps {
     readonly fullName: string;
     readonly phone?: string | null;
     readonly role: string;
+    readonly craftFocus?: 'GARMENT' | 'JEWELLERY' | 'DUAL_CRAFT';
     readonly denimPreferences?: DenimMeasurements;
     readonly jewelleryPreferences?: JewelleryMeasurements;
   };
@@ -54,6 +59,18 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
     null,
   );
 
+  const initialCraftFocus: 'GARMENT' | 'JEWELLERY' | 'DUAL_CRAFT' =
+    profile.craftFocus ||
+    (profile.denimPreferences && !profile.jewelleryPreferences
+      ? 'GARMENT'
+      : !profile.denimPreferences && profile.jewelleryPreferences
+        ? 'JEWELLERY'
+        : 'DUAL_CRAFT');
+
+  const [craftFocus, setCraftFocus] = useState<'GARMENT' | 'JEWELLERY' | 'DUAL_CRAFT'>(
+    initialCraftFocus,
+  );
+
   // Vault form state
   const denim = profile.denimPreferences || {};
   const bottoms = denim.bottoms || {};
@@ -74,6 +91,7 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
   const [inseam, setInseam] = useState<string>(
     bottoms.inseamInches?.toString() || denim.inseamInches?.toString() || '34',
   );
+  const [outseam, setOutseam] = useState<string>(bottoms.outseamInches?.toString() || '42');
   const [thigh, setThigh] = useState<string>(bottoms.thighInches?.toString() || '23');
   const [knee, setKnee] = useState<string>(bottoms.kneeInches?.toString() || '17');
   const [legOpening, setLegOpening] = useState<string>(
@@ -81,16 +99,25 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
   );
   const [frontRise, setFrontRise] = useState<string>(bottoms.frontRiseInches?.toString() || '11');
   const [backRise, setBackRise] = useState<string>(bottoms.backRiseInches?.toString() || '14.5');
+  const [crotchTotal, setCrotchTotal] = useState<string>(
+    bottoms.crotchTotalInches?.toString() || '25.5',
+  );
+  const [calf, setCalf] = useState<string>(bottoms.calfInches?.toString() || '15');
+  const [ankle, setAnkle] = useState<string>(bottoms.ankleInches?.toString() || '10');
   const [naturalWaist, setNaturalWaist] = useState<string>(
     bottoms.naturalWaistInches?.toString() || '28',
   );
   const [hips, setHips] = useState<string>(bottoms.hipsInches?.toString() || '38');
-  const [risePreference, setRisePreference] = useState<'HIGH_RISE' | 'MID_RISE' | 'LOW_RISE'>(
-    (bottoms.risePreference as 'HIGH_RISE' | 'MID_RISE' | 'LOW_RISE') || 'MID_RISE',
+  const [risePreference, setRisePreference] = useState<RisePreference>(
+    (bottoms.risePreference as RisePreference) || 'MID_RISE',
   );
-  const [seatProfile, setSeatProfile] = useState<'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT'>(
-    (bottoms.seatProfile as 'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT') || 'AVERAGE',
+  const [seatProfile, setSeatProfile] = useState<SeatProfile>(
+    (bottoms.seatProfile as SeatProfile) || 'AVERAGE',
   );
+  const [stomachProfile, setStomachProfile] = useState<StomachProfile>(
+    (bottoms.stomachProfile as StomachProfile) || 'AVERAGE',
+  );
+  const [bottomsFitCut, setBottomsFitCut] = useState<FitCutType>(bottoms.fitCut || 'NORMAL');
   const [silhouette, setSilhouette] = useState<BottomsSilhouette>(
     bottoms.silhouette || denim.silhouette || 'STRAIGHT',
   );
@@ -98,12 +125,47 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
     bottoms.hemAllowanceInches?.toString() || '1',
   );
 
-  // Denim Tops
+  // Denim Tops (Modern Tailor Shirt & Suit System)
+  const [topsGender, setTopsGender] = useState<'MEN' | 'WOMEN' | 'UNISEX'>(
+    (tops.gender as 'MEN' | 'WOMEN' | 'UNISEX') || 'MEN',
+  );
+  const [collar, setCollar] = useState<string>(
+    tops.collarInches?.toString() || tops.neckInches?.toString() || '16',
+  );
   const [chest, setChest] = useState<string>(tops.chestInches?.toString() || '40');
+  const [shirtWaist, setShirtWaist] = useState<string>(tops.waistInches?.toString() || '36');
+  const [stomach, setStomach] = useState<string>(tops.stomachInches?.toString() || '38');
+  const [shirtHip, setShirtHip] = useState<string>(tops.hipInches?.toString() || '40');
   const [shoulder, setShoulder] = useState<string>(tops.shoulderWidthInches?.toString() || '18');
+  const [yoke, setYoke] = useState<string>(tops.yokeInches?.toString() || '18.5');
   const [sleeve, setSleeve] = useState<string>(tops.sleeveLengthInches?.toString() || '25');
+  const [shortSleeve, setShortSleeve] = useState<string>(
+    tops.shortSleeveLengthInches?.toString() || '9.5',
+  );
+  const [bicep, setBicep] = useState<string>(tops.bicepInches?.toString() || '14');
+  const [cuff, setCuff] = useState<string>(
+    tops.cuffInches?.toString() || tops.wristInches?.toString() || '9.5',
+  );
+  const [armhole, setArmhole] = useState<string>(tops.armholeInches?.toString() || '20');
+  const [shirtLength, setShirtLength] = useState<string>(
+    tops.shirtLengthInches?.toString() || tops.backLengthInches?.toString() || '30',
+  );
+  const [jacketLength, setJacketLength] = useState<string>(
+    tops.jacketLengthInches?.toString() || '30',
+  );
+  const [breastPoint, setBreastPoint] = useState<string>(
+    tops.breastPointInches?.toString() || '10.5',
+  );
+  const [waistPoint, setWaistPoint] = useState<string>(tops.waistPointInches?.toString() || '16.5');
+  const [frontBustWidth, setFrontBustWidth] = useState<string>(
+    tops.frontBustWidthInches?.toString() || '18',
+  );
   const [fitPreference, setFitPreference] = useState<TopsFitPreference>(
     tops.fitPreference || 'REGULAR',
+  );
+  const [topsFitCut, setTopsFitCut] = useState<FitCutType>(tops.fitCut || 'NORMAL');
+  const [topsStomachProfile, setTopsStomachProfile] = useState<StomachProfile>(
+    (tops.stomachProfile as StomachProfile) || 'AVERAGE',
   );
 
   // Jewellery
@@ -139,70 +201,194 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
   const [addrCountry, setAddrCountry] = useState('NP');
   const [addrPhone, setAddrPhone] = useState(profile.phone || '+977-9800000000');
 
-  const handleSaveVault = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const getGarmentPayload = () => ({
+    bottoms: {
+      gender,
+      waistInches: parseFloat(waist) || 32,
+      inseamInches: parseFloat(inseam) || 34,
+      outseamInches: parseFloat(outseam) || undefined,
+      thighInches: parseFloat(thigh) || undefined,
+      kneeInches: parseFloat(knee) || undefined,
+      legOpeningInches: parseFloat(legOpening) || undefined,
+      frontRiseInches: parseFloat(frontRise) || undefined,
+      backRiseInches: parseFloat(backRise) || undefined,
+      crotchTotalInches: parseFloat(crotchTotal) || undefined,
+      calfInches: parseFloat(calf) || undefined,
+      ankleInches: parseFloat(ankle) || undefined,
+      naturalWaistInches: parseFloat(naturalWaist) || undefined,
+      hipsInches: parseFloat(hips) || undefined,
+      risePreference,
+      seatProfile,
+      stomachProfile,
+      fitCut: bottomsFitCut,
+      silhouette,
+      hemAllowanceInches: parseFloat(hemAllowance) || 1,
+    },
+    tops: {
+      gender: topsGender,
+      collarInches: parseFloat(collar) || undefined,
+      neckInches: parseFloat(collar) || undefined,
+      chestInches: parseFloat(chest) || 40,
+      waistInches: parseFloat(shirtWaist) || undefined,
+      stomachInches: parseFloat(stomach) || undefined,
+      hipInches: parseFloat(shirtHip) || undefined,
+      shoulderWidthInches: parseFloat(shoulder) || 18,
+      yokeInches: parseFloat(yoke) || undefined,
+      sleeveLengthInches: parseFloat(sleeve) || 25,
+      shortSleeveLengthInches: parseFloat(shortSleeve) || undefined,
+      bicepInches: parseFloat(bicep) || undefined,
+      cuffInches: parseFloat(cuff) || undefined,
+      wristInches: parseFloat(cuff) || undefined,
+      armholeInches: parseFloat(armhole) || undefined,
+      shirtLengthInches: parseFloat(shirtLength) || undefined,
+      jacketLengthInches: parseFloat(jacketLength) || undefined,
+      backLengthInches: parseFloat(shirtLength) || undefined,
+      breastPointInches: topsGender === 'WOMEN' ? parseFloat(breastPoint) || undefined : undefined,
+      waistPointInches: topsGender === 'WOMEN' ? parseFloat(waistPoint) || undefined : undefined,
+      frontBustWidthInches:
+        topsGender === 'WOMEN' ? parseFloat(frontBustWidth) || undefined : undefined,
+      fitPreference,
+      fitCut: topsFitCut,
+      stomachProfile: topsStomachProfile,
+    },
+    waistInches: parseFloat(waist) || 32,
+    inseamInches: parseFloat(inseam) || 34,
+    silhouette,
+  });
+
+  const getJewelleryPayload = () => ({
+    rings: {
+      ringSizeUs: ringSize,
+      bandWidthMm: parseFloat(bandWidth) || undefined,
+      preferredFinger: 'RING' as const,
+    },
+    wrists: {
+      wristCircumferenceInches: parseFloat(wristCirc) || 7.25,
+      braceletFit,
+    },
+    necklaces: {
+      preferredChainLengthInches: parseFloat(chainLength) || 22,
+      chainStyle,
+    },
+    metals: {
+      preferredAlloy,
+      preferredFinish,
+    },
+    ringSizeUs: ringSize,
+    preferredAlloy,
+    preferredFinish,
+  });
+
+  const handleSaveGarmentVault = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setFeedback(null);
 
     startTransition(async () => {
-      const payload = {
-        denimPreferences: {
-          bottoms: {
-            gender,
-            waistInches: parseFloat(waist) || 32,
-            inseamInches: parseFloat(inseam) || 34,
-            thighInches: parseFloat(thigh) || undefined,
-            kneeInches: parseFloat(knee) || undefined,
-            legOpeningInches: parseFloat(legOpening) || undefined,
-            frontRiseInches: parseFloat(frontRise) || undefined,
-            backRiseInches: parseFloat(backRise) || undefined,
-            naturalWaistInches: parseFloat(naturalWaist) || undefined,
-            hipsInches: parseFloat(hips) || undefined,
-            risePreference,
-            seatProfile,
-            silhouette,
-            hemAllowanceInches: parseFloat(hemAllowance) || 1,
-          },
-          tops: {
-            chestInches: parseFloat(chest) || 40,
-            shoulderWidthInches: parseFloat(shoulder) || 18,
-            sleeveLengthInches: parseFloat(sleeve) || 25,
-            fitPreference,
-          },
-          waistInches: parseFloat(waist) || 32,
-          inseamInches: parseFloat(inseam) || 34,
-          silhouette,
-        },
-        jewelleryPreferences: {
-          rings: {
-            ringSizeUs: ringSize,
-            bandWidthMm: parseFloat(bandWidth) || undefined,
-            preferredFinger: 'RING' as const,
-          },
-          wrists: {
-            wristCircumferenceInches: parseFloat(wristCirc) || 7.25,
-            braceletFit,
-          },
-          necklaces: {
-            preferredChainLengthInches: parseFloat(chainLength) || 22,
-            chainStyle,
-          },
-          metals: {
-            preferredAlloy,
-            preferredFinish,
-          },
-          ringSizeUs: ringSize,
-          preferredAlloy,
-          preferredFinish,
-        },
-      };
-
-      const result = await updateProfileAction(payload);
+      const result = await updateProfileAction({
+        denimPreferences: getGarmentPayload(),
+        craftFocus: craftFocus === 'DUAL_CRAFT' ? 'DUAL_CRAFT' : 'GARMENT',
+      });
       if (!result.success) {
-        setFeedback({ type: 'error', message: result.error?.message || 'Failed to save vault' });
+        setFeedback({
+          type: 'error',
+          message: result.error?.message || 'Failed to save garment vault',
+        });
         return;
       }
 
-      setFeedback({ type: 'success', message: 'Atelier Measurements Vault saved successfully!' });
+      setFeedback({
+        type: 'success',
+        message: 'Garment Tailoring measurements saved to Atelier Vault!',
+      });
+      router.refresh();
+    });
+  };
+
+  const handleSaveJewelleryVault = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setFeedback(null);
+
+    startTransition(async () => {
+      const result = await updateProfileAction({
+        jewelleryPreferences: getJewelleryPayload(),
+        craftFocus: craftFocus === 'DUAL_CRAFT' ? 'DUAL_CRAFT' : 'JEWELLERY',
+      });
+      if (!result.success) {
+        setFeedback({
+          type: 'error',
+          message: result.error?.message || 'Failed to save jewellery vault',
+        });
+        return;
+      }
+
+      setFeedback({
+        type: 'success',
+        message: 'Precious Jewellery specifications saved to Atelier Vault!',
+      });
+      router.refresh();
+    });
+  };
+
+  const handleSaveBothVaults = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setFeedback(null);
+
+    startTransition(async () => {
+      const result = await updateProfileAction({
+        denimPreferences: getGarmentPayload(),
+        jewelleryPreferences: getJewelleryPayload(),
+        craftFocus: 'DUAL_CRAFT',
+      });
+      if (!result.success) {
+        setFeedback({
+          type: 'error',
+          message: result.error?.message || 'Failed to save atelier vault',
+        });
+        return;
+      }
+
+      setFeedback({
+        type: 'success',
+        message: 'Dual-Craft Atelier measurements saved successfully!',
+      });
+      router.refresh();
+    });
+  };
+
+  const handleClearGarmentProfile = async () => {
+    if (!window.confirm('Clear saved garment measurements from the vault?')) return;
+    setFeedback(null);
+
+    startTransition(async () => {
+      const result = await updateProfileAction({ denimPreferences: null });
+      if (!result.success) {
+        setFeedback({
+          type: 'error',
+          message: result.error?.message || 'Failed to clear garment profile',
+        });
+        return;
+      }
+
+      setFeedback({ type: 'success', message: 'Garment profile cleared from vault.' });
+      router.refresh();
+    });
+  };
+
+  const handleClearJewelleryProfile = async () => {
+    if (!window.confirm('Clear saved jewellery specifications from the vault?')) return;
+    setFeedback(null);
+
+    startTransition(async () => {
+      const result = await updateProfileAction({ jewelleryPreferences: null });
+      if (!result.success) {
+        setFeedback({
+          type: 'error',
+          message: result.error?.message || 'Failed to clear jewellery profile',
+        });
+        return;
+      }
+
+      setFeedback({ type: 'success', message: 'Jewellery profile cleared from vault.' });
       router.refresh();
     });
   };
@@ -385,386 +571,833 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
 
       {/* TAB 1: MEASUREMENTS VAULT */}
       {activeTab === 'vault' && (
-        <form onSubmit={handleSaveVault}>
+        <div>
+          {/* Craft Focus Mode Switcher */}
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+              padding: '1.25rem 1.5rem',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '1rem',
+            }}
+          >
+            <div>
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontFamily: 'var(--font-mono, monospace)',
+                  textTransform: 'uppercase',
+                  color: '#64748b',
+                  letterSpacing: '0.08em',
+                  fontWeight: 600,
+                  display: 'block',
+                  marginBottom: '0.2rem',
+                }}
+              >
+                Atelier Craft Specialization
+              </span>
+              <h3 style={{ fontSize: '1.05rem', color: '#0f172a', margin: 0 }}>
+                Decoupled Sizing: Garment, Jewellery, or Both
+              </h3>
+            </div>
+
+            <div
+              style={{
+                display: 'inline-flex',
+                backgroundColor: '#f1f5f9',
+                padding: '4px',
+                borderRadius: '6px',
+                gap: '4px',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setCraftFocus('GARMENT')}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  backgroundColor: craftFocus === 'GARMENT' ? '#0f172a' : 'transparent',
+                  color: craftFocus === 'GARMENT' ? '#ffffff' : '#475569',
+                  transition: 'all 150ms ease',
+                }}
+              >
+                👖 Garment Only
+              </button>
+              <button
+                type="button"
+                onClick={() => setCraftFocus('JEWELLERY')}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  backgroundColor: craftFocus === 'JEWELLERY' ? '#0f172a' : 'transparent',
+                  color: craftFocus === 'JEWELLERY' ? '#ffffff' : '#475569',
+                  transition: 'all 150ms ease',
+                }}
+              >
+                💍 Jewellery Only
+              </button>
+              <button
+                type="button"
+                onClick={() => setCraftFocus('DUAL_CRAFT')}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  backgroundColor: craftFocus === 'DUAL_CRAFT' ? '#0f172a' : 'transparent',
+                  color: craftFocus === 'DUAL_CRAFT' ? '#ffffff' : '#475569',
+                  transition: 'all 150ms ease',
+                }}
+              >
+                ✨ Dual-Craft (Both)
+              </button>
+            </div>
+          </div>
+
+          {/* Craft Status Telemetry Cards */}
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '1rem',
+              marginBottom: '2rem',
+            }}
+          >
+            <div
+              style={{
+                padding: '0.85rem 1.15rem',
+                borderRadius: '6px',
+                border: '1px solid',
+                borderColor: profile.denimPreferences ? '#bbf7d0' : '#e2e8f0',
+                backgroundColor: profile.denimPreferences ? '#f0fdf4' : '#f8fafc',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <div>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#334155' }}>
+                  👖 Garment Profile
+                </span>
+                <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '2px' }}>
+                  {profile.denimPreferences
+                    ? `Waist ${waist}" · Inseam ${inseam}" (${silhouette})`
+                    : 'Unconfigured (Optional for jewellery patrons)'}
+                </div>
+              </div>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  padding: '2px 8px',
+                  borderRadius: '9999px',
+                  backgroundColor: profile.denimPreferences ? '#dcfce7' : '#e2e8f0',
+                  color: profile.denimPreferences ? '#166534' : '#64748b',
+                }}
+              >
+                {profile.denimPreferences ? 'SAVED' : 'UNSET'}
+              </span>
+            </div>
+
+            <div
+              style={{
+                padding: '0.85rem 1.15rem',
+                borderRadius: '6px',
+                border: '1px solid',
+                borderColor: profile.jewelleryPreferences ? '#fed7aa' : '#e2e8f0',
+                backgroundColor: profile.jewelleryPreferences ? '#fff7ed' : '#f8fafc',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <div>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#334155' }}>
+                  💍 Jewellery Profile
+                </span>
+                <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '2px' }}>
+                  {profile.jewelleryPreferences
+                    ? `Ring US ${ringSize} · Wrist ${wristCirc}" (${preferredAlloy.split('_')[0]})`
+                    : 'Unconfigured (Optional for denim patrons)'}
+                </div>
+              </div>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  padding: '2px 8px',
+                  borderRadius: '9999px',
+                  backgroundColor: profile.jewelleryPreferences ? '#ffedd5' : '#e2e8f0',
+                  color: profile.jewelleryPreferences ? '#9a3412' : '#64748b',
+                }}
+              >
+                {profile.jewelleryPreferences ? 'SAVED' : 'UNSET'}
+              </span>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns:
+                craftFocus === 'DUAL_CRAFT' ? 'repeat(auto-fit, minmax(360px, 1fr))' : '1fr',
               gap: '2rem',
             }}
           >
             {/* Denim Tailoring */}
-            <div
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '6px',
-                padding: '1.5rem',
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: '1.1rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  color: '#1e3a8a',
-                  margin: '0 0 1rem 0',
-                  borderBottom: '1px solid #e2e8f0',
-                  paddingBottom: '0.5rem',
-                }}
-              >
-                1. Denim Tailoring Vault
-              </h2>
-
+            {(craftFocus === 'GARMENT' || craftFocus === 'DUAL_CRAFT') && (
               <div
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  margin: '1rem 0 0.5rem 0',
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '6px',
+                  padding: '1.5rem',
                 }}
               >
-                <h3
+                <h2
                   style={{
-                    fontSize: '0.85rem',
-                    color: '#64748b',
+                    fontSize: '1.1rem',
                     textTransform: 'uppercase',
-                    margin: 0,
+                    letterSpacing: '0.05em',
+                    color: '#1e3a8a',
+                    margin: '0 0 1rem 0',
+                    borderBottom: '1px solid #e2e8f0',
+                    paddingBottom: '0.5rem',
                   }}
                 >
-                  Lower Body (Jeans & Trousers)
-                </h3>
-                <Link
-                  href="/sizing"
-                  target="_blank"
-                  style={{
-                    fontSize: '0.72rem',
-                    color: '#b91c1c',
-                    textDecoration: 'underline',
-                    fontWeight: 600,
-                  }}
-                >
-                  Need Guidance? Sizing Studio ↗
-                </Link>
-              </div>
+                  1. Denim Tailoring Vault
+                </h2>
 
-              {/* Gender Cut & Rise Profile */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr 1fr',
-                  gap: '1rem',
-                  marginBottom: '1rem',
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Anatomical Pattern Cut
-                  </label>
-                  <select
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value as 'MEN' | 'WOMEN' | 'UNISEX')}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    <option value="MEN">Men’s Pattern (Pelvic Anchor)</option>
-                    <option value="WOMEN">Women’s Pattern (Lordosis Curve)</option>
-                    <option value="UNISEX">Unisex / Vintage Straight</option>
-                  </select>
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Rise Preference
-                  </label>
-                  <select
-                    value={risePreference}
-                    onChange={(e) =>
-                      setRisePreference(e.target.value as 'HIGH_RISE' | 'MID_RISE' | 'LOW_RISE')
-                    }
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    <option value="MID_RISE">Mid Rise (Classic)</option>
-                    <option value="HIGH_RISE">High Rise (Torso Anchor)</option>
-                    <option value="LOW_RISE">Low Rise (Hip Hugger)</option>
-                  </select>
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Point Q: Seat Profile
-                  </label>
-                  <select
-                    value={seatProfile}
-                    onChange={(e) =>
-                      setSeatProfile(e.target.value as 'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT')
-                    }
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    <option value="AVERAGE">Average Posture</option>
-                    <option value="FLAT">Flat Seat</option>
-                    <option value="ROUNDED">Rounded / Prominent</option>
-                    <option value="STOUT">Stout Fork</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Point A & Point H: Waist & Inseam */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '1rem',
-                  marginBottom: '1rem',
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Point A: Waist (Inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={waist}
-                    onChange={(e) => setWaist(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Point H: Inseam (Inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={inseam}
-                    onChange={(e) => setInseam(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Points C, D & E: Thigh, Knee & Leg Opening */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr 1fr',
-                  gap: '1rem',
-                  marginBottom: '1rem',
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Point C: Thigh (Inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={thigh}
-                    onChange={(e) => setThigh(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Point D: Knee (Inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={knee}
-                    onChange={(e) => setKnee(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Point E: Hem Opening (Inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={legOpening}
-                    onChange={(e) => setLegOpening(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Points F & G: Front & Back Rise */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '1rem',
-                  marginBottom: '1rem',
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Point F: Front Rise (Inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.25"
-                    value={frontRise}
-                    onChange={(e) => setFrontRise(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Point G: Back Rise (Inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.25"
-                    value={backRise}
-                    onChange={(e) => setBackRise(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Women's Specific Points L & B */}
-              {gender === 'WOMEN' && (
                 <div
                   style={{
-                    backgroundColor: '#fff7ed',
-                    border: '1px solid #fed7aa',
-                    padding: '0.75rem',
-                    borderRadius: '4px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    margin: '1rem 0 0.5rem 0',
+                  }}
+                >
+                  <h3
+                    style={{
+                      fontSize: '0.85rem',
+                      color: '#64748b',
+                      textTransform: 'uppercase',
+                      margin: 0,
+                    }}
+                  >
+                    Lower Body (Jeans & Trousers)
+                  </h3>
+                  <Link
+                    href="/sizing"
+                    target="_blank"
+                    style={{
+                      fontSize: '0.72rem',
+                      color: '#b91c1c',
+                      textDecoration: 'underline',
+                      fontWeight: 600,
+                    }}
+                  >
+                    Need Guidance? Sizing Studio ↗
+                  </Link>
+                </div>
+
+                {/* Lower Body Configuration Row 1 */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                    gap: '1rem',
                     marginBottom: '1rem',
                   }}
                 >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Anatomical Pattern Cut
+                    </label>
+                    <select
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value as 'MEN' | 'WOMEN' | 'UNISEX')}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="MEN">Men’s Pattern (Pelvic Anchor)</option>
+                      <option value="WOMEN">Women’s Pattern (Lordosis Curve)</option>
+                      <option value="UNISEX">Unisex / Vintage Straight</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Rise Preference
+                    </label>
+                    <select
+                      value={risePreference}
+                      onChange={(e) =>
+                        setRisePreference(e.target.value as 'HIGH_RISE' | 'MID_RISE' | 'LOW_RISE')
+                      }
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="MID_RISE">Mid Rise (Classic)</option>
+                      <option value="HIGH_RISE">High Rise (Torso Anchor)</option>
+                      <option value="LOW_RISE">Low Rise (Hip Hugger)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Trouser Fit Ease
+                    </label>
+                    <select
+                      value={bottomsFitCut}
+                      onChange={(e) => setBottomsFitCut(e.target.value as FitCutType)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="NORMAL">Normal Fit (Tailored Room)</option>
+                      <option value="SLIM">Slim Fit (Clean Contour)</option>
+                      <option value="LOOSE">Loose Fit (Comfort Relaxed)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Lower Body Posture Profiles */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point Q: Seat Posture
+                    </label>
+                    <select
+                      value={seatProfile}
+                      onChange={(e) =>
+                        setSeatProfile(e.target.value as 'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT')
+                      }
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="AVERAGE">Average Posture</option>
+                      <option value="FLAT">Flat Seat</option>
+                      <option value="ROUNDED">Rounded / Prominent</option>
+                      <option value="STOUT">Stout Fork</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Abdomen / Stomach Posture
+                    </label>
+                    <select
+                      value={stomachProfile}
+                      onChange={(e) =>
+                        setStomachProfile(
+                          e.target.value as 'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT',
+                        )
+                      }
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="AVERAGE">Average Abdomen</option>
+                      <option value="FLAT">Flat Stomach</option>
+                      <option value="ROUNDED">Rounded Stomach</option>
+                      <option value="STOUT">Stout (Beer Belly)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Point A, Point H & Point I: Waist, Inseam & Outseam */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point A: Waist (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={waist}
+                      onChange={(e) => setWaist(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point H: Inseam (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={inseam}
+                      onChange={(e) => setInseam(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point I: Outseam / Pants Length
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={outseam}
+                      onChange={(e) => setOutseam(e.target.value)}
+                      placeholder="42"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Points C, D & E: Thigh, Knee & Leg Opening */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point C: Thigh (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={thigh}
+                      onChange={(e) => setThigh(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point D: Knee (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={knee}
+                      onChange={(e) => setKnee(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point E: Hem Opening (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={legOpening}
+                      onChange={(e) => setLegOpening(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Points F, G & N: Front Rise, Back Rise & Total Crotch */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point F: Front Rise (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={frontRise}
+                      onChange={(e) => setFrontRise(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point G: Back Rise (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={backRise}
+                      onChange={(e) => setBackRise(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point N: Total Crotch
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={crotchTotal}
+                      onChange={(e) => setCrotchTotal(e.target.value)}
+                      placeholder="25.5"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Points O & P: Calf & Ankle Circumference */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point O: Calf Circumference (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={calf}
+                      onChange={(e) => setCalf(e.target.value)}
+                      placeholder="15.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point P: Ankle Circumference (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={ankle}
+                      onChange={(e) => setAnkle(e.target.value)}
+                      placeholder="10.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Point B: Fullest Hips & Cut Silhouette */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Point B: Hips / Seat Fullest
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={hips}
+                      onChange={(e) => setHips(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Cut Silhouette
+                    </label>
+                    <select
+                      value={silhouette}
+                      onChange={(e) => setSilhouette(e.target.value as BottomsSilhouette)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="STRAIGHT">Straight Selvedge</option>
+                      <option value="SLIM_TAPERED">Slim Tapered</option>
+                      <option value="WIDE_LEG">Wide Leg Atelier</option>
+                      <option value="RELAXED_TAPERED">Relaxed Tapered</option>
+                      <option value="BOOTCUT">Vintage Bootcut</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Hem Allowance (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={hemAllowance}
+                      onChange={(e) => setHemAllowance(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Women's Specific Point L */}
+                {gender === 'WOMEN' && (
                   <div
                     style={{
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      color: '#9a3412',
-                      marginBottom: '0.5rem',
+                      backgroundColor: '#fff7ed',
+                      border: '1px solid #fed7aa',
+                      padding: '0.75rem',
+                      borderRadius: '4px',
+                      marginBottom: '1rem',
                     }}
                   >
-                    FEMALE ANATOMY CALIBRATION (POINTS L &amp; B)
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    <div
+                      style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        color: '#9a3412',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
+                      FEMALE ANATOMY CALIBRATION (POINT L)
+                    </div>
                     <div>
                       <label
                         style={{
@@ -774,7 +1407,7 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
                           color: '#475569',
                         }}
                       >
-                        Point L: Natural Waist (Ribs)
+                        Point L: Natural Waist (Narrowest Rib Plane)
                       </label>
                       <input
                         type="number"
@@ -783,30 +1416,7 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
                         onChange={(e) => setNaturalWaist(e.target.value)}
                         style={{
                           width: '100%',
-                          padding: '0.4rem',
-                          border: '1px solid #cbd5e1',
-                          borderRadius: '4px',
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <label
-                        style={{
-                          display: 'block',
-                          fontSize: '0.72rem',
-                          fontWeight: 600,
-                          color: '#475569',
-                        }}
-                      >
-                        Point B: Hips Fullest
-                      </label>
-                      <input
-                        type="number"
-                        step="0.5"
-                        value={hips}
-                        onChange={(e) => setHips(e.target.value)}
-                        style={{
-                          width: '100%',
+                          maxWidth: '240px',
                           padding: '0.4rem',
                           border: '1px solid #cbd5e1',
                           borderRadius: '4px',
@@ -814,510 +1424,1193 @@ export function AccountClientView({ profile, addresses }: AccountClientProps) {
                       />
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Silhouette & Hem Allowance */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '1rem',
-                  marginBottom: '1rem',
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Cut Silhouette
-                  </label>
-                  <select
-                    value={silhouette}
-                    onChange={(e) => setSilhouette(e.target.value as BottomsSilhouette)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    <option value="STRAIGHT">Straight Selvedge</option>
-                    <option value="SLIM_TAPERED">Slim Tapered</option>
-                    <option value="WIDE_LEG">Wide Leg Atelier</option>
-                    <option value="RELAXED_TAPERED">Relaxed Tapered</option>
-                    <option value="BOOTCUT">Vintage Bootcut</option>
-                  </select>
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Hem Allowance (Inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.25"
-                    value={hemAllowance}
-                    onChange={(e) => setHemAllowance(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-              </div>
+                {/* ======================================================= */}
+                {/* UPPER BODY (SHIRTS, JACKETS & SUITS - MODERN TAILOR)     */}
+                {/* ======================================================= */}
+                <h3
+                  style={{
+                    fontSize: '0.85rem',
+                    color: '#64748b',
+                    textTransform: 'uppercase',
+                    margin: '2rem 0 0.5rem 0',
+                    borderTop: '1px solid #f1f5f9',
+                    paddingTop: '1.25rem',
+                  }}
+                >
+                  Upper Body (Shirts, Overshirts, Jackets &amp; Suits)
+                </h3>
 
-              <h3
-                style={{
-                  fontSize: '0.85rem',
-                  color: '#64748b',
-                  textTransform: 'uppercase',
-                  margin: '1.5rem 0 0.5rem 0',
-                }}
-              >
-                Upper Body (Jackets & Overshirts)
-              </h3>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '1rem',
-                  marginBottom: '1rem',
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Chest Circumference
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={chest}
-                    onChange={(e) => setChest(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Shoulder Width
-                  </label>
-                  <input
-                    type="number"
-                    step="0.25"
-                    value={shoulder}
-                    onChange={(e) => setShoulder(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Sleeve Length
-                  </label>
-                  <input
-                    type="number"
-                    step="0.25"
-                    value={sleeve}
-                    onChange={(e) => setSleeve(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Jacket Fit
-                  </label>
-                  <select
-                    value={fitPreference}
-                    onChange={(e) => setFitPreference(e.target.value as TopsFitPreference)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    <option value="REGULAR">Regular Workwear</option>
-                    <option value="SLIM">Slim Tailored</option>
-                    <option value="BOXY">Boxy Type II</option>
-                    <option value="OVERSIZED">Oversized Chore</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Jewellery & Metalsmithing */}
-            <div
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '6px',
-                padding: '1.5rem',
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: '1.1rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  color: '#92400e',
-                  margin: '0 0 1rem 0',
-                  borderBottom: '1px solid #e2e8f0',
-                  paddingBottom: '0.5rem',
-                }}
-              >
-                2. Jewellery & Metalsmithing Vault
-              </h2>
-
-              <h3
-                style={{
-                  fontSize: '0.85rem',
-                  color: '#64748b',
-                  textTransform: 'uppercase',
-                  margin: '1rem 0 0.5rem 0',
-                }}
-              >
-                Fingers & Wrists
-              </h3>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr 1fr',
-                  gap: '1rem',
-                  marginBottom: '0.75rem',
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Ring Size (US)
-                  </label>
-                  <input
-                    type="text"
-                    value={ringSize}
-                    onChange={(e) => setRingSize(e.target.value)}
-                    placeholder="10.0"
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Band Width (mm)
-                  </label>
-                  <input
-                    type="number"
-                    step="1"
-                    min="3"
-                    max="16"
-                    value={bandWidth}
-                    onChange={(e) => setBandWidth(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Wrist Circumference
-                  </label>
-                  <input
-                    type="number"
-                    step="0.25"
-                    value={wristCirc}
-                    onChange={(e) => setWristCirc(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {parseFloat(bandWidth) >= 8 && (
+                {/* Upper Body Configuration Row 1 */}
                 <div
                   style={{
-                    fontSize: '0.75rem',
-                    color: '#92400e',
-                    backgroundColor: '#fef3c7',
-                    padding: '0.4rem 0.75rem',
-                    borderRadius: '4px',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                    gap: '1rem',
                     marginBottom: '1rem',
                   }}
                 >
-                  ⚡ Wide Shank Rule: Bands ≥ 8mm automatically receive +0.5 size compensation
-                  during lost-wax casting.
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Upper Pattern Model
+                    </label>
+                    <select
+                      value={topsGender}
+                      onChange={(e) => setTopsGender(e.target.value as 'MEN' | 'WOMEN' | 'UNISEX')}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="MEN">Men’s Shirt &amp; Suit Cut</option>
+                      <option value="WOMEN">Women’s Shirt &amp; Blouse Cut</option>
+                      <option value="UNISEX">Unisex Overshirt Cut</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Fit Allowance Ease
+                    </label>
+                    <select
+                      value={topsFitCut}
+                      onChange={(e) => setTopsFitCut(e.target.value as FitCutType)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="NORMAL">Normal Fit (+16cm Ease)</option>
+                      <option value="SLIM">Slim Fit (+12cm Ease)</option>
+                      <option value="LOOSE">Loose Fit (+20cm Ease)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Jacket / Overshirt Fit
+                    </label>
+                    <select
+                      value={fitPreference}
+                      onChange={(e) => setFitPreference(e.target.value as TopsFitPreference)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="REGULAR">Regular Workwear</option>
+                      <option value="SLIM">Slim Tailored</option>
+                      <option value="BOXY">Boxy Type II</option>
+                      <option value="OVERSIZED">Oversized Chore</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Abdomen Profile
+                    </label>
+                    <select
+                      value={topsStomachProfile}
+                      onChange={(e) =>
+                        setTopsStomachProfile(
+                          e.target.value as 'FLAT' | 'AVERAGE' | 'ROUNDED' | 'STOUT',
+                        )
+                      }
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="AVERAGE">Average Abdomen</option>
+                      <option value="FLAT">Flat Stomach</option>
+                      <option value="ROUNDED">Rounded</option>
+                      <option value="STOUT">Stout (Beer Belly)</option>
+                    </select>
+                  </div>
                 </div>
-              )}
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '1rem',
-                  marginBottom: '1rem',
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Cuff / Bracelet Fit
-                  </label>
-                  <select
-                    value={braceletFit}
-                    onChange={(e) => setBraceletFit(e.target.value as BraceletFitType)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    <option value="COMFORT">Comfort Fit</option>
-                    <option value="SNUG">Snug Fit</option>
-                    <option value="LOOSE">Loose Drape</option>
-                  </select>
+                {/* Upper Body Row 2: Collar, Chest, Shirt Waist */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Collar / Neck (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={collar}
+                      onChange={(e) => setCollar(e.target.value)}
+                      placeholder="16.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Chest Circumference
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={chest}
+                      onChange={(e) => setChest(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Shirt Waistline (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={shirtWaist}
+                      onChange={(e) => setShirtWaist(e.target.value)}
+                      placeholder="36.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Chain Style
-                  </label>
-                  <select
-                    value={chainStyle}
-                    onChange={(e) => setChainStyle(e.target.value as ChainStyleType)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    <option value="CURB">Curb</option>
-                    <option value="CABLE">Cable</option>
-                    <option value="ROPE">Rope</option>
-                    <option value="BOX">Box</option>
-                    <option value="FIGARO">Figaro</option>
-                  </select>
+
+                {/* Upper Body Row 3: Stomach, Hip, Shirt Length */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Stomach / Belly (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={stomach}
+                      onChange={(e) => setStomach(e.target.value)}
+                      placeholder="38.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Shirt Base Hip (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={shirtHip}
+                      onChange={(e) => setShirtHip(e.target.value)}
+                      placeholder="40.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Shirt Length (Front Neck to Hem)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={shirtLength}
+                      onChange={(e) => setShirtLength(e.target.value)}
+                      placeholder="30.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Suit Jacket Length (to Thumb Joint)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={jacketLength}
+                      onChange={(e) => setJacketLength(e.target.value)}
+                      placeholder="30.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label
+
+                {/* Upper Body Row 4: Shoulders, Yoke, Armhole */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Shoulder Width
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={shoulder}
+                      onChange={(e) => setShoulder(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Yoke (Back Shoulder-to-Shoulder)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={yoke}
+                      onChange={(e) => setYoke(e.target.value)}
+                      placeholder="18.5"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Armhole / Sleeve Hole
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={armhole}
+                      onChange={(e) => setArmhole(e.target.value)}
+                      placeholder="20.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Upper Body Row 5: Sleeve, Short Sleeve, Bicep, Cuff */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Sleeve Length
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={sleeve}
+                      onChange={(e) => setSleeve(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Short Sleeve
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={shortSleeve}
+                      onChange={(e) => setShortSleeve(e.target.value)}
+                      placeholder="9.5"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Bicep (Upper Arm)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={bicep}
+                      onChange={(e) => setBicep(e.target.value)}
+                      placeholder="14.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Cuff / Wrist (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={cuff}
+                      onChange={(e) => setCuff(e.target.value)}
+                      placeholder="9.5"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Women's Specific Upper Body Callout */}
+                {(topsGender === 'WOMEN' || gender === 'WOMEN') && (
+                  <div
                     style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
+                      backgroundColor: '#fff7ed',
+                      border: '1px solid #fed7aa',
+                      padding: '0.75rem',
+                      borderRadius: '4px',
+                      marginBottom: '1rem',
                     }}
                   >
-                    Chain Length (Inches)
-                  </label>
-                  <input
-                    type="number"
-                    value={chainLength}
-                    onChange={(e) => setChainLength(e.target.value)}
+                    <div
+                      style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        color: '#9a3412',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
+                      WOMEN’S UPPER BODY CALIBRATION (BREAST POINT, WAIST POINT &amp; BUST)
+                    </div>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+                        gap: '0.75rem',
+                      }}
+                    >
+                      <div>
+                        <label
+                          style={{
+                            display: 'block',
+                            fontSize: '0.72rem',
+                            fontWeight: 600,
+                            color: '#475569',
+                          }}
+                        >
+                          Breast Point (Shoulder to Apex)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.25"
+                          value={breastPoint}
+                          onChange={(e) => setBreastPoint(e.target.value)}
+                          placeholder="10.5"
+                          style={{
+                            width: '100%',
+                            padding: '0.4rem',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '4px',
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={{
+                            display: 'block',
+                            fontSize: '0.72rem',
+                            fontWeight: 600,
+                            color: '#475569',
+                          }}
+                        >
+                          Waist Point (Shoulder to Waist)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.25"
+                          value={waistPoint}
+                          onChange={(e) => setWaistPoint(e.target.value)}
+                          placeholder="16.5"
+                          style={{
+                            width: '100%',
+                            padding: '0.4rem',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '4px',
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={{
+                            display: 'block',
+                            fontSize: '0.72rem',
+                            fontWeight: 600,
+                            color: '#475569',
+                          }}
+                        >
+                          Front Bust Width (Armpit to Armpit)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.25"
+                          value={frontBustWidth}
+                          onChange={(e) => setFrontBustWidth(e.target.value)}
+                          placeholder="18.0"
+                          style={{
+                            width: '100%',
+                            padding: '0.4rem',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '4px',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Denim Box Action Footer */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginTop: '2rem',
+                    paddingTop: '1rem',
+                    borderTop: '1px solid #f1f5f9',
+                  }}
+                >
+                  {profile.denimPreferences ? (
+                    <button
+                      type="button"
+                      onClick={handleClearGarmentProfile}
+                      disabled={isPending}
+                      style={{
+                        padding: '0.5rem 1rem',
+                        background: 'transparent',
+                        color: '#b91c1c',
+                        border: '1px solid #fecaca',
+                        borderRadius: '4px',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: isPending ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      Clear Garment Profile ✕
+                    </button>
+                  ) : (
+                    <div />
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleSaveGarmentVault}
+                    disabled={isPending}
                     style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
+                      padding: '0.65rem 1.35rem',
+                      background: '#1e3a8a',
+                      color: '#ffffff',
+                      border: 'none',
                       borderRadius: '4px',
+                      fontWeight: 600,
+                      fontSize: '0.85rem',
+                      cursor: isPending ? 'not-allowed' : 'pointer',
                     }}
-                  />
+                  >
+                    {isPending ? 'Saving...' : 'Save Garment Vault 👖'}
+                  </button>
                 </div>
               </div>
+            )}
 
-              <h3
-                style={{
-                  fontSize: '0.85rem',
-                  color: '#64748b',
-                  textTransform: 'uppercase',
-                  margin: '1.5rem 0 0.5rem 0',
-                }}
-              >
-                Metallurgical Preferences
-              </h3>
+            {/* Jewellery & Metalsmithing */}
+            {(craftFocus === 'JEWELLERY' || craftFocus === 'DUAL_CRAFT') && (
               <div
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '1rem',
-                  marginBottom: '1rem',
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '6px',
+                  padding: '1.5rem',
                 }}
               >
-                <div>
-                  <label
+                <h2
+                  style={{
+                    fontSize: '1.1rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: '#92400e',
+                    margin: '0 0 1rem 0',
+                    borderBottom: '1px solid #e2e8f0',
+                    paddingBottom: '0.5rem',
+                  }}
+                >
+                  2. Jewellery & Metalsmithing Vault
+                </h2>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    margin: '1rem 0 0.5rem 0',
+                  }}
+                >
+                  <h3
                     style={{
-                      display: 'block',
-                      fontSize: '0.75rem',
+                      fontSize: '0.85rem',
+                      color: '#64748b',
+                      textTransform: 'uppercase',
+                      margin: 0,
+                    }}
+                  >
+                    Fingers & Wrists
+                  </h3>
+                  <Link
+                    href="/sizing"
+                    target="_blank"
+                    style={{
+                      fontSize: '0.72rem',
+                      color: '#b91c1c',
+                      textDecoration: 'underline',
                       fontWeight: 600,
-                      color: '#475569',
                     }}
                   >
-                    Preferred Metal Alloy
-                  </label>
-                  <select
-                    value={preferredAlloy}
-                    onChange={(e) => setPreferredAlloy(e.target.value as PreciousAlloy)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    <option value="STERLING_SILVER_925">.925 Sterling Silver</option>
-                    <option value="SOLID_BRASS">Solid Yellow Brass</option>
-                    <option value="GOLD_18K">18K Solid Gold</option>
-                    <option value="WHITE_GOLD_14K">14K White Gold</option>
-                  </select>
+                    Need Guidance? Sizing Studio ↗
+                  </Link>
                 </div>
-                <div>
-                  <label
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '0.75rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Ring Size (US)
+                    </label>
+                    <input
+                      type="text"
+                      value={ringSize}
+                      onChange={(e) => setRingSize(e.target.value)}
+                      placeholder="10.0"
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Band Width (mm)
+                    </label>
+                    <input
+                      type="number"
+                      step="1"
+                      min="3"
+                      max="16"
+                      value={bandWidth}
+                      onChange={(e) => setBandWidth(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Wrist Circumference
+                    </label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={wristCirc}
+                      onChange={(e) => setWristCirc(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {parseFloat(bandWidth) >= 8 && (
+                  <div
                     style={{
-                      display: 'block',
                       fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#475569',
-                    }}
-                  >
-                    Preferred Patina / Finish
-                  </label>
-                  <select
-                    value={preferredFinish}
-                    onChange={(e) => setPreferredFinish(e.target.value as JewelleryFinish)}
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #cbd5e1',
+                      color: '#92400e',
+                      backgroundColor: '#fef3c7',
+                      padding: '0.4rem 0.75rem',
                       borderRadius: '4px',
+                      marginBottom: '1rem',
                     }}
                   >
-                    <option value="OXIDIZED_PATINA">Oxidized Vintage Patina</option>
-                    <option value="HIGH_POLISH">High Mirror Polish</option>
-                    <option value="SATIN_MATTE">Satin Hand Brushed</option>
-                    <option value="HAMMERED_RAW">Raw Hammered Texture</option>
-                  </select>
+                    ⚡ Wide Shank Rule: Bands ≥ 8mm automatically receive +0.5 size compensation
+                    during lost-wax casting.
+                  </div>
+                )}
+
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Cuff / Bracelet Fit
+                    </label>
+                    <select
+                      value={braceletFit}
+                      onChange={(e) => setBraceletFit(e.target.value as BraceletFitType)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="COMFORT">Comfort Fit</option>
+                      <option value="SNUG">Snug Fit</option>
+                      <option value="LOOSE">Loose Drape</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Chain Style
+                    </label>
+                    <select
+                      value={chainStyle}
+                      onChange={(e) => setChainStyle(e.target.value as ChainStyleType)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="CURB">Curb</option>
+                      <option value="CABLE">Cable</option>
+                      <option value="ROPE">Rope</option>
+                      <option value="BOX">Box</option>
+                      <option value="FIGARO">Figaro</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Chain Length (Inches)
+                    </label>
+                    <input
+                      type="number"
+                      value={chainLength}
+                      onChange={(e) => setChainLength(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <h3
+                  style={{
+                    fontSize: '0.85rem',
+                    color: '#64748b',
+                    textTransform: 'uppercase',
+                    margin: '1.5rem 0 0.5rem 0',
+                  }}
+                >
+                  Metallurgical Preferences
+                </h3>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Preferred Metal Alloy
+                    </label>
+                    <select
+                      value={preferredAlloy}
+                      onChange={(e) => setPreferredAlloy(e.target.value as PreciousAlloy)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="STERLING_SILVER_925">.925 Sterling Silver</option>
+                      <option value="SOLID_BRASS">Solid Yellow Brass</option>
+                      <option value="GOLD_18K">18K Solid Gold</option>
+                      <option value="WHITE_GOLD_14K">14K White Gold</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                      }}
+                    >
+                      Preferred Patina / Finish
+                    </label>
+                    <select
+                      value={preferredFinish}
+                      onChange={(e) => setPreferredFinish(e.target.value as JewelleryFinish)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <option value="OXIDIZED_PATINA">Oxidized Vintage Patina</option>
+                      <option value="HIGH_POLISH">High Mirror Polish</option>
+                      <option value="SATIN_MATTE">Satin Hand Brushed</option>
+                      <option value="HAMMERED_RAW">Raw Hammered Texture</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Jewellery Box Action Footer */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginTop: '2rem',
+                    paddingTop: '1rem',
+                    borderTop: '1px solid #f1f5f9',
+                  }}
+                >
+                  {profile.jewelleryPreferences ? (
+                    <button
+                      type="button"
+                      onClick={handleClearJewelleryProfile}
+                      disabled={isPending}
+                      style={{
+                        padding: '0.5rem 1rem',
+                        background: 'transparent',
+                        color: '#b91c1c',
+                        border: '1px solid #fecaca',
+                        borderRadius: '4px',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: isPending ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      Clear Jewellery Profile ✕
+                    </button>
+                  ) : (
+                    <div />
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleSaveJewelleryVault}
+                    disabled={isPending}
+                    style={{
+                      padding: '0.65rem 1.35rem',
+                      background: '#92400e',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      fontWeight: 600,
+                      fontSize: '0.85rem',
+                      cursor: isPending ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {isPending ? 'Saving...' : 'Save Jewellery Vault 💍'}
+                  </button>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
-          <div style={{ marginTop: '2rem', textAlign: 'right' }}>
-            <button
-              type="submit"
-              disabled={isPending}
+          {/* Unified Save Button for Dual-Craft mode */}
+          {craftFocus === 'DUAL_CRAFT' && (
+            <div
               style={{
-                padding: '0.75rem 1.75rem',
-                background: '#0f172a',
-                color: '#fdfbf7',
-                border: 'none',
-                borderRadius: '4px',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                cursor: isPending ? 'not-allowed' : 'pointer',
+                marginTop: '2.5rem',
+                padding: '1.5rem',
+                backgroundColor: '#faf8f4',
+                border: '1px solid #ebe7df',
+                borderRadius: '8px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '1rem',
               }}
             >
-              {isPending ? 'Saving Bespoke Vault...' : 'Save Atelier Measurements Vault'}
-            </button>
-          </div>
-        </form>
+              <div>
+                <h4 style={{ margin: 0, color: '#0f172a', fontSize: '1rem' }}>
+                  Complete Atelier Patron Profile
+                </h4>
+                <p style={{ margin: '0.25rem 0 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+                  Save both denim tailoring and jewellery specifications in a single verified atomic
+                  transaction.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleSaveBothVaults}
+                disabled={isPending}
+                style={{
+                  padding: '0.75rem 1.75rem',
+                  background: '#0f172a',
+                  color: '#fdfbf7',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  cursor: isPending ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {isPending ? 'Saving Dual Vault...' : 'Save Both Atelier Vaults ✨'}
+              </button>
+            </div>
+          )}
+
+          {/* Single Focus Assistance Banners */}
+          {craftFocus === 'GARMENT' && (
+            <div
+              style={{
+                marginTop: '1.5rem',
+                padding: '1rem 1.25rem',
+                backgroundColor: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+                color: '#64748b',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '1rem',
+              }}
+            >
+              <span>
+                💡 Looking to customize precious jewellery too? Switch to{' '}
+                <strong>Jewellery Only</strong> or <strong>Dual-Craft</strong> anytime.
+              </span>
+              <button
+                type="button"
+                onClick={() => setCraftFocus('DUAL_CRAFT')}
+                style={{
+                  padding: '0.35rem 0.75rem',
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '4px',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  color: '#0f172a',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Enable Dual-Craft ↗
+              </button>
+            </div>
+          )}
+
+          {craftFocus === 'JEWELLERY' && (
+            <div
+              style={{
+                marginTop: '1.5rem',
+                padding: '1rem 1.25rem',
+                backgroundColor: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+                color: '#64748b',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '1rem',
+              }}
+            >
+              <span>
+                💡 Looking to order bespoke jeans too? Switch to <strong>Garment Only</strong> or{' '}
+                <strong>Dual-Craft</strong> anytime.
+              </span>
+              <button
+                type="button"
+                onClick={() => setCraftFocus('DUAL_CRAFT')}
+                style={{
+                  padding: '0.35rem 0.75rem',
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '4px',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  color: '#0f172a',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Enable Dual-Craft ↗
+              </button>
+            </div>
+          )}
+        </div>
       )}
 
       {/* TAB 2: AUTO-FILL SIMULATOR */}

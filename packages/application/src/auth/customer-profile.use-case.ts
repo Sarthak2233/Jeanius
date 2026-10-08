@@ -1,5 +1,5 @@
 import type { UpdateProfileDto, CreateAddressInputDto } from '@jeanius/contracts';
-import type { UserProfile } from '@jeanius/domain';
+import type { UserProfile, DenimMeasurements, JewelleryMeasurements } from '@jeanius/domain';
 import { NotFoundError } from '@jeanius/domain';
 import type { IUserProfileRepository } from './user-profile-repository.port';
 import type { IAddressRepository, AddressRecord } from './address-repository.port';
@@ -35,14 +35,53 @@ export class CustomerProfileUseCase {
       throw new NotFoundError('UserProfile', userId);
     }
 
+    const denimPreferences =
+      dto.denimPreferences === null
+        ? undefined
+        : (dto.denimPreferences ?? existing.denimPreferences);
+
+    const jewelleryPreferences =
+      dto.jewelleryPreferences === null
+        ? undefined
+        : (dto.jewelleryPreferences ?? existing.jewelleryPreferences);
+
     return this.userProfileRepository.update(userId, {
       fullName: dto.fullName ?? existing.fullName,
       phone: dto.phone ?? existing.phone,
       avatarUrl: dto.avatarUrl ?? existing.avatarUrl,
-      denimPreferences: dto.denimPreferences ?? existing.denimPreferences,
-      jewelleryPreferences: dto.jewelleryPreferences ?? existing.jewelleryPreferences,
+      craftFocus: dto.craftFocus ?? existing.craftFocus,
+      denimPreferences,
+      jewelleryPreferences,
       updatedAt: new Date(),
     });
+  }
+
+  async updateGarmentPreferences(
+    userId: string,
+    preferences: DenimMeasurements,
+  ): Promise<UserProfile> {
+    return this.updateProfile(userId, {
+      denimPreferences: preferences,
+      craftFocus: 'GARMENT',
+    });
+  }
+
+  async updateJewelleryPreferences(
+    userId: string,
+    preferences: JewelleryMeasurements,
+  ): Promise<UserProfile> {
+    return this.updateProfile(userId, {
+      jewelleryPreferences: preferences,
+      craftFocus: 'JEWELLERY',
+    });
+  }
+
+  async clearGarmentPreferences(userId: string): Promise<UserProfile> {
+    return this.updateProfile(userId, { denimPreferences: null });
+  }
+
+  async clearJewelleryPreferences(userId: string): Promise<UserProfile> {
+    return this.updateProfile(userId, { jewelleryPreferences: null });
   }
 
   async addAddress(userId: string, dto: CreateAddressInputDto): Promise<AddressRecord> {

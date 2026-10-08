@@ -38,6 +38,7 @@ export function MobileDrawer({
       badge: !isMemberOrAdmin ? '🔒 VIP' : '★ VIP',
       isVip: true,
     },
+    { label: 'Atelier Stories', href: '/pages' },
     { label: 'Together', href: '/together' },
     { label: 'Sizing Guide', href: '/sizing' },
     { label: 'Contact Studio', href: '/contact' },
@@ -56,9 +57,10 @@ export function MobileDrawer({
         style={{
           display: 'flex',
           flexDirection: 'column',
-          height: '100%',
+          flex: 1,
           justifyContent: 'space-between',
-          padding: '1.25rem',
+          minHeight: '100%',
+          gap: '2rem',
         }}
       >
         {/* Navigation Links */}

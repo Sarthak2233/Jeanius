@@ -181,7 +181,19 @@ export function AccountNavState({
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        fontSize: '0.7rem',
+        fontWeight: 600,
+        paddingLeft: '0.25rem',
+        flexShrink: 0,
+        whiteSpace: 'nowrap',
+        minWidth: 0,
+      }}
+    >
       <Link
         href="/account"
         style={{
@@ -194,6 +206,7 @@ export function AccountNavState({
       >
         <span
           style={{
+            flexShrink: 0,
             fontSize: '0.7rem',
             fontWeight: 700,
             padding: '0.15rem 0.45rem',
@@ -202,11 +215,25 @@ export function AccountNavState({
             color: roleBadgeColor,
             textTransform: 'uppercase',
             letterSpacing: '0.02em',
+            whiteSpace: 'nowrap',
           }}
         >
           {roleLabel}
         </span>
-        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{fullName}</span>
+        <span
+          title={fullName}
+          style={{
+            fontSize: '0.6rem',
+            fontWeight: 600,
+            maxWidth: '120px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            display: 'block',
+          }}
+        >
+          {fullName}
+        </span>
       </Link>
 
       <form action={logoutAction}>

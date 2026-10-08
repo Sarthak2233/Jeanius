@@ -41,9 +41,8 @@ export function DesktopHeader({
           justifyContent: 'space-between',
           width: '100%',
           maxWidth: '1280px',
-          margin: '0 auto',
-          padding: '0 2rem',
-          height: '64px',
+          margin: '2px auto',
+          padding: '2px 2rem',
         }}
       >
         {/* Brand & Studio Emblem */}
@@ -89,7 +88,13 @@ export function DesktopHeader({
           {/* Primary Editorial Navigation */}
           <nav
             aria-label="Primary desktop navigation"
-            style={{ display: 'flex', gap: '1.75rem', alignItems: 'center' }}
+            style={{
+              display: 'flex',
+              gap: '1.75rem',
+              alignItems: 'center',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
+            }}
           >
             <Link
               href="/about"
@@ -115,6 +120,8 @@ export function DesktopHeader({
                 fontWeight: 600,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
                 transition: 'color var(--duration-micro, 150ms) ease',
               }}
             >
@@ -155,6 +162,21 @@ export function DesktopHeader({
               ) : (
                 <span style={{ color: '#b45309', fontSize: '0.75rem' }}>★</span>
               )}
+            </Link>
+
+            <Link
+              href="/pages"
+              style={{
+                textDecoration: 'none',
+                color: '#334155',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                transition: 'color var(--duration-micro, 150ms) ease',
+              }}
+            >
+              Stories
             </Link>
 
             <Link
@@ -205,7 +227,16 @@ export function DesktopHeader({
         </div>
 
         {/* Utility Tray: Currency, Account State & Cart Bag */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1.25rem',
+            paddingRight: '0.75rem',
+            flexShrink: 0,
+            whiteSpace: 'nowrap',
+          }}
+        >
           <span
             style={{
               fontSize: '0.72rem',
@@ -218,6 +249,8 @@ export function DesktopHeader({
               borderRadius: '4px',
               backgroundColor: '#f8fafc',
               border: '1px solid #e2e8f0',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
             }}
           >
             USD ($)
@@ -329,6 +362,22 @@ export function DesktopHeader({
               }}
             >
               OM Lead Times (14-21d)
+            </Link>
+
+            <Link
+              href="/pages/kathmandu-atelier"
+              style={{
+                textDecoration: 'none',
+                border: '1px solid #e2e8f0',
+                borderRadius: '9999px',
+                padding: '0.22rem 0.65rem',
+                fontSize: '0.72rem',
+                color: '#475569',
+                backgroundColor: '#ffffff',
+                transition: 'border-color 150ms ease, color 150ms ease',
+              }}
+            >
+              Kathmandu Atelier
             </Link>
 
             <button

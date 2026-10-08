@@ -1,8 +1,9 @@
 import type { UserProfileId } from '../common/entity-id.js';
 import type { ActorRole } from '../index.js';
 
-// ================= Tailoring (Denim / Garments) =================
+// ================= Tailoring & Craft Focus =================
 
+export type CraftFocus = 'GARMENT' | 'JEWELLERY' | 'DUAL_CRAFT';
 export type GenderProfile = 'MEN' | 'WOMEN' | 'UNISEX';
 export type MeasurementMethod = 'GARMENT_FLAT' | 'BODY_ANATOMICAL';
 export type MeasurementUnit = 'INCHES' | 'CM';
@@ -36,6 +37,8 @@ export interface BottomsMeasurements {
   readonly frontRiseInches?: number;
   readonly backRiseInches?: number;
   readonly crotchTotalInches?: number;
+  readonly calfInches?: number;
+  readonly ankleInches?: number;
   readonly silhouette?: BottomsSilhouette;
   readonly risePreference?: RisePreference;
   readonly fitCut?: FitCutType;
@@ -65,8 +68,16 @@ export interface TopsMeasurements {
   readonly armholeInches?: number;
   readonly collarInches?: number;
   readonly neckInches?: number;
+  readonly shirtLengthInches?: number;
+  readonly jacketLengthInches?: number;
   readonly backLengthInches?: number;
+  readonly yokeInches?: number;
+  readonly cuffInches?: number;
+  readonly waistInches?: number;
+  readonly hipInches?: number;
   readonly fitPreference?: TopsFitPreference;
+  readonly fitCut?: FitCutType;
+  readonly stomachProfile?: StomachProfile;
 }
 
 export interface DenimMeasurements {
@@ -141,6 +152,7 @@ export interface UserProfileProps {
   readonly role: ActorRole;
   readonly phone?: string;
   readonly avatarUrl?: string;
+  readonly craftFocus?: CraftFocus;
   readonly denimPreferences?: DenimMeasurements;
   readonly jewelleryPreferences?: JewelleryMeasurements;
   readonly createdAt: Date;
@@ -155,6 +167,7 @@ export class UserProfile {
 
   private _phone?: string;
   private _avatarUrl?: string;
+  private _craftFocus?: CraftFocus;
   private _denimPreferences?: DenimMeasurements;
   private _jewelleryPreferences?: JewelleryMeasurements;
   readonly createdAt: Date;
@@ -168,6 +181,7 @@ export class UserProfile {
 
     this._phone = props.phone;
     this._avatarUrl = props.avatarUrl;
+    this._craftFocus = props.craftFocus;
     this._denimPreferences = props.denimPreferences;
     this._jewelleryPreferences = props.jewelleryPreferences;
 
@@ -263,6 +277,67 @@ export class UserProfile {
     return undefined;
   }
 
+  get craftFocus(): CraftFocus {
+    if (this._craftFocus) {
+      return this._craftFocus;
+    }
+    const hasGarment = this.hasGarmentProfile();
+    const hasJewellery = this.hasJewelleryProfile();
+    if (hasGarment && !hasJewellery) return 'GARMENT';
+    if (!hasGarment && hasJewellery) return 'JEWELLERY';
+    return 'DUAL_CRAFT';
+  }
+
+  setCraftFocus(focus: CraftFocus): void {
+    this._craftFocus = focus;
+    this._updatedAt = new Date();
+  }
+
+  hasGarmentProfile(): boolean {
+    if (!this._denimPreferences) return false;
+    return (
+      this._denimPreferences.bottoms !== undefined ||
+      this._denimPreferences.waistInches !== undefined ||
+      this._denimPreferences.inseamInches !== undefined ||
+      this._denimPreferences.tops !== undefined
+    );
+  }
+
+  hasJewelleryProfile(): boolean {
+    if (!this._jewelleryPreferences) return false;
+    return (
+      this._jewelleryPreferences.rings !== undefined ||
+      this._jewelleryPreferences.ringSizeUs !== undefined ||
+      this._jewelleryPreferences.wrists !== undefined ||
+      this._jewelleryPreferences.necklaces !== undefined ||
+      this._jewelleryPreferences.metals !== undefined
+    );
+  }
+
+  hasDualCraftProfile(): boolean {
+    return this.hasGarmentProfile() && this.hasJewelleryProfile();
+  }
+
+  updateDenimPreferences(denim?: DenimMeasurements): void {
+    this._denimPreferences = denim;
+    this._updatedAt = new Date();
+  }
+
+  clearDenimPreferences(): void {
+    this._denimPreferences = undefined;
+    this._updatedAt = new Date();
+  }
+
+  updateJewelleryPreferences(jewellery?: JewelleryMeasurements): void {
+    this._jewelleryPreferences = jewellery;
+    this._updatedAt = new Date();
+  }
+
+  clearJewelleryPreferences(): void {
+    this._jewelleryPreferences = undefined;
+    this._updatedAt = new Date();
+  }
+
   get updatedAt(): Date {
     return new Date(this._updatedAt);
   }
@@ -296,6 +371,7 @@ export class UserProfile {
       role: this.role,
       phone: this._phone,
       avatarUrl: this._avatarUrl,
+      craftFocus: this.craftFocus,
       denimPreferences: this._denimPreferences,
       jewelleryPreferences: this._jewelleryPreferences,
       createdAt: this.createdAt,

@@ -352,18 +352,26 @@ Implement the restrained Jeanius & Jewl visual language before feature UI.
 | JN-159 | Add announcement scheduling   | Start/end dates.                 | DONE   |
 | JN-160 | Build About content           | Brand story.                     | DONE   |
 | JN-161 | Build Guide content           | OM/DROP/shipping education.      | DONE   |
-| JN-162 | Build Sizing content          | Measurement guidance.            | DONE   |
+| JN-162 | Build Sizing content          | Measurement guidance (Decoupled Garment & Jewellery Vault, Modern Tailor Points A–Q and 1–13, Ease Matrix, and Ring Mandrels). | DONE   |
 | JN-163 | Build Contact content         | Support instructions.            | DONE   |
 | JN-164 | Build return/refund content   | Policy pages.                    | DONE   |
 | JN-165 | Build legal content           | Terms/privacy/etc.               | DONE   |
 | JN-166 | Add content publishing state  | Draft/published/archived.        | DONE   |
 | JN-167 | Add content preview           | Admin preview before publishing. | DONE   |
 
+**Stage 08 Craft Architecture Highlights:**
+- **Decoupled Craft Focus (`GARMENT`, `JEWELLERY`, `DUAL_CRAFT`):** Users configure independent sizing profiles with atomic save/clear operations.
+- **Modern Tailor Lower Body (Points A–Q):** Waist, hips, thigh, knee, hem, rises, crotch total, calf, ankle, and posture profiles with Kurabo loomstate shrinkage buffer (+3%).
+- **Modern Tailor Upper Body (Points 1–13):** Collar, chest, waist, stomach, hips, shoulder, yoke, sleeves, bicep, cuffs, armhole, lengths, and female dart mapping (Breast Point, Waist Point, Front Bust).
+- **Fit Ease Matrix & Standard Size Tables:** Modern Tailor ease formulas (Slim: +12cm, Normal: +16cm/+4cm/-2cm, Loose: +20cm/+8cm/-4cm) and finished shirt European size tables (XS–XXL).
+- **Solid 925 Jewellery Calibration:** International mandrel table (US 5.0–13.0) and wide-shank compensator (+0.5 US for ≥8mm bands).
+- **Auto-Fill Engine:** Resolves customizer defaults from saved vault specifications for zero-friction made-to-order ordering.
+
 ---
 
 # STATE 09 — PRODUCT CATALOG
 
-This is one of the most important Jeanius domains.
+This is one of the most important Jeanius and Jewels domains.
 
 | ID     | Task                          | Description                          | Status      |
 | ------ | ----------------------------- | ------------------------------------ | ----------- |

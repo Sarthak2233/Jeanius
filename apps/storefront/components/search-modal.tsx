@@ -7,8 +7,10 @@ import { Modal } from './modal';
 
 const SUGGESTED_QUERIES = [
   { label: 'Raw Selvedge 16oz', href: '/?q=selvedge' },
+  { label: 'Inside Kathmandu Atelier', href: '/pages/kathmandu-atelier' },
   { label: 'Ring Mandrel Guide', href: '/sizing' },
   { label: 'OM Tailoring Lead Time', href: '/about' },
+  { label: 'Atelier Stories & Archive', href: '/pages' },
   { label: 'Sterling Silver 925', href: '/?q=silver' },
 ];
 

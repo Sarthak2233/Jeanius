@@ -71,6 +71,35 @@ export async function getContentPageAction(slug: string): Promise<ActionResult<C
   }
 }
 
+export async function listPublishedContentPagesAction(): Promise<
+  ActionResult<readonly ContentPageDto[]>
+> {
+  try {
+    const service = getContentService();
+    const pages = await service.listPublishedPages();
+
+    return {
+      success: true,
+      data: pages.map((page) => ({
+        id: page.id,
+        slug: page.slug,
+        title: page.title,
+        contentMarkdown: page.contentMarkdown,
+        metaDescription: page.metaDescription,
+        status: page.status,
+        publishedAt: page.publishedAt?.toISOString(),
+        updatedAt: page.updatedAt.toISOString(),
+      })),
+    };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to list published content pages';
+    return {
+      success: false,
+      error: { code: 'CONTENT_LIST_FAILED', message },
+    };
+  }
+}
+
 export async function getActiveAnnouncementsAction(): Promise<
   ActionResult<readonly AnnouncementDto[]>
 > {

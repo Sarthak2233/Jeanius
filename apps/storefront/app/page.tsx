@@ -45,10 +45,10 @@ export default function HomePage() {
                 width: '6px',
                 height: '6px',
                 borderRadius: '50%',
-                backgroundColor: '#b91c1c',
+                backgroundColor: '#fa0707ff',
               }}
             />
-            KATHMANDU CUTTING TABLES · SEOUL SILVERSMITHING BENCH
+            KATHMANDU CUTTING TABLES · SILVERSMITHING BENCH
           </div>
 
           <h1

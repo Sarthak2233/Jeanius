@@ -1,6 +1,6 @@
 'use client';
-
-import React, { useEffect, useId } from 'react';
+import React, { useEffect, useId, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface DrawerProps {
   readonly isOpen: boolean;
@@ -23,7 +23,12 @@ export function Drawer({
   className = '',
   style,
 }: DrawerProps) {
+  const [mounted, setMounted] = useState(false);
   const titleId = useId();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Escape key dismiss & body scroll lock
   useEffect(() => {
@@ -55,7 +60,7 @@ export function Drawer({
 
   const isRight = position === 'right';
 
-  return (
+  const content = (
     <div
       role="dialog"
       aria-modal="true"
@@ -152,9 +157,11 @@ export function Drawer({
         {/* Drawer Body */}
         <div
           style={{
-            padding: '1.5rem',
+            padding: '1.25rem',
             overflowY: 'auto',
             flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
             fontFamily: 'var(--font-sans, sans-serif)',
           }}
         >
@@ -163,4 +170,10 @@ export function Drawer({
       </div>
     </div>
   );
+
+  if (typeof document !== 'undefined' && mounted) {
+    return createPortal(content, document.body);
+  }
+
+  return content;
 }

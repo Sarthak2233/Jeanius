@@ -242,6 +242,8 @@ export const BottomsMeasurementsSchema = z.object({
   frontRiseInches: z.number().min(7).max(20).optional(),
   backRiseInches: z.number().min(10).max(25).optional(),
   crotchTotalInches: z.number().min(18).max(40).optional(),
+  calfInches: z.number().min(10).max(25).optional(),
+  ankleInches: z.number().min(7).max(18).optional(),
   silhouette: z
     .enum(['STRAIGHT', 'SLIM_TAPERED', 'WIDE_LEG', 'RELAXED_TAPERED', 'BOOTCUT'])
     .optional(),
@@ -273,8 +275,16 @@ export const TopsMeasurementsSchema = z.object({
   armholeInches: z.number().min(14).max(30).optional(),
   collarInches: z.number().min(11).max(24).optional(),
   neckInches: z.number().min(11).max(24).optional(),
+  shirtLengthInches: z.number().min(20).max(45).optional(),
+  jacketLengthInches: z.number().min(24).max(45).optional(),
   backLengthInches: z.number().min(18).max(42).optional(),
+  yokeInches: z.number().min(12).max(28).optional(),
+  cuffInches: z.number().min(7).max(16).optional(),
+  waistInches: z.number().min(24).max(60).optional(),
+  hipInches: z.number().min(28).max(65).optional(),
   fitPreference: z.enum(['SLIM', 'REGULAR', 'BOXY', 'OVERSIZED']).optional(),
+  fitCut: z.enum(['SLIM', 'NORMAL', 'LOOSE']).optional(),
+  stomachProfile: StomachProfileSchema.optional(),
 });
 
 export const DenimPreferencesSchema = z.object({
@@ -415,12 +425,25 @@ export const ResolvedCustomizationDefaultsSchema = z.object({
   appliedFromVault: z.boolean(),
 });
 
+export const CraftFocusSchema = z.enum(['GARMENT', 'JEWELLERY', 'DUAL_CRAFT']);
+
 export const UpdateProfileSchema = z.object({
   fullName: z.string().min(2).optional(),
   phone: z.string().optional(),
   avatarUrl: z.string().url().optional(),
-  denimPreferences: DenimPreferencesSchema.optional(),
-  jewelleryPreferences: JewelleryPreferencesSchema.optional(),
+  craftFocus: CraftFocusSchema.optional(),
+  denimPreferences: DenimPreferencesSchema.nullable().optional(),
+  jewelleryPreferences: JewelleryPreferencesSchema.nullable().optional(),
+});
+
+export const UpdateGarmentPreferencesSchema = z.object({
+  denimPreferences: DenimPreferencesSchema.nullable(),
+  craftFocus: CraftFocusSchema.optional(),
+});
+
+export const UpdateJewelleryPreferencesSchema = z.object({
+  jewelleryPreferences: JewelleryPreferencesSchema.nullable(),
+  craftFocus: CraftFocusSchema.optional(),
 });
 
 export const CreateAddressInputSchema = AddressSchema.extend({
@@ -483,3 +506,6 @@ export type UpdateContentPageDto = z.infer<typeof UpdateContentPageSchema>;
 export type AnnouncementDto = z.infer<typeof AnnouncementSchema>;
 export type CreateAnnouncementDto = z.infer<typeof CreateAnnouncementSchema>;
 export type UpdateAnnouncementDto = z.infer<typeof UpdateAnnouncementSchema>;
+export type CraftFocusDto = z.infer<typeof CraftFocusSchema>;
+export type UpdateGarmentPreferencesDto = z.infer<typeof UpdateGarmentPreferencesSchema>;
+export type UpdateJewelleryPreferencesDto = z.infer<typeof UpdateJewelleryPreferencesSchema>;

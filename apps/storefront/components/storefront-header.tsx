@@ -40,36 +40,38 @@ export async function StorefrontHeader({ cartItemCount = 0 }: StorefrontHeaderPr
   const isAuthenticated = !!user;
 
   return (
-    <header
-      role="banner"
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        backgroundColor: 'rgba(253, 251, 247, 0.95)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        borderBottom: '1px solid #e2e8f0',
-        transition: 'background-color 200ms ease',
-      }}
-    >
-      {/* Desktop Navigation Segment */}
-      <div className="header-desktop-view">
-        <DesktopHeader
-          isAuthenticated={isAuthenticated}
-          role={role}
-          fullName={fullName}
-          cartItemCount={cartItemCount}
-        />
-      </div>
+    <>
+      <header
+        role="banner"
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
+          backgroundColor: 'rgba(253, 251, 247, 0.95)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          borderBottom: '1px solid #e2e8f0',
+          transition: 'background-color 200ms ease',
+        }}
+      >
+        {/* Desktop Navigation Segment */}
+        <div className="header-desktop-view">
+          <DesktopHeader
+            isAuthenticated={isAuthenticated}
+            role={role}
+            fullName={fullName}
+            cartItemCount={cartItemCount}
+          />
+        </div>
 
-      {/* Mobile Navigation Segment */}
-      <div className="header-mobile-view">
-        <MobileHeader cartItemCount={cartItemCount} />
-      </div>
+        {/* Mobile Navigation Segment */}
+        <div className="header-mobile-view">
+          <MobileHeader cartItemCount={cartItemCount} />
+        </div>
+      </header>
 
-      {/* Mobile Slide-Over Drawer Island */}
+      {/* Mobile Slide-Over Drawer Island (Rendered outside <header> so backdropFilter doesn't trap position: fixed) */}
       <MobileDrawer isAuthenticated={isAuthenticated} role={role} fullName={fullName} />
-    </header>
+    </>
   );
 }

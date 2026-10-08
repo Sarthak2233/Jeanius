@@ -70,11 +70,12 @@ export function MobileHeader({ cartItemCount = 0 }: MobileHeaderProps) {
         style={{
           textDecoration: 'none',
           color: '#0f172a',
-          fontSize: '1.1rem',
+          fontSize: 'clamp(0.95rem, 4vw, 1.15rem)',
           fontWeight: 800,
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
           fontFamily: 'var(--font-serif, Georgia, serif)',
+          whiteSpace: 'nowrap',
         }}
       >
         Jeanius &amp; Jewl

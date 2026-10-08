@@ -1,11 +1,46 @@
 'use client';
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { listPublishedContentPagesAction } from '../actions/content.actions';
 
-export function StorefrontFooter() {
+const CORE_STATIC_SLUGS = new Set([
+  'about',
+  'sizing',
+  'guide',
+  'contact',
+  'terms',
+  'returns',
+  'privacy',
+]);
+
+export interface DynamicPageNavItem {
+  readonly slug: string;
+  readonly title: string;
+}
+
+export interface StorefrontFooterProps {
+  readonly initialPages?: readonly DynamicPageNavItem[];
+}
+
+export function StorefrontFooter({ initialPages }: StorefrontFooterProps = {}) {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [customPages, setCustomPages] = useState<readonly DynamicPageNavItem[]>(initialPages ?? []);
+
+  useEffect(() => {
+    if (initialPages && initialPages.length > 0) return;
+    listPublishedContentPagesAction()
+      .then((res) => {
+        if (res.success && res.data) {
+          setCustomPages(
+            res.data
+              .filter((p) => !CORE_STATIC_SLUGS.has(p.slug))
+              .map((p) => ({ slug: p.slug, title: p.title })),
+          );
+        }
+      })
+      .catch(() => {});
+  }, [initialPages]);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,6 +170,36 @@ export function StorefrontFooter() {
                   Bespoke Studio Inquiries
                 </Link>
               </li>
+              {customPages.map((page) => (
+                <li key={page.slug}>
+                  <Link
+                    href={`/pages/${page.slug}`}
+                    style={{
+                      color: '#0f172a',
+                      textDecoration: 'none',
+                      fontSize: '0.85rem',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {page.title}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link
+                  href="/pages"
+                  style={{
+                    color: '#94a3b8',
+                    textDecoration: 'none',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Atelier Archive &rarr;
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -180,7 +245,7 @@ export function StorefrontFooter() {
               </li>
               <li>
                 <Link
-                  href="/about"
+                  href="/guide"
                   style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem' }}
                 >
                   Sterling Silver (925) Care
@@ -188,10 +253,10 @@ export function StorefrontFooter() {
               </li>
               <li>
                 <Link
-                  href="/about"
+                  href="/guide"
                   style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem' }}
                 >
-                  Raw Selvedge Bolt Traceability
+                  Raw Selvedge Denim Rituals
                 </Link>
               </li>
             </ul>
@@ -223,26 +288,26 @@ export function StorefrontFooter() {
             >
               <li>
                 <Link
-                  href="/about"
+                  href="/terms"
                   style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem' }}
                 >
-                  Worldwide Shipping &amp; Customs
+                  Terms &amp; Order-Made Conditions
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/about"
+                  href="/returns"
                   style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem' }}
                 >
-                  OM Point of No Return Policy
+                  Returns &amp; Alteration Policy
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/about"
+                  href="/privacy"
                   style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem' }}
                 >
-                  5-Day Drop Return Terms
+                  Privacy &amp; Data Protocol
                 </Link>
               </li>
               <li>

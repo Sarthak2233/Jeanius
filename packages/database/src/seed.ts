@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { db } from './client';
 import {
   usersProfile,
@@ -522,7 +523,19 @@ You may export or permanently erase your Atelier Vault measurements and account 
         publishedAt: new Date(),
       },
     ])
-    .onConflictDoNothing();
+    .onConflictDoUpdate({
+      target: contentPages.id,
+      set: {
+        slug: sql`EXCLUDED.slug`,
+        title: sql`EXCLUDED.title`,
+        contentMarkdown: sql`EXCLUDED.content_markdown`,
+        metaDescription: sql`EXCLUDED.meta_description`,
+        status: sql`EXCLUDED.status`,
+        isPublished: sql`EXCLUDED.is_published`,
+        publishedAt: sql`EXCLUDED.published_at`,
+        updatedAt: sql`NOW()`,
+      },
+    });
 
   // 8. Announcements
   await db

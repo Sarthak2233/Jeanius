@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 import { getContentPageAction } from '../../actions/content.actions';
 import { SizingStudioClient } from './sizing-studio-client';
 import { createStorefrontMetadata } from '../../lib/metadata';
+import { createClient } from '../../lib/supabase/server';
+import { db, DrizzleUserProfileRepository } from '@jeanius/database';
+import type { CraftFocusDto } from '@jeanius/contracts';
 
 export async function generateMetadata(): Promise<Metadata> {
   const result = await getContentPageAction('sizing');
@@ -24,5 +27,32 @@ export default async function SizingPage() {
   const result = await getContentPageAction('sizing');
   const markdown = result.success ? result.data?.contentMarkdown : undefined;
 
-  return <SizingStudioClient cmsMarkdown={markdown} />;
+  let initialCraftFocus: CraftFocusDto | undefined;
+  let isAuthenticated = false;
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      isAuthenticated = true;
+      const userProfileRepo = new DrizzleUserProfileRepository(db);
+      const profile = await userProfileRepo.findById(user.id);
+      if (profile?.craftFocus) {
+        initialCraftFocus = profile.craftFocus as CraftFocusDto;
+      }
+    }
+  } catch {
+    // Guest visitor, defaults to DUAL_CRAFT
+  }
+
+  return (
+    <SizingStudioClient
+      cmsMarkdown={markdown}
+      initialCraftFocus={initialCraftFocus}
+      isAuthenticated={isAuthenticated}
+    />
+  );
 }
