@@ -2,7 +2,12 @@
  * @jeanius/observability
  * Structured logging, correlation IDs, and metrics tracing.
  */
-import { randomUUID } from 'node:crypto';
+function getSecureUUID(): string {
+  if (typeof globalThis !== 'undefined' && typeof globalThis.crypto?.randomUUID === 'function') {
+    return globalThis.crypto.randomUUID();
+  }
+  return `trc_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+}
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -74,7 +79,7 @@ export class Logger {
 
   debug(message: string, context?: LogContext): void {
     if (!this.shouldLog('debug')) return;
-    console.debug(this.formatMessage('debug', message, context));
+    console.log(this.formatMessage('debug', message, context));
   }
 
   info(message: string, context?: LogContext): void {
@@ -113,9 +118,5 @@ export function createLogger(serviceName: string): Logger {
 }
 
 export function generateTraceId(): string {
-  try {
-    return randomUUID();
-  } catch {
-    return `trc_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-  }
+  return getSecureUUID();
 }

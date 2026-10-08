@@ -1,7 +1,10 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { createLogger } from '@jeanius/observability';
 
 export const ADMIN_AUTH_COOKIE = 'sb-admin-auth-token';
+
+const logger = createLogger('admin:middleware:guard');
 
 export async function updateAdminSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -53,6 +56,7 @@ export async function updateAdminSession(request: NextRequest) {
 
   // All other admin routes require authenticated staff account
   if (!user) {
+    logger.info('Unauthenticated request redirected to admin login', { pathname });
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set('returnUrl', pathname);
@@ -61,6 +65,11 @@ export async function updateAdminSession(request: NextRequest) {
 
   // Global Staff Guard: Reject non-staff accounts (CUSTOMER, MEMBER, GUEST) from all admin routes
   if (!isStaffRole) {
+    logger.warn('Non-staff customer account rejected from admin workbench', {
+      pathname,
+      userId: user.id,
+      role,
+    });
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set('error', 'unauthorized_customer');
@@ -71,6 +80,12 @@ export async function updateAdminSession(request: NextRequest) {
   // 1. Denim workshop: TAILOR or ADMIN
   if (pathname.startsWith('/workshop/tailor')) {
     if (role !== 'TAILOR' && role !== 'ADMIN') {
+      logger.warn('RBAC forbidden: Denim tailoring bench access denied', {
+        pathname,
+        userId: user.id,
+        role,
+        requiredRoles: ['TAILOR', 'ADMIN'],
+      });
       return new NextResponse('Forbidden: Denim tailoring bench access only.', { status: 403 });
     }
   }
@@ -78,6 +93,12 @@ export async function updateAdminSession(request: NextRequest) {
   // 2. Jewellery metalsmith workshop: JEWELLER or ADMIN
   if (pathname.startsWith('/workshop/jeweller')) {
     if (role !== 'JEWELLER' && role !== 'ADMIN') {
+      logger.warn('RBAC forbidden: Jewellery metalsmith bench access denied', {
+        pathname,
+        userId: user.id,
+        role,
+        requiredRoles: ['JEWELLER', 'ADMIN'],
+      });
       return new NextResponse('Forbidden: Jewellery silversmith bench access only.', {
         status: 403,
       });
@@ -87,6 +108,12 @@ export async function updateAdminSession(request: NextRequest) {
   // 3. Fulfillment warehouse: FULFILLMENT or ADMIN
   if (pathname.startsWith('/fulfillment')) {
     if (role !== 'FULFILLMENT' && role !== 'ADMIN') {
+      logger.warn('RBAC forbidden: Fulfillment station access denied', {
+        pathname,
+        userId: user.id,
+        role,
+        requiredRoles: ['FULFILLMENT', 'ADMIN'],
+      });
       return new NextResponse('Forbidden: Fulfillment station access only.', { status: 403 });
     }
   }
@@ -94,6 +121,12 @@ export async function updateAdminSession(request: NextRequest) {
   // 4. Customer Support desk: SUPPORT or ADMIN
   if (pathname.startsWith('/support')) {
     if (role !== 'SUPPORT' && role !== 'ADMIN') {
+      logger.warn('RBAC forbidden: Customer support desk access denied', {
+        pathname,
+        userId: user.id,
+        role,
+        requiredRoles: ['SUPPORT', 'ADMIN'],
+      });
       return new NextResponse('Forbidden: Customer support desk access only.', { status: 403 });
     }
   }
@@ -105,6 +138,12 @@ export async function updateAdminSession(request: NextRequest) {
     pathname.startsWith('/settings')
   ) {
     if (role !== 'ADMIN') {
+      logger.warn('RBAC forbidden: Administrative section access denied', {
+        pathname,
+        userId: user.id,
+        role,
+        requiredRoles: ['ADMIN'],
+      });
       return new NextResponse('Forbidden: Administrative access required.', { status: 403 });
     }
   }

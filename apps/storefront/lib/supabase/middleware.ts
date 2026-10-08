@@ -1,7 +1,10 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { createLogger } from '@jeanius/observability';
 
 export const STOREFRONT_AUTH_COOKIE = 'sb-storefront-auth-token';
+
+const logger = createLogger('storefront:middleware:guard');
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -42,6 +45,9 @@ export async function updateSession(request: NextRequest) {
   // Protected route checking:
   // 1. /account/* requires authenticated user
   if (pathname.startsWith('/account') && !user) {
+    logger.info('Unauthenticated customer redirected to login from account area', {
+      pathname,
+    });
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set('returnUrl', pathname);
@@ -51,6 +57,9 @@ export async function updateSession(request: NextRequest) {
   // 2. /member/* requires MEMBER or ADMIN role
   if (pathname.startsWith('/member')) {
     if (!user) {
+      logger.info('Unauthenticated visitor redirected from member salon', {
+        pathname,
+      });
       const url = request.nextUrl.clone();
       url.pathname = '/login';
       url.searchParams.set('returnUrl', pathname);
@@ -59,6 +68,11 @@ export async function updateSession(request: NextRequest) {
 
     const role = user.user_metadata?.role;
     if (role !== 'MEMBER' && role !== 'ADMIN') {
+      logger.warn('Non-member customer blocked from VIP member drop salon', {
+        pathname,
+        userId: user.id,
+        role,
+      });
       const url = request.nextUrl.clone();
       url.pathname = '/';
       return NextResponse.redirect(url);
