@@ -63,7 +63,8 @@
   },
   "dependencies": {
     "@jeanius/domain": "workspace:*",
-    "@jeanius/contracts": "workspace:*"
+    "@jeanius/contracts": "workspace:*",
+    "@jeanius/observability": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.3"

@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import { createLogger } from '@jeanius/observability';
 import { db } from './client';
 import {
   usersProfile,
@@ -12,8 +13,10 @@ import {
   announcements,
 } from './schema/index';
 
+const logger = createLogger('database:seed');
+
 export async function runDatabaseSeed() {
-  console.log('Seeding Jeanius database...');
+  logger.info('Seeding Jeanius database...');
 
   // 1. Users
   await db
@@ -562,7 +565,7 @@ You may export or permanently erase your Atelier Vault measurements and account 
     ])
     .onConflictDoNothing();
 
-  console.log('Database seeded successfully.');
+  logger.info('Database seeded successfully.');
 }
 
 if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('seed.ts')) {
@@ -571,7 +574,7 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
       process.exit(0);
     })
     .catch((err) => {
-      console.error('Seed execution failed:', err);
+      logger.error('Seed execution failed', err);
       process.exit(1);
     });
 }

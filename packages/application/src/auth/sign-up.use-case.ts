@@ -1,8 +1,11 @@
 import type { SignUpDto } from '@jeanius/contracts';
 import { UserRegisteredEvent, createEntityId } from '@jeanius/domain';
+import { createLogger } from '@jeanius/observability';
 import type { IAuthGateway } from './auth-gateway.port';
 import type { IUserProfileRepository } from './user-profile-repository.port';
 import type { IOutboxRepository } from '../audit/outbox-repository.port';
+
+const logger = createLogger('application:auth:sign-up');
 
 export interface SignUpResult {
   readonly userId: string;
@@ -18,6 +21,7 @@ export class SignUpUseCase {
   ) {}
 
   async execute(dto: SignUpDto): Promise<SignUpResult> {
+    logger.info('Executing customer signup flow', { email: dto.email });
     const { userId, emailConfirmationRequired } = await this.authGateway.signUp({
       email: dto.email,
       password: dto.password,
@@ -45,6 +49,12 @@ export class SignUpUseCase {
         }),
       ]);
     }
+
+    logger.info('Customer signed up and profile synchronized', {
+      userId,
+      emailConfirmationRequired,
+      hasOutboxEvent: Boolean(this.outboxRepository),
+    });
 
     return {
       userId,

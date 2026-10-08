@@ -1,6 +1,9 @@
 import type { Actor } from '@jeanius/domain';
+import { createLogger } from '@jeanius/observability';
 import { assertActorHasRole } from './auth-guards';
 import type { IAuditLogRepository } from '../audit/audit-log-repository.port';
+
+const logger = createLogger('application:auth:record-privileged-action');
 
 export interface PrivilegedActionParams {
   readonly actor: Actor;
@@ -29,6 +32,14 @@ export class RecordPrivilegedActionUseCase {
       ipAddress: params.ipAddress,
       userAgent: params.userAgent,
       createdAt: new Date(),
+    });
+
+    logger.info('Privileged action recorded to audit ledger', {
+      actorId: params.actor.id,
+      actorRole: params.actor.role,
+      action: params.action,
+      entityType: params.entityType,
+      entityId: params.entityId,
     });
   }
 }

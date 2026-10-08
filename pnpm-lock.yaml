@@ -154,6 +154,9 @@ importers:
       '@jeanius/domain':
         specifier: workspace:*
         version: link:../domain
+      '@jeanius/observability':
+        specifier: workspace:*
+        version: link:../observability
     devDependencies:
       typescript:
         specifier: ^5.7.3
@@ -190,6 +193,9 @@ importers:
       '@jeanius/domain':
         specifier: workspace:*
         version: link:../domain
+      '@jeanius/observability':
+        specifier: workspace:*
+        version: link:../observability
       drizzle-orm:
         specifier: ^0.39.3
         version: 0.39.3(postgres@3.4.9)

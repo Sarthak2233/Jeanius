@@ -24,6 +24,7 @@
   "dependencies": {
     "@jeanius/domain": "workspace:*",
     "@jeanius/application": "workspace:*",
+    "@jeanius/observability": "workspace:*",
     "drizzle-orm": "^0.39.3",
     "postgres": "^3.4.5"
   },

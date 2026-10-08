@@ -2,6 +2,9 @@
 
 import { db, DrizzleContentPageRepository, DrizzleAnnouncementRepository } from '@jeanius/database';
 import { ContentService } from '@jeanius/application';
+import { createLogger, generateTraceId } from '@jeanius/observability';
+
+const logger = createLogger('storefront:content-actions');
 
 export interface ActionResult<T> {
   readonly success: boolean;
@@ -38,16 +41,32 @@ function getContentService() {
 }
 
 export async function getContentPageAction(slug: string): Promise<ActionResult<ContentPageDto>> {
+  const traceId = generateTraceId();
+  const start = Date.now();
+  logger.debug('getContentPageAction invoked', { traceId, slug });
+
   try {
     const service = getContentService();
     const page = await service.getPageBySlug(slug);
 
     if (!page) {
+      logger.warn('Content page not found in action', {
+        traceId,
+        slug,
+        durationMs: Date.now() - start,
+      });
       return {
         success: false,
         error: { code: 'NOT_FOUND', message: `Page "${slug}" not found or not published` },
       };
     }
+
+    logger.info('Content page retrieved successfully', {
+      traceId,
+      slug,
+      id: page.id,
+      durationMs: Date.now() - start,
+    });
 
     return {
       success: true,
@@ -64,6 +83,11 @@ export async function getContentPageAction(slug: string): Promise<ActionResult<C
     };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to retrieve content page';
+    logger.error('Failed to retrieve content page in action', err, {
+      traceId,
+      slug,
+      durationMs: Date.now() - start,
+    });
     return {
       success: false,
       error: { code: 'CONTENT_RETRIEVAL_FAILED', message },
@@ -74,9 +98,19 @@ export async function getContentPageAction(slug: string): Promise<ActionResult<C
 export async function listPublishedContentPagesAction(): Promise<
   ActionResult<readonly ContentPageDto[]>
 > {
+  const traceId = generateTraceId();
+  const start = Date.now();
+  logger.debug('listPublishedContentPagesAction invoked', { traceId });
+
   try {
     const service = getContentService();
     const pages = await service.listPublishedPages();
+
+    logger.info('Listed published content pages', {
+      traceId,
+      count: pages.length,
+      durationMs: Date.now() - start,
+    });
 
     return {
       success: true,
@@ -93,6 +127,10 @@ export async function listPublishedContentPagesAction(): Promise<
     };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to list published content pages';
+    logger.error('Failed to list published content pages in action', err, {
+      traceId,
+      durationMs: Date.now() - start,
+    });
     return {
       success: false,
       error: { code: 'CONTENT_LIST_FAILED', message },
@@ -103,9 +141,19 @@ export async function listPublishedContentPagesAction(): Promise<
 export async function getActiveAnnouncementsAction(): Promise<
   ActionResult<readonly AnnouncementDto[]>
 > {
+  const traceId = generateTraceId();
+  const start = Date.now();
+  logger.debug('getActiveAnnouncementsAction invoked', { traceId });
+
   try {
     const service = getContentService();
     const active = await service.getActiveAnnouncements();
+
+    logger.info('Retrieved active announcements', {
+      traceId,
+      count: active.length,
+      durationMs: Date.now() - start,
+    });
 
     return {
       success: true,
@@ -119,6 +167,10 @@ export async function getActiveAnnouncementsAction(): Promise<
     };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to retrieve active announcements';
+    logger.error('Failed to retrieve active announcements in action', err, {
+      traceId,
+      durationMs: Date.now() - start,
+    });
     return {
       success: false,
       error: { code: 'ANNOUNCEMENT_RETRIEVAL_FAILED', message },

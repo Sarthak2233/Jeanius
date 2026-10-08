@@ -8,8 +8,11 @@ import {
 } from '@jeanius/database';
 import { ContentService, RecordPrivilegedActionUseCase } from '@jeanius/application';
 import { createEntityId, type Actor, type ActorRole } from '@jeanius/domain';
+import { createLogger, generateTraceId } from '@jeanius/observability';
 import { createClient } from '../lib/supabase/server';
 import { revalidatePath } from 'next/cache';
+
+const logger = createLogger('admin:content-actions');
 
 export interface AdminActionResult<T> {
   readonly success: boolean;
@@ -75,9 +78,20 @@ async function getAdminContentService() {
 export async function listAllContentPagesAction(): Promise<
   AdminActionResult<readonly ContentPageSummaryDto[]>
 > {
+  const traceId = generateTraceId();
+  const start = Date.now();
+  logger.debug('listAllContentPagesAction invoked', { traceId });
+
   try {
-    const { contentService } = await getAdminContentService();
+    const { contentService, actor } = await getAdminContentService();
     const pages = await contentService.listAllPages();
+
+    logger.info('Listed all content pages in admin workbench', {
+      traceId,
+      actorId: actor.id,
+      count: pages.length,
+      durationMs: Date.now() - start,
+    });
 
     return {
       success: true,
@@ -95,6 +109,10 @@ export async function listAllContentPagesAction(): Promise<
     };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to list content pages';
+    logger.error('Failed to list content pages in admin action', err, {
+      traceId,
+      durationMs: Date.now() - start,
+    });
     return { success: false, error: { code: 'LIST_PAGES_FAILED', message } };
   }
 }
@@ -107,6 +125,10 @@ export async function saveContentPageAction(data: {
   readonly metaDescription?: string;
   readonly status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 }): Promise<AdminActionResult<{ id: string }>> {
+  const traceId = generateTraceId();
+  const start = Date.now();
+  logger.debug('saveContentPageAction invoked', { traceId, slug: data.slug, isUpdate: !!data.id });
+
   try {
     const { actor, contentService, auditUseCase } = await getAdminContentService();
 
@@ -126,6 +148,15 @@ export async function saveContentPageAction(data: {
         entityType: 'ContentPage',
         entityId: data.id,
         payload: { title: data.title, status: data.status },
+      });
+
+      logger.info('Admin updated content page', {
+        traceId,
+        actorId: actor.id,
+        pageId: data.id,
+        slug: data.slug,
+        status: data.status,
+        durationMs: Date.now() - start,
       });
 
       revalidatePath('/content');
@@ -150,15 +181,33 @@ export async function saveContentPageAction(data: {
       payload: { slug: data.slug, title: data.title },
     });
 
+    logger.info('Admin created new content page', {
+      traceId,
+      actorId: actor.id,
+      pageId,
+      slug: data.slug,
+      status: data.status ?? 'DRAFT',
+      durationMs: Date.now() - start,
+    });
+
     revalidatePath('/content');
     return { success: true, data: { id: pageId } };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to save content page';
+    logger.error('Failed to save content page in admin action', err, {
+      traceId,
+      slug: data.slug,
+      durationMs: Date.now() - start,
+    });
     return { success: false, error: { code: 'SAVE_PAGE_FAILED', message } };
   }
 }
 
 export async function publishContentPageAction(id: string): Promise<AdminActionResult<void>> {
+  const traceId = generateTraceId();
+  const start = Date.now();
+  logger.debug('publishContentPageAction invoked', { traceId, id });
+
   try {
     const { actor, contentService, auditUseCase } = await getAdminContentService();
     const pageId = createEntityId<'ContentPage'>(id);
@@ -171,15 +220,31 @@ export async function publishContentPageAction(id: string): Promise<AdminActionR
       entityId: id,
     });
 
+    logger.info('Admin published content page', {
+      traceId,
+      actorId: actor.id,
+      pageId: id,
+      durationMs: Date.now() - start,
+    });
+
     revalidatePath('/content');
     return { success: true };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to publish content page';
+    logger.error('Failed to publish content page in admin action', err, {
+      traceId,
+      id,
+      durationMs: Date.now() - start,
+    });
     return { success: false, error: { code: 'PUBLISH_PAGE_FAILED', message } };
   }
 }
 
 export async function archiveContentPageAction(id: string): Promise<AdminActionResult<void>> {
+  const traceId = generateTraceId();
+  const start = Date.now();
+  logger.debug('archiveContentPageAction invoked', { traceId, id });
+
   try {
     const { actor, contentService, auditUseCase } = await getAdminContentService();
     const pageId = createEntityId<'ContentPage'>(id);
@@ -192,10 +257,22 @@ export async function archiveContentPageAction(id: string): Promise<AdminActionR
       entityId: id,
     });
 
+    logger.info('Admin archived content page', {
+      traceId,
+      actorId: actor.id,
+      pageId: id,
+      durationMs: Date.now() - start,
+    });
+
     revalidatePath('/content');
     return { success: true };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to archive content page';
+    logger.error('Failed to archive content page in admin action', err, {
+      traceId,
+      id,
+      durationMs: Date.now() - start,
+    });
     return { success: false, error: { code: 'ARCHIVE_PAGE_FAILED', message } };
   }
 }
