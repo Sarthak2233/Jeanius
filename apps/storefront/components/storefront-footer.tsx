@@ -140,7 +140,7 @@ export function StorefrontFooter({ initialPages }: StorefrontFooterProps = {}) {
             >
               <li>
                 <Link
-                  href="/"
+                  href="/shop"
                   style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem' }}
                 >
                   Order-Made (OM) Catalog

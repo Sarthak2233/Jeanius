@@ -59,10 +59,10 @@ VALUES
   ),
   (
     'a0000000-0000-0000-0000-000000000003',
-    'type-ii-selvedge-trucker-jacket',
-    'Type II Selvedge Denim Jacket',
-    '14.5oz Kaihara Mills natural indigo selvedge jacket with front knife pleats, selvedge interior placket, and custom iron buttons.',
-    36000,
+    'lot-t01-type2-selvedge-jacket',
+    'Lot T01 — Type II Selvedge Denim Jacket',
+    '14.5oz Kurabo raw denim Type II jacket. Boxy vintage fit with knife pleats and custom donut buttons.',
+    42000,
     'USD',
     'OM',
     'TOPS',
@@ -70,12 +70,12 @@ VALUES
   ),
   (
     'a0000000-0000-0000-0000-000000000004',
-    'selvedge-canvas-field-bag',
-    'Selvedge Canvas Field Bag',
-    '16oz Kurabo duck canvas paired with heavy selvedge denim trim and full-grain vegetable-tanned leather straps.',
-    12000,
+    'lot-a01-bridle-leather-selvedge-belt',
+    'Lot A01 — Tochigi Bridle Leather Belt',
+    '40mm vegetable-tanned Japanese Tochigi saddle leather belt with hand-cast solid brass buckle.',
+    14500,
     'USD',
-    'DROP',
+    'OM',
     'ACCESSORIES',
     'PUBLISHED'
   ),
@@ -90,7 +90,14 @@ VALUES
     'JEWELLERY',
     'PUBLISHED'
   )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+  slug = EXCLUDED.slug,
+  title = EXCLUDED.title,
+  description = EXCLUDED.description,
+  base_price_amount = EXCLUDED.base_price_amount,
+  commerce_model = EXCLUDED.commerce_model,
+  category = EXCLUDED.category,
+  status = EXCLUDED.status;
 
 -- 4. Product Options
 INSERT INTO public.product_options (id, product_id, name, code, position, is_required)

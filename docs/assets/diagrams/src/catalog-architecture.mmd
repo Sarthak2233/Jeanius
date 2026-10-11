@@ -1,0 +1,53 @@
+graph TD
+    classDef clientLayer fill:#1e293b,stroke:#38bdf8,stroke-width:1.5px,color:#f8fafc;
+    classDef appLayer fill:#0f172a,stroke:#818cf8,stroke-width:1.5px,color:#f8fafc;
+    classDef domainLayer fill:#18181b,stroke:#e2e8f0,stroke-width:1.5px,color:#f8fafc;
+    classDef dataLayer fill:#1e1e24,stroke:#34d399,stroke-width:1.5px,color:#f8fafc;
+    classDef storageLayer fill:#2a1b18,stroke:#f97316,stroke-width:1.5px,color:#f8fafc;
+    classDef obsLayer fill:#3b1322,stroke:#f43f5e,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph Storefront["apps/storefront (Next.js 15 Customer Surface)"]
+        ShopRoute["/shop Route (Server Component)<br/>• Dynamic SEO Metadata (generateMetadata)<br/>• URL SearchParams Synchronization<br/>• Schema.org ItemList JSON-LD"]:::clientLayer
+        ClientUI["ShopCatalogClient (Interactive UI)<br/>• CategoryBar (4 Canonical Categories + Counts)<br/>• CatalogFilterBar (OM vs DROP, Sort, Search)<br/>• ProductCard Grid & Pagination Controls"]:::clientLayer
+        ServerActions["Server Actions (catalog.actions.ts)<br/>• getCatalogAction(criteria)<br/>• getProductBySlugAction(slug)<br/>• getRelatedProductsAction(id, limit)"]:::clientLayer
+    end
+
+    subgraph ApplicationBoundary["packages/application (Use-Case Ports & Logic)"]
+        CatalogSvc["CatalogService<br/>• getCatalog(criteria)<br/>• getRelatedProducts(id, limit)<br/>• getCategoryCounts()"]:::appLayer
+        RepoPort["IProductRepository (Port)<br/>• findFiltered(criteria)<br/>• findRelated(id, limit)<br/>• getCategoriesWithCounts()"]:::appLayer
+    end
+
+    subgraph PersistenceBoundary["packages/database (Supabase Postgres & Drizzle ORM)"]
+        DrizzleRepo["DrizzleProductRepository<br/>• Dynamic SQL Filtering (category, model, price)<br/>• Database Indexed OrderBy (price, newest, title)<br/>• Batch Product Image Fetching (Zero N+1)"]:::dataLayer
+        Tables["Postgres Tables<br/>• products (id, slug, category, model, status)<br/>• product_images (product_id, url, is_primary)"]:::dataLayer
+    end
+
+    subgraph ObjectStorageBoundary["Supabase Object Storage (Media Assets)"]
+        StorageBucket["Bucket: product-media (Public)<br/>• products/{slug}/primary.png<br/>• products/{slug}/detail-01.png<br/>• Next.js remotePatterns Optimized"]:::storageLayer
+    end
+
+    subgraph DomainBoundary["packages/domain & contracts"]
+        ProductEntity["Product Aggregate Root<br/>• ProductImageVo (url, altText, isPrimary)<br/>• ProductCategory (BOTTOMS, TOPS, JEWELLERY, ACCESSORIES)<br/>• CommerceModel (OM, DROP) & Lifecycle Statuses"]:::domainLayer
+        Contracts["Zod Schemas & DTOs<br/>• CatalogFilterCriteriaSchema<br/>• ProductCardDto & CatalogPageDto"]:::domainLayer
+    end
+
+    subgraph ObservabilityBoundary["packages/observability"]
+        Telemetry["Structured Logger & Tracing<br/>• generateTraceId()<br/>• Query Duration Telemetry<br/>• Query Counts & Filters Logging"]:::obsLayer
+    end
+
+    %% Flow connections
+    ShopRoute --> ClientUI
+    ShopRoute --> ServerActions
+    ServerActions --> CatalogSvc
+    CatalogSvc --> RepoPort
+    RepoPort --> DrizzleRepo
+    DrizzleRepo --> Tables
+    DrizzleRepo --> ProductEntity
+    ServerActions --> Contracts
+
+    Tables -.->|"stores public URL to"| StorageBucket
+    ShopRoute -.->|"renders images from"| StorageBucket
+
+    ServerActions -.-> Telemetry
+    CatalogSvc -.-> Telemetry
+    DrizzleRepo -.-> Telemetry

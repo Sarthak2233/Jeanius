@@ -77,3 +77,4 @@ export class PaymentOrchestrator implements IPaymentGateway {
 }
 
 export * from './auth/supabase-auth.gateway.js';
+export * from './storage/supabase-storage.service.js';

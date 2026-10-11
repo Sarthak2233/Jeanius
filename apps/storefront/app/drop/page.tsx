@@ -1,83 +1,98 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { createStorefrontMetadata } from '../../lib/metadata';
 import { createClient } from '../../lib/supabase/server';
-import { StatusBadge } from '../../components/status-badge';
+import { getCatalogAction } from '../../actions/catalog.actions';
+import { DropCatalogClient } from './drop-catalog-client';
 
 export const metadata: Metadata = createStorefrontMetadata({
-  title: 'Limited Drops — Atelier Vault',
+  title: 'Limited Drops — Atelier Vault (Members Only)',
   description:
-    'Exclusive limited-run selvedge bolt allocations and hallmarked sterling silver releases for registered VIP members.',
+    'Exclusive limited-run selvedge bolt allocations, ready-to-ship denim, and hallmarked sterling silver releases for registered collectors.',
 });
 
-export default async function DropPage() {
+interface DropPageProps {
+  searchParams: Promise<{
+    category?: string;
+    sort?: string;
+    search?: string;
+    page?: string;
+  }>;
+}
+
+export default async function DropPage(props: DropPageProps) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const isAuthenticated = Boolean(user);
   const role = (user?.user_metadata?.role as string) || 'CUSTOMER';
-  const isMember = role === 'MEMBER' || role === 'ADMIN';
+  const isVipMember = role === 'MEMBER' || role === 'ADMIN';
+  const fullName =
+    (user?.user_metadata?.full_name as string) || user?.email?.split('@')[0] || 'Collector';
 
-  return (
-    <div style={{ backgroundColor: 'var(--color-bg-canvas, #fdfbf7)', minHeight: '100vh' }}>
-      <div
-        style={{
-          maxWidth: '1280px',
-          margin: '0 auto',
-          padding: '4.5rem 2rem',
-        }}
-      >
-        {/* Header Eyebrow */}
+  // 1. Unauthenticated Guest: Gated Access Gate (Spec Section 23 & 42: zero data leakage)
+  if (!isAuthenticated) {
+    return (
+      <div style={{ backgroundColor: 'var(--color-bg-canvas, #fdfbf7)', minHeight: '100vh' }}>
         <div
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '0.75rem',
-            fontFamily: 'var(--font-mono, monospace)',
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            color: isMember ? '#b45309' : '#94a3b8',
-            fontWeight: 600,
-            marginBottom: '0.75rem',
+            maxWidth: '1280px',
+            margin: '0 auto',
+            padding: '4.5rem 2rem',
           }}
         >
-          <span>{isMember ? '★ VIP ACCESS UNLOCKED' : '🔒 VIP RESTRICTED VAULT'}</span>
-        </div>
+          {/* Eyebrow */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '0.75rem',
+              fontFamily: 'var(--font-mono, monospace)',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: '#94a3b8',
+              fontWeight: 600,
+              marginBottom: '0.75rem',
+            }}
+          >
+            <span>🔒 VIP RESTRICTED VAULT</span>
+          </div>
 
-        <h1
-          style={{
-            fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-            fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)',
-            fontWeight: 700,
-            lineHeight: 1.15,
-            letterSpacing: '-0.02em',
-            color: '#0f172a',
-            margin: '0 0 1rem 0',
-            textTransform: 'uppercase',
-          }}
-        >
-          Limited Drops &amp; Archival Vault
-        </h1>
+          <h1
+            style={{
+              fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
+              fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)',
+              fontWeight: 700,
+              lineHeight: 1.15,
+              letterSpacing: '-0.02em',
+              color: '#0f172a',
+              margin: '0 0 1rem 0',
+              textTransform: 'uppercase',
+            }}
+          >
+            Limited Drops &amp; Archival Vault
+          </h1>
 
-        <p
-          style={{
-            fontSize: '1.1rem',
-            lineHeight: 1.7,
-            color: '#475569',
-            margin: '0 0 3rem 0',
-            maxWidth: '680px',
-          }}
-        >
-          Special allocation bolts from deceased mills, natural hank-dyed indigo runs, and
-          one-of-one hand-engraved silver jewellery. Released in numbered editions of 25 pieces or
-          fewer.
-        </p>
+          <p
+            style={{
+              fontSize: '1.1rem',
+              lineHeight: 1.7,
+              color: '#475569',
+              margin: '0 0 3rem 0',
+              maxWidth: '720px',
+            }}
+          >
+            Exclusive small-batch denim allocations and handcrafted sterling silver releases. Unlike
+            our bespoke Order-Made queue, Drop items are pre-crafted in numbered editions and
+            dispatched within 48 hours. Access is reserved exclusively for registered members and
+            collectors.
+          </p>
 
-        {!isMember ? (
-          /* Gated Member Banner */
+          {/* Gated Member Gate Card */}
           <div
             style={{
               backgroundColor: '#fffbeb',
@@ -109,7 +124,7 @@ export default async function DropPage() {
                 margin: '0 0 0.75rem 0',
               }}
             >
-              Early Access to Numbered Drops
+              Member Access to Numbered Drops
             </h2>
             <p
               style={{
@@ -119,9 +134,9 @@ export default async function DropPage() {
                 margin: '0 0 1.5rem 0',
               }}
             >
-              Active collectors with verified purchase histories or VIP invitations unlock 48-hour
-              advance purchasing before general public allocation. Sign in or register to connect
-              your account.
+              Ready-to-ship allocations are released in strictly numbered runs. Sign in with your
+              collector account or create a profile to unlock vault allocations and immediate
+              48-hour workshop dispatch.
             </p>
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <Link
@@ -163,196 +178,163 @@ export default async function DropPage() {
               </Link>
             </div>
           </div>
-        ) : (
-          /* VIP Unlocked Banner */
-          <div
-            style={{
-              backgroundColor: '#ecfdf5',
-              border: '1px solid #a7f3d0',
-              borderRadius: '8px',
-              padding: '1.5rem 2rem',
-              marginBottom: '3rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              maxWidth: '820px',
-            }}
-          >
-            <div>
-              <div style={{ fontWeight: 700, color: '#065f46', fontSize: '0.95rem' }}>
-                VIP Collector Status Active
-              </div>
-              <div style={{ color: '#047857', fontSize: '0.85rem' }}>
-                You have immediate allocation privileges for all upcoming vault releases.
-              </div>
-            </div>
-            <span
-              style={{
-                fontSize: '0.75rem',
-                fontFamily: 'var(--font-mono, monospace)',
-                backgroundColor: '#ffffff',
-                border: '1px solid #10b981',
-                padding: '0.25rem 0.6rem',
-                borderRadius: '4px',
-                color: '#065f46',
-                fontWeight: 600,
-              }}
-            >
-              PRIORITY ALLOCATION
-            </span>
-          </div>
-        )}
 
-        {/* Archival Drop Previews */}
-        <div>
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-              fontSize: '1.75rem',
-              color: '#0f172a',
-              margin: '0 0 1.5rem 0',
-            }}
-          >
-            Vault Archive &amp; Upcoming Drops
-          </h2>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '2rem',
-            }}
-          >
-            {/* Drop Card 1 */}
-            <div
-              style={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                padding: '2rem',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '1rem',
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: '0.7rem',
-                    fontFamily: 'var(--font-mono, monospace)',
-                    color: '#b91c1c',
-                    fontWeight: 700,
-                    letterSpacing: '0.1em',
-                  }}
-                >
-                  DROP 01 · 25 EDITIONS
-                </span>
-                <StatusBadge status="OM" variant="drop" />
-              </div>
-
-              <h3 style={{ fontSize: '1.3rem', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
-                18oz Heavy Slub Deadstock Selvedge
-              </h3>
-              <p
-                style={{
-                  color: '#475569',
-                  fontSize: '0.88rem',
-                  lineHeight: 1.6,
-                  margin: '0 0 1.25rem 0',
-                }}
-              >
-                Unwashed loomstate Japanese selvedge with extreme slub nep texture. Hand-numbered
-                leather patch with Kathmandu copper rivets.
+          {/* Three Pillars of Drop Model (Spec Section 9.2 & 19) */}
+          <div className="drop-gate-features">
+            <div className="drop-gate-feature-card">
+              <h3>Numbered Small Batches</h3>
+              <p>
+                Released in editions of 25 pieces or fewer. Each denim pair features a hand-numbered
+                leather patch; jewellery pieces bear master silversmith forge hallmarks.
               </p>
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  fontFamily: 'var(--font-mono, monospace)',
-                  color: '#64748b',
-                  paddingTop: '0.75rem',
-                  borderTop: '1px solid #f1f5f9',
-                }}
-              >
-                STATUS: SOLD OUT (ARCHIVED)
-              </div>
             </div>
-
-            {/* Drop Card 2 */}
-            <div
-              style={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                padding: '2rem',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '1rem',
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: '0.7rem',
-                    fontFamily: 'var(--font-mono, monospace)',
-                    color: '#d97706',
-                    fontWeight: 700,
-                    letterSpacing: '0.1em',
-                  }}
-                >
-                  DROP 02 · FORTHCOMING
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.7rem',
-                    backgroundColor: '#fffbeb',
-                    border: '1px solid #fde68a',
-                    padding: '0.2rem 0.5rem',
-                    borderRadius: '2px',
-                    color: '#92400e',
-                    fontWeight: 600,
-                  }}
-                >
-                  NOVEMBER 2026
-                </span>
-              </div>
-
-              <h3 style={{ fontSize: '1.3rem', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
-                Seoul Bench: Hand-Carved Dragon Talon Cuff (925)
-              </h3>
-              <p
-                style={{
-                  color: '#475569',
-                  fontSize: '0.88rem',
-                  lineHeight: 1.6,
-                  margin: '0 0 1.25rem 0',
-                }}
-              >
-                Heavy 65g solid 925 sterling silver wrist cuff. Individually hallmarked with custom
-                client initials upon allocation.
+            <div className="drop-gate-feature-card">
+              <h3>48-Hour Kathmandu Dispatch</h3>
+              <p>
+                Unlike the 14–21 day bespoke cutting table wait for Order-Made items, Drop pieces
+                are pre-finished in our Kathmandu workshop and ship immediately upon ordering.
               </p>
-              <div
-                style={{
-                  fontSize: '0.75rem',
-                  fontFamily: 'var(--font-mono, monospace)',
-                  color: '#64748b',
-                  paddingTop: '0.75rem',
-                  borderTop: '1px solid #f1f5f9',
-                }}
-              >
-                STATUS: ALLOCATION PENDING
-              </div>
+            </div>
+            <div className="drop-gate-feature-card">
+              <h3>5-Day Inspection Guarantee</h3>
+              <p>
+                Because Drop pieces are not tailored to anatomical measurements, they carry a
+                dedicated 5-day post-delivery return window for unworn items with security seals
+                intact.
+              </p>
             </div>
           </div>
         </div>
       </div>
+    );
+  }
+
+  // 2. Authenticated Collector / Member: Real DROP Catalog
+  const searchParams = await props.searchParams;
+  const category = (searchParams.category?.toUpperCase() || 'ALL') as
+    'ALL' | 'BOTTOMS' | 'TOPS' | 'JEWELLERY' | 'ACCESSORIES';
+  const sortBy = (searchParams.sort || 'FEATURED') as
+    'FEATURED' | 'PRICE_ASC' | 'PRICE_DESC' | 'NEWEST' | 'TITLE_ASC';
+  const searchQuery = searchParams.search || '';
+  const page = parseInt(searchParams.page || '1', 10) || 1;
+
+  const catalogResult = await getCatalogAction({
+    category,
+    commerceModel: 'DROP',
+    sortBy,
+    searchQuery,
+    page,
+    pageSize: 12,
+  });
+
+  const catalogData = catalogResult.data ?? {
+    products: [],
+    totalCount: 0,
+    page: 1,
+    pageSize: 12,
+    totalPages: 0,
+    categoryCounts: [
+      { category: 'BOTTOMS', count: 0 },
+      { category: 'TOPS', count: 0 },
+      { category: 'JEWELLERY', count: 0 },
+      { category: 'ACCESSORIES', count: 0 },
+    ],
+    selectedCategory: 'ALL',
+    selectedCommerceModel: 'DROP',
+    selectedSort: 'FEATURED',
+  };
+
+  return (
+    <div className="catalog-page">
+      <main className="catalog-container">
+        {/* Unlocked Eyebrow */}
+        <header className="catalog-header">
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '0.75rem',
+              fontFamily: 'var(--font-mono, monospace)',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: isVipMember ? '#b45309' : '#047857',
+              fontWeight: 600,
+              marginBottom: '0.75rem',
+            }}
+          >
+            <span>{isVipMember ? '★ VIP ACCESS UNLOCKED' : '★ COLLECTOR ACCESS ACTIVE'}</span>
+          </div>
+
+          <h1 className="catalog-title">Limited Drops &amp; Archival Vault</h1>
+
+          <p className="catalog-manifesto">
+            Rare deadstock selvedge allocations and hand-forged jewellery releases in numbered
+            editions of 25 pieces or fewer. Ready to ship within 48 hours from our Kathmandu
+            atelier.
+          </p>
+
+          {/* Member Status Active Banner */}
+          <div
+            className={`drop-vault-status-active ${isVipMember ? 'drop-vault-status-vip' : ''}`}
+            style={{ marginTop: '1.5rem' }}
+          >
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>
+                {isVipMember ? '★ VIP Priority Collector' : 'Collector Vault Access Active'}
+              </div>
+              <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
+                Welcome, {fullName}. You have unlocked immediate allocation for limited
+                ready-to-ship drops.
+              </div>
+            </div>
+            <span
+              style={{
+                fontSize: '0.7rem',
+                fontFamily: 'var(--font-mono, monospace)',
+                padding: '0.25rem 0.6rem',
+                borderRadius: '4px',
+                border: '1px solid currentColor',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+              }}
+            >
+              {isVipMember ? 'PRIORITY' : 'UNLOCKED'}
+            </span>
+          </div>
+
+          {/* Drop Shipping & Return Policy Banner (Spec Section 9.2 & 19) */}
+          <div className="drop-policy-notice">
+            <div>
+              <strong>48h Immediate Dispatch:</strong> All pieces ship pre-finished within 48 hours
+              directly from our Kathmandu workshop.
+            </div>
+            <div>
+              <strong>5-Day Inspection Window:</strong> Eligible for refund within 5 days of
+              delivery (unworn, with security tags intact).
+            </div>
+          </div>
+        </header>
+
+        {/* Interactive Drop Catalog */}
+        <Suspense
+          fallback={
+            <div
+              style={{
+                padding: '6rem 0',
+                textAlign: 'center',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.875rem',
+                color: 'var(--color-text-muted)',
+              }}
+            >
+              Loading vault allocations...
+            </div>
+          }
+        >
+          <DropCatalogClient initialData={catalogData} />
+        </Suspense>
+      </main>
     </div>
   );
 }

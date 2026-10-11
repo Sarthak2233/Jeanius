@@ -373,20 +373,20 @@ Implement the restrained Jeanius & Jewl visual language before feature UI.
 
 This is one of the most important Jeanius and Jewels domains.
 
-| ID     | Task                          | Description                          | Status      |
-| ------ | ----------------------------- | ------------------------------------ | ----------- |
-| JN-168 | Build product repository      | Product retrieval.                   | NOT_STARTED |
-| JN-169 | Build product listing         | Catalog page.                        | NOT_STARTED |
-| JN-170 | Build category system         | Bottoms/Tops/Accessories etc.        | NOT_STARTED |
-| JN-171 | Build product status          | Available/sold-out/hidden/scheduled. | NOT_STARTED |
-| JN-172 | Build OM product type         | Made-to-order semantics.             | NOT_STARTED |
-| JN-173 | Build DROP product type       | Ready-to-ship semantics.             | NOT_STARTED |
-| JN-174 | Build scheduled products      | Future releases.                     | NOT_STARTED |
-| JN-175 | Build product sorting         | Catalog ordering.                    | NOT_STARTED |
-| JN-176 | Build product filtering       | Category/status/etc.                 | NOT_STARTED |
-| JN-177 | Build related products        | Product relationships.               | NOT_STARTED |
-| JN-178 | Build product SEO             | Metadata/canonical URLs.             | NOT_STARTED |
-| JN-179 | Build structured product data | Product schema/SEO.                  | NOT_STARTED |
+| ID     | Task                          | Description                          | Status    |
+| ------ | ----------------------------- | ------------------------------------ | --------- |
+| JN-168 | Build product repository      | Product retrieval.                   | COMPLETED |
+| JN-169 | Build product listing         | Catalog page.                        | COMPLETED |
+| JN-170 | Build category system         | Bottoms/Tops/Accessories etc.        | COMPLETED |
+| JN-171 | Build product status          | Available/sold-out/hidden/scheduled. | COMPLETED |
+| JN-172 | Build OM product type         | Made-to-order semantics.             | COMPLETED |
+| JN-173 | Build DROP product type       | Ready-to-ship semantics.             | COMPLETED |
+| JN-174 | Build scheduled products      | Future releases.                     | COMPLETED |
+| JN-175 | Build product sorting         | Catalog ordering.                    | COMPLETED |
+| JN-176 | Build product filtering       | Category/status/etc.                 | COMPLETED |
+| JN-177 | Build related products        | Product relationships.               | COMPLETED |
+| JN-178 | Build product SEO             | Metadata/canonical URLs.             | COMPLETED |
+| JN-179 | Build structured product data | Product schema/SEO.                  | COMPLETED |
 
 ---
 
@@ -669,6 +669,20 @@ Scoped for VIP `MEMBER` collectors on `apps/storefront/member`.
 | JN-333 | Build member early access window   | 1-hour early access countdown & fabric bolt allocation.   | NOT_STARTED |
 | JN-334 | Test authorization boundaries      | Verify GUEST vs CUSTOMER vs MEMBER access boundaries.     | NOT_STARTED |
 
+### NOTE:
+## How Members Should Be Provisioned, Onboarded & What Features to Expose
+* **Provisioning (3 Channels):**
+  1. *Automated Spend Milestone:* When an authenticated customer completes 2+ bespoke OM orders or exceeds a lifetime spend threshold, an event listener on `OrderPaidEvent` promotes `users_profile.role` to `'MEMBER'` and creates an entry in [memberships](file:///home/sarakb/projects/Jeanius/packages/database/src/schema/content.ts#L63-L84).
+  2. *Cryptographic Atelier Invite:* Physical invitation tokens enclosed in completed garment packages (or sent to VIP patrons) redeemed at `/invite` or `/vip`.
+  3. *Admin Workbench:* Studio managers in `apps/admin` can promote high-value clients directly from the Workshop workbench.
+* **Onboarding:**
+  * Collector profile receives the amber star (`★`) badge in the header and account badge.
+  * Personal measurement profile (Points A through Q, ring mandrel diameter) is locked as an active atelier cutting template.
+* **Exposed Member Features:**
+  1. **Advance Drop Window:** 1–24 hour early purchase priority on numbered drops before general customer release ([JN-333](file:///home/sarakb/projects/Jeanius/Production_Implementation.md#L669)).
+  2. **Gated Member Lounge (`/member` or `/together/lounge`):** Access to private prototype releases, deadstock fabric reserves, and studio journals ([JN-329](file:///home/sarakb/projects/Jeanius/Production_Implementation.md#L665)).
+  3. **Direct Bespoke Studio Intake:** Expedited communication with the Kathmandu Master Cutter and Seoul Metalsmith for custom commissions.
+  4. **Complimentary Workshop Servicing:** Free round-trip shipping for garment repairs and silver maintenance.
 ---
 
 # STATE 22 — REVIEWS & PRODUCT Q&A
@@ -1484,3 +1498,373 @@ This is one of the most important things I'd enforce in the agent's implementati
 I would use the backlog above as the **master engineering roadmap**, with **Zustand + Turborepo + Next.js + Supabase + Drizzle + DDD modular monolith** as the baseline architecture.
 
 And most importantly, I would make the agent implement **the foundation first, then the commerce core, then manufacturing/admin**, rather than letting it jump around between UI features.
+
+
+### Further Polish
+
+Yes. I went through the manifesto rather than just giving a generic ecommerce checklist. You already have **rate limiting** explicitly mentioned under security (`JN-442`), but I agree it is under-specified. 
+
+The bigger issue is that the manifesto is very strong on **business features** but has some gaps in **platform/reliability engineering**.
+
+### The major missing pieces I'd add
+
+| Priority | Component                                     | What I'd add                                                                                                             |
+| -------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 🔴 P0    | **Rate limiting / abuse prevention**          | Per-IP, per-user, per-route limits; login/signup; checkout; search; custom-order uploads; admin APIs; webhook protection |
+| 🔴 P0    | **Idempotency framework**                     | Not just payments/checkout. Generic idempotency keys for every mutation that can be retried                              |
+| 🔴 P0    | **Distributed locking / concurrency control** | Inventory reservation, checkout races, production job claiming, DROP releases                                            |
+| 🔴 P0    | **Timeouts & failure budgets**                | Explicit timeout policy for DB, payment, shipping, email, external APIs                                                  |
+| 🔴 P0    | **Retry + backoff policy**                    | Centralized exponential backoff + jitter; distinguish retryable vs permanent errors                                      |
+| 🔴 P0    | **Circuit breakers / bulkheads**              | Prevent a broken payment/shipping/email provider from taking down the application                                        |
+| 🔴 P0    | **Caching strategy**                          | CDN/cache headers, product/catalog caching, invalidation rules, server-side cache                                        |
+| 🔴 P0    | **Database connection/pool management**       | Pool limits, exhaustion behavior, long-query detection, transaction timeouts                                             |
+| 🔴 P0    | **Backup + disaster recovery**                | Actual RPO/RTO targets, automated backups, restore drills, PITR, storage recovery                                        |
+| 🔴 P0    | **Secrets management + rotation**             | Secret storage, rotation, expiry, emergency revocation—not just "configure production secrets"                           |
+| 🔴 P0    | **Infrastructure capacity/scaling**           | What happens at 10×/100× traffic? DB limits, concurrency limits, autoscaling, connection limits                          |
+| 🟠 P1    | **WAF / bot protection**                      | Particularly important for drops, login, search and checkout                                                             |
+| 🟠 P1    | **Feature flags / kill switches**             | Disable checkout, a payment provider, a DROP, etc. without redeploying                                                   |
+| 🟠 P1    | **Health/readiness probes**                   | `/health`, `/ready`, dependency health, deployment verification                                                          |
+| 🟠 P1    | **SLO/SLA + error budgets**                   | Define availability and latency targets rather than merely "monitor uptime"                                              |
+| 🟠 P1    | **Distributed tracing**                       | Request → checkout → payment → webhook → order → production                                                              |
+| 🟠 P1    | **Alert severity/escalation**                 | P0/P1/P2 alerts, ownership, paging, escalation paths                                                                     |
+| 🟠 P1    | **Load/stress testing**                       | Especially simultaneous DROP launches and checkout spikes                                                                |
+| 🟠 P1    | **Chaos/failure testing**                     | Kill payment provider, duplicate webhook, DB timeout, queue failure, etc.                                                |
+| 🟠 P1    | **Queue architecture**                        | You have background jobs, but need queue semantics, visibility timeout, worker concurrency and poison-message handling   |
+| 🟠 P1    | **Scheduled jobs / cron architecture**        | Expired reservations, abandoned carts, scheduled products, delayed notifications, reconciliation                         |
+| 🟠 P1    | **Data retention/lifecycle**                  | What gets deleted, archived, anonymized and when                                                                         |
+| 🟠 P1    | **Audit-log integrity**                       | Append-only/tamper-resistant audit records and retention                                                                 |
+| 🟡 P2    | **Dependency failure matrix**                 | Explicit behavior when Supabase, payment, email, shipping, storage, etc. fail                                            |
+| 🟡 P2    | **API versioning/deprecation**                | Particularly if external integrations or future mobile clients appear                                                    |
+| 🟡 P2    | **Contract testing**                          | Payment/shipping/webhook provider contracts                                                                              |
+| 🟡 P2    | **Synthetic monitoring**                      | Continuously execute a fake browse/cart/checkout journey                                                                 |
+| 🟡 P2    | **Cost/FinOps controls**                      | DB/storage/egress/email/payment costs and runaway usage alerts                                                           |
+
+### The biggest architectural gap
+
+Your manifesto has an **Events & Async** section:
+
+> background jobs → retries → idempotency → dead-letter handling → event monitoring
+
+That's good, but I'd turn it into a proper **Job/Queue Infrastructure** subsystem. 
+
+You need to answer questions like:
+
+```text
+Job
+├── id
+├── type
+├── payload
+├── status
+├── attempts
+├── maxAttempts
+├── availableAt
+├── lockedAt
+├── lockedBy
+├── lastError
+├── createdAt
+└── completedAt
+```
+
+and define:
+
+```text
+Producer
+   ↓
+Queue
+   ↓
+Worker
+   ↓
+Success
+   │
+   └── Retry → Backoff → Retry
+                    │
+                    └── Dead Letter Queue
+```
+
+Otherwise "implement retry mechanism" is too vague for a production system.
+
+---
+
+## Rate limiting specifically
+
+I would **not** leave `JN-442` as just:
+
+> Review rate limiting — Login/search/support/etc. 
+
+I'd make it a first-class platform capability:
+
+```text
+STATE XX — ABUSE PREVENTION & TRAFFIC CONTROL
+
+RL-001 Define rate-limit infrastructure
+RL-002 Define per-IP limits
+RL-003 Define per-user limits
+RL-004 Define per-route limits
+RL-005 Define anonymous vs authenticated limits
+RL-006 Protect authentication endpoints
+RL-007 Protect password reset
+RL-008 Protect checkout
+RL-009 Protect cart mutations
+RL-010 Protect search/autocomplete
+RL-011 Protect reviews/Q&A
+RL-012 Protect custom-order submissions
+RL-013 Protect file uploads
+RL-014 Protect admin operations
+RL-015 Protect webhooks
+RL-016 Implement burst limits
+RL-017 Implement sustained limits
+RL-018 Implement Retry-After responses
+RL-019 Implement bot/abuse detection
+RL-020 Implement IP reputation controls
+RL-021 Implement rate-limit monitoring
+RL-022 Alert on abnormal traffic
+RL-023 Test distributed rate limiting
+```
+
+And importantly:
+
+**Rate limiting needs a distributed backing mechanism.**
+
+If you deploy multiple Next.js instances:
+
+```text
+             ┌── Instance A
+Request ─────┼── Instance B
+             └── Instance C
+                    │
+                    ▼
+              Shared limiter
+```
+
+You don't want each instance independently believing:
+
+> "This IP has made 9 requests."
+
+while the actual user has made 27 across three instances.
+
+---
+
+# Three things I'd consider even more important than rate limiting
+
+### 1. Idempotency
+
+You already have it in checkout and payment webhooks, which is excellent. 
+
+But I'd make **idempotency a platform primitive**, not a feature-specific implementation.
+
+For example:
+
+```text
+POST /checkout
+Idempotency-Key: abc123
+
+POST /refund
+Idempotency-Key: xyz456
+
+POST /inventory/reserve
+Idempotency-Key: ...
+```
+
+Because networks fail.
+
+The dangerous sequence is:
+
+```text
+Client
+  │
+  ├── "Create order"
+  │
+  ├── Server creates order
+  │
+  ├── Response gets lost
+  │
+  └── Client retries
+          │
+          └── 💥 duplicate order
+```
+
+---
+
+### 2. Failure isolation
+
+This is probably the **largest missing engineering concept**.
+
+Suppose Stripe/eSewa goes down.
+
+You don't want:
+
+```text
+Payment provider DOWN
+        ↓
+Checkout slow
+        ↓
+Threads/connections consumed
+        ↓
+Application slow
+        ↓
+Everything DOWN
+```
+
+You want:
+
+```text
+Payment provider DOWN
+        ↓
+Circuit breaker OPEN
+        ↓
+Checkout fails quickly
+        ↓
+Rest of application remains healthy
+```
+
+Same concept for:
+
+* email
+* shipping carrier
+* storage
+* analytics
+* search
+* external APIs
+
+I'd add **timeouts + retries + circuit breakers + bulkheads** as one explicit reliability section.
+
+---
+
+### 3. Disaster recovery
+
+You have:
+
+> Verify backups — Database/storage recovery
+
+and rollback tasks. 
+
+But **backup ≠ disaster recovery**.
+
+You need:
+
+```text
+RPO — How much data can we lose?
+
+RTO — How long can we be down?
+
+Backup
+  ↓
+Restore
+  ↓
+Verify integrity
+  ↓
+Rebuild infrastructure
+  ↓
+Restore application
+  ↓
+Restore database
+  ↓
+Verify payments/orders
+  ↓
+Go live
+```
+
+And actually perform restore drills.
+
+For this business, I'd explicitly protect:
+
+**orders + payments + inventory + production state + customer sizing data + audit records.**
+
+---
+
+## One more subtle missing component: concurrency
+
+You do have inventory concurrency testing (`JN-489`) and inventory reservation. 
+
+But concurrency should extend beyond inventory.
+
+For example:
+
+```text
+                  ┌── Customer A
+Inventory ────────┤
+                  └── Customer B
+
+Production Job ───┬── Tailor tablet
+                  └── Admin
+```
+
+You need explicit policies for:
+
+* optimistic locking
+* row locks
+* version numbers
+* stale updates
+* job claiming
+* duplicate worker execution
+* simultaneous admin edits
+* inventory reservation races
+* production-stage races
+
+I'd call this **Concurrency & Consistency Engineering**.
+
+---
+
+# If I were upgrading this manifesto
+
+I'd add an entirely new section between **Observability** and **CI/CD**:
+
+```text
+STATE 37 — PLATFORM RELIABILITY & RESILIENCE
+
+REL-001 Rate limiting
+REL-002 Abuse prevention
+REL-003 Idempotency framework
+REL-004 Distributed locking
+REL-005 Optimistic concurrency
+REL-006 Request timeouts
+REL-007 Retry policies
+REL-008 Exponential backoff + jitter
+REL-009 Circuit breakers
+REL-010 Bulkheads
+REL-011 Dependency failure policies
+REL-012 Caching architecture
+REL-013 Cache invalidation
+REL-014 CDN strategy
+REL-015 Queue infrastructure
+REL-016 Worker concurrency
+REL-017 Job scheduling / cron
+REL-018 Dead-letter queues
+REL-019 Health checks
+REL-020 Readiness checks
+REL-021 Capacity limits
+REL-022 Load testing
+REL-023 Stress testing
+REL-024 Failure injection testing
+REL-025 Disaster recovery
+REL-026 Restore drills
+REL-027 RPO/RTO
+REL-028 Feature flags
+REL-029 Kill switches
+REL-030 Graceful degradation
+REL-031 Dependency isolation
+REL-032 SLO definitions
+REL-033 Error budgets
+```
+
+Then the architecture becomes much more complete:
+
+**Business correctness**
+→ domain/inventory/payment/order
+
+**Security**
+→ auth/RLS/secrets/rate limiting
+
+**Reliability**
+→ idempotency/concurrency/timeouts/retries/circuit breakers/queues
+
+**Observability**
+→ logs/metrics/traces/SLOs/alerts
+
+**Resilience**
+→ backups/DR/failure testing/rollback
+
+**Delivery**
+→ CI/CD/environments/migrations/feature flags
+
+That is the main layer I think your current ~600-task manifesto is missing. It already covers an unusually large amount of **functional engineering**; the next step isn't adding more features, it's adding the **distributed-systems/reliability layer around those features**.

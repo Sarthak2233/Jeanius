@@ -18,7 +18,8 @@
     "db:stop": "supabase stop",
     "db:status": "supabase status",
     "db:push": "pnpm --filter @jeanius/database db:push",
-    "db:seed": "pnpm --filter @jeanius/database seed"
+    "db:seed": "pnpm --filter @jeanius/database seed",
+    "seed:media": "node --experimental-strip-types scripts/seed-product-media.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

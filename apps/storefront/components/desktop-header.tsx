@@ -112,7 +112,7 @@ export function DesktopHeader({
             </Link>
 
             <Link
-              href="/"
+              href="/shop"
               style={{
                 textDecoration: 'none',
                 color: '#334155',
@@ -144,7 +144,7 @@ export function DesktopHeader({
               }}
             >
               <span>Drop</span>
-              {!isMemberOrAdmin ? (
+              {!isAuthenticated ? (
                 <span
                   style={{
                     fontSize: '0.62rem',
@@ -159,8 +159,23 @@ export function DesktopHeader({
                 >
                   🔒 VIP
                 </span>
-              ) : (
+              ) : isMemberOrAdmin ? (
                 <span style={{ color: '#b45309', fontSize: '0.75rem' }}>★</span>
+              ) : (
+                <span
+                  style={{
+                    fontSize: '0.62rem',
+                    padding: '0.1rem 0.4rem',
+                    borderRadius: '9999px',
+                    backgroundColor: '#ecfdf5',
+                    color: '#065f46',
+                    fontWeight: 600,
+                    letterSpacing: '0.02em',
+                    border: '1px solid #a7f3d0',
+                  }}
+                >
+                  UNLOCKED
+                </span>
               )}
             </Link>
 

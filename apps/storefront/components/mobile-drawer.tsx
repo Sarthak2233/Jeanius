@@ -31,11 +31,11 @@ export function MobileDrawer({
 
   const NAV_LINKS = [
     { label: 'About / Guide', href: '/about' },
-    { label: 'Shop (OM)', href: '/' },
+    { label: 'Shop (OM)', href: '/shop' },
     {
       label: 'Drop',
       href: '/drop',
-      badge: !isMemberOrAdmin ? '🔒 VIP' : '★ VIP',
+      badge: !isAuthenticated ? '🔒 VIP' : isMemberOrAdmin ? '★ VIP' : 'UNLOCKED',
       isVip: true,
     },
     { label: 'Atelier Stories', href: '/pages' },

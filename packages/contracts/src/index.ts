@@ -509,3 +509,73 @@ export type UpdateAnnouncementDto = z.infer<typeof UpdateAnnouncementSchema>;
 export type CraftFocusDto = z.infer<typeof CraftFocusSchema>;
 export type UpdateGarmentPreferencesDto = z.infer<typeof UpdateGarmentPreferencesSchema>;
 export type UpdateJewelleryPreferencesDto = z.infer<typeof UpdateJewelleryPreferencesSchema>;
+
+// ================= Catalog Discovery & Filtering (JN-168 → JN-179) =================
+export const ProductSortOptionSchema = z.enum([
+  'FEATURED',
+  'PRICE_ASC',
+  'PRICE_DESC',
+  'NEWEST',
+  'TITLE_ASC',
+]);
+
+export const CatalogFilterCriteriaSchema = z.object({
+  category: z.enum(['ALL', 'BOTTOMS', 'TOPS', 'JEWELLERY', 'ACCESSORIES']).default('ALL'),
+  commerceModel: z.enum(['ALL', 'OM', 'DROP']).default('ALL'),
+  status: z.enum(['ALL', 'PUBLISHED', 'SOLD_OUT', 'SCHEDULED']).default('ALL'),
+  minPrice: z.number().int().nonnegative().optional(),
+  maxPrice: z.number().int().nonnegative().optional(),
+  searchQuery: z.string().optional(),
+  sortBy: ProductSortOptionSchema.default('FEATURED'),
+  page: z.number().int().positive().default(1),
+  pageSize: z.number().int().positive().max(50).default(12),
+});
+
+export const ProductImageDtoSchema = z.object({
+  id: z.string().optional(),
+  url: z.string().min(1),
+  altText: z.string(),
+  position: z.number().int().default(0),
+  isPrimary: z.boolean().default(false),
+  width: z.number().int().optional(),
+  height: z.number().int().optional(),
+});
+
+export const ProductCardDtoSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  description: z.string(),
+  basePriceAmount: z.number().int(),
+  basePriceCurrency: z.string(),
+  commerceModel: z.enum(['OM', 'DROP', 'CUSTOM_ORDER', 'PRE_ORDER']),
+  category: ProductCategorySchema,
+  status: ProductStatusSchema,
+  publishAt: z.string().optional(),
+  primaryImage: ProductImageDtoSchema.optional(),
+  images: z.array(ProductImageDtoSchema).default([]),
+});
+
+export const CategoryCountDtoSchema = z.object({
+  category: ProductCategorySchema,
+  count: z.number().int().nonnegative(),
+});
+
+export const CatalogPageDtoSchema = z.object({
+  products: z.array(ProductCardDtoSchema),
+  totalCount: z.number().int().nonnegative(),
+  page: z.number().int().positive(),
+  pageSize: z.number().int().positive(),
+  totalPages: z.number().int().nonnegative(),
+  categoryCounts: z.array(CategoryCountDtoSchema),
+  selectedCategory: z.enum(['ALL', 'BOTTOMS', 'TOPS', 'JEWELLERY', 'ACCESSORIES']),
+  selectedCommerceModel: z.enum(['ALL', 'OM', 'DROP']),
+  selectedSort: ProductSortOptionSchema,
+});
+
+export type ProductSortOptionDto = z.infer<typeof ProductSortOptionSchema>;
+export type CatalogFilterCriteriaDto = z.infer<typeof CatalogFilterCriteriaSchema>;
+export type ProductImageDto = z.infer<typeof ProductImageDtoSchema>;
+export type ProductCardDto = z.infer<typeof ProductCardDtoSchema>;
+export type CategoryCountDto = z.infer<typeof CategoryCountDtoSchema>;
+export type CatalogPageDto = z.infer<typeof CatalogPageDtoSchema>;

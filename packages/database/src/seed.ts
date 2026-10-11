@@ -6,6 +6,7 @@ import {
   fabricBolts,
   metalStocks,
   products,
+  productImages,
   productOptions,
   optionValues,
   productVariants,
@@ -126,71 +127,203 @@ export async function runDatabaseSeed() {
     ])
     .onConflictDoNothing();
 
-  // 3. Products
-  await db
-    .insert(products)
-    .values([
-      {
-        id: 'a0000000-0000-0000-0000-000000000001',
-        slug: 'lot-001-straight-selvedge',
-        title: 'Lot 001 — Straight Selvedge Raw Denim',
-        description:
-          '14oz Japanese Kurabo raw selvedge denim. Hand-cut and crafted in our Kathmandu workshop.',
-        basePriceAmount: 28000,
-        basePriceCurrency: 'USD',
-        commerceModel: 'OM',
-        category: 'BOTTOMS',
-        status: 'PUBLISHED',
-      },
-      {
-        id: 'a0000000-0000-0000-0000-000000000002',
-        slug: 'lot-002-slim-tapered-deep-indigo',
-        title: 'Lot 002 — Slim Tapered Deep Indigo Selvedge',
-        description: '15.5oz Kuroki Mills heavyweight selvedge denim. Tailored slim tapered cut.',
-        basePriceAmount: 31000,
-        basePriceCurrency: 'USD',
-        commerceModel: 'DROP',
-        category: 'BOTTOMS',
-        status: 'PUBLISHED',
-      },
-      {
-        id: 'a0000000-0000-0000-0000-000000000003',
-        slug: 'lot-j01-sterling-signet-ring',
-        title: 'Lot J01 — .925 Sterling Silver Signet Ring',
-        description:
-          'Solid .925 sterling silver signet ring with hand-chiseled crest. Made to order at our Kathmandu jewellery bench.',
-        basePriceAmount: 22000,
-        basePriceCurrency: 'USD',
-        commerceModel: 'OM',
-        category: 'JEWELLERY',
-        status: 'PUBLISHED',
-      },
-      {
-        id: 'a0000000-0000-0000-0000-000000000004',
-        slug: 'lot-j02-forged-brass-cuff',
-        title: 'Lot J02 — Hand-Forged Solid Brass Cuff',
-        description:
-          'Heavy solid brass cuff bracelet hand-hammered and heat-tempered with raw vintage patina.',
-        basePriceAmount: 18000,
-        basePriceCurrency: 'USD',
-        commerceModel: 'DROP',
-        category: 'JEWELLERY',
-        status: 'PUBLISHED',
-      },
-      {
-        id: 'a0000000-0000-0000-0000-000000000005',
-        slug: 'lot-j03-curb-denim-wallet-chain',
-        title: 'Lot J03 — Heavy Curb Denim Wallet Chain',
-        description:
-          'Solid sterling silver curb chain with hand-carved swivel clip engineered specifically for raw denim belt loops.',
-        basePriceAmount: 38000,
-        basePriceCurrency: 'USD',
-        commerceModel: 'OM',
-        category: 'JEWELLERY',
-        status: 'PUBLISHED',
-      },
-    ])
-    .onConflictDoNothing();
+  // 3. Clean and reset product catalog for idempotent seed
+  await db.delete(productVariants);
+  await db.delete(optionValues);
+  await db.delete(productOptions);
+  await db.delete(productImages);
+  await db.delete(products);
+
+  const scheduledDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 days in future
+  const allProducts = [
+    // --- BOTTOMS (4) ---
+    {
+      id: 'a0000000-0000-0000-0000-000000000001',
+      slug: 'lot-001-straight-selvedge',
+      title: 'Lot 001 — Straight Selvedge Raw Denim',
+      description:
+        '14oz Japanese Kurabo raw selvedge denim. Hand-cut and crafted on Union Special 43200G machines in our Kathmandu workshop.',
+      basePriceAmount: 28000,
+      basePriceCurrency: 'USD',
+      commerceModel: 'OM' as const,
+      category: 'BOTTOMS' as const,
+      status: 'PUBLISHED' as const,
+    },
+    {
+      id: 'a0000000-0000-0000-0000-000000000002',
+      slug: 'lot-002-slim-tapered-deep-indigo',
+      title: 'Lot 002 — Slim Tapered Deep Indigo Selvedge',
+      description: '15.5oz Kuroki Mills heavyweight selvedge denim. Tailored slim tapered cut.',
+      basePriceAmount: 31000,
+      basePriceCurrency: 'USD',
+      commerceModel: 'DROP' as const,
+      category: 'BOTTOMS' as const,
+      status: 'PUBLISHED' as const,
+    },
+    {
+      id: 'a0000000-0000-0000-0000-000000000006',
+      slug: 'lot-003-natural-indigo-deadstock-straight',
+      title: 'Lot 003 — Natural Indigo Deadstock Straight',
+      description:
+        'Ultra-rare 16oz natural plant-indigo deadstock selvedge. Scheduled limited release.',
+      basePriceAmount: 36000,
+      basePriceCurrency: 'USD',
+      commerceModel: 'OM' as const,
+      category: 'BOTTOMS' as const,
+      status: 'SCHEDULED' as const,
+      publishAt: scheduledDate,
+    },
+    {
+      id: 'a0000000-0000-0000-0000-000000000007',
+      slug: 'lot-000-archive-first-edition-selvedge',
+      title: 'Lot 000 — Archive First Edition Selvedge',
+      description: 'Our inaugural 2024 atelier run. Fully committed and sold out.',
+      basePriceAmount: 26000,
+      basePriceCurrency: 'USD',
+      commerceModel: 'DROP' as const,
+      category: 'BOTTOMS' as const,
+      status: 'SOLD_OUT' as const,
+    },
+
+    // --- TOPS (2) ---
+    {
+      id: 'a0000000-0000-0000-0000-000000000003',
+      slug: 'lot-t01-type2-selvedge-jacket',
+      title: 'Lot T01 — Type II Selvedge Denim Jacket',
+      description:
+        '14.5oz Kurabo raw denim Type II jacket. Boxy vintage fit with knife pleats and custom donut buttons.',
+      basePriceAmount: 42000,
+      basePriceCurrency: 'USD',
+      commerceModel: 'OM' as const,
+      category: 'TOPS' as const,
+      status: 'PUBLISHED' as const,
+    },
+    {
+      id: 'a0000000-0000-0000-0000-000000000008',
+      slug: 'lot-t02-western-selvedge-overshirt',
+      title: 'Lot T02 — Western Selvedge Chambray Overshirt',
+      description:
+        '10oz Nihon Menpu rope-dyed indigo selvedge chambray. Pearl snap buttons and sawtooth pocket flaps.',
+      basePriceAmount: 24000,
+      basePriceCurrency: 'USD',
+      commerceModel: 'DROP' as const,
+      category: 'TOPS' as const,
+      status: 'PUBLISHED' as const,
+    },
+
+    // --- JEWELLERY (4) ---
+    {
+      id: 'a0000000-0000-0000-0000-000000000005',
+      slug: 'lot-j01-sterling-signet-ring',
+      title: 'Lot J01 — .925 Sterling Silver Signet Ring',
+      description:
+        'Solid .925 sterling silver signet ring with hand-chiseled crest. Made to order at our Kathmandu jewellery bench.',
+      basePriceAmount: 22000,
+      basePriceCurrency: 'USD',
+      commerceModel: 'OM' as const,
+      category: 'JEWELLERY' as const,
+      status: 'PUBLISHED' as const,
+    },
+    {
+      id: 'a0000000-0000-0000-0000-000000000009',
+      slug: 'lot-j02-forged-brass-cuff',
+      title: 'Lot J02 — Hand-Forged Solid Brass Cuff',
+      description:
+        'Heavy solid brass cuff bracelet hand-hammered and heat-tempered with raw vintage patina.',
+      basePriceAmount: 18000,
+      basePriceCurrency: 'USD',
+      commerceModel: 'DROP' as const,
+      category: 'JEWELLERY' as const,
+      status: 'PUBLISHED' as const,
+    },
+    {
+      id: 'a0000000-0000-0000-0000-000000000010',
+      slug: 'lot-j03-curb-denim-wallet-chain',
+      title: 'Lot J03 — Heavy Curb Denim Wallet Chain',
+      description:
+        'Solid sterling silver curb chain with hand-carved swivel clip engineered specifically for raw denim belt loops.',
+      basePriceAmount: 38000,
+      basePriceCurrency: 'USD',
+      commerceModel: 'OM' as const,
+      category: 'JEWELLERY' as const,
+      status: 'PUBLISHED' as const,
+    },
+    {
+      id: 'a0000000-0000-0000-0000-000000000011',
+      slug: 'lot-j04-obsidian-carved-signet',
+      title: 'Lot J04 — Carved Obsidian Sterling Ring',
+      description:
+        'Solid sterling silver signet set with hand-faceted volcanic black obsidian. Preview edition.',
+      basePriceAmount: 34000,
+      basePriceCurrency: 'USD',
+      commerceModel: 'OM' as const,
+      category: 'JEWELLERY' as const,
+      status: 'SCHEDULED' as const,
+      publishAt: scheduledDate,
+    },
+
+    // --- ACCESSORIES (2) ---
+    {
+      id: 'a0000000-0000-0000-0000-000000000004',
+      slug: 'lot-a01-bridle-leather-selvedge-belt',
+      title: 'Lot A01 — Tochigi Bridle Leather Belt',
+      description:
+        '40mm vegetable-tanned Japanese Tochigi saddle leather belt with hand-cast solid brass buckle.',
+      basePriceAmount: 14500,
+      basePriceCurrency: 'USD',
+      commerceModel: 'OM' as const,
+      category: 'ACCESSORIES' as const,
+      status: 'PUBLISHED' as const,
+    },
+    {
+      id: 'a0000000-0000-0000-0000-000000000012',
+      slug: 'lot-a02-solid-silver-bandana-slide',
+      title: 'Lot A02 — Solid Silver Bandana Slide',
+      description:
+        'Lost-wax cast .925 sterling silver bandana slide with Tibetan talismanic engraving.',
+      basePriceAmount: 8500,
+      basePriceCurrency: 'USD',
+      commerceModel: 'DROP' as const,
+      category: 'ACCESSORIES' as const,
+      status: 'PUBLISHED' as const,
+    },
+  ];
+
+  for (const product of allProducts) {
+    await db
+      .insert(products)
+      .values(product)
+      .onConflictDoUpdate({
+        target: products.id,
+        set: {
+          slug: product.slug,
+          title: product.title,
+          description: product.description,
+          basePriceAmount: product.basePriceAmount,
+          basePriceCurrency: product.basePriceCurrency,
+          commerceModel: product.commerceModel,
+          category: product.category,
+          status: product.status,
+          publishAt: 'publishAt' in product ? (product as { publishAt?: Date }).publishAt : null,
+        },
+      });
+  }
+
+  // 3.5 Single Primary Product Image in Supabase Object Storage (JN-168)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321';
+  const storageMediaUrl = `${supabaseUrl}/storage/v1/object/public/product-media`;
+
+  const productImagesList = allProducts.map((p) => ({
+    productId: p.id,
+    url: `${storageMediaUrl}/products/${p.slug}/primary.png`,
+    altText: `${p.title} — Primary Atelier View`,
+    position: 0,
+    isPrimary: true,
+    width: 600,
+    height: p.category === 'BOTTOMS' || p.category === 'TOPS' ? 750 : 600,
+  }));
+
+  await db.insert(productImages).values(productImagesList);
 
   // 4. Options
   await db
@@ -214,7 +347,7 @@ export async function runDatabaseSeed() {
       },
       {
         id: 'e0000000-0000-0000-0000-000000000003',
-        productId: 'a0000000-0000-0000-0000-000000000003',
+        productId: 'a0000000-0000-0000-0000-000000000005',
         name: 'Ring Size',
         code: 'ring_size',
         position: 1,
@@ -222,7 +355,7 @@ export async function runDatabaseSeed() {
       },
       {
         id: 'e0000000-0000-0000-0000-000000000004',
-        productId: 'a0000000-0000-0000-0000-000000000003',
+        productId: 'a0000000-0000-0000-0000-000000000005',
         name: 'Finish',
         code: 'finish',
         position: 2,
@@ -574,7 +707,7 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
       process.exit(0);
     })
     .catch((err) => {
-      logger.error('Seed execution failed', err);
+      console.error('SEED ERROR DETAILS:', err);
       process.exit(1);
     });
 }

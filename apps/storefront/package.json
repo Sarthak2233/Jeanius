@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --port 3000",
+    "dev": "next dev --port 3002",
     "build": "rm -rf .next && next build",
-    "start": "next start --port 3000",
+    "start": "next start --port 3002",
     "typecheck": "tsc --noEmit",
     "lint": "echo \"@jeanius/storefront linted\"",
     "test": "npx tsx --test \"lib/**/*.test.ts\" \"lib/**/*.test.tsx\""

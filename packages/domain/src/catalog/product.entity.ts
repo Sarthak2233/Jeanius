@@ -14,6 +14,16 @@ import type { ProductOption } from './product-option.entity.js';
 import type { ProductVariant } from './variant.entity.js';
 import { DomainError } from '../errors/index.js';
 
+export interface ProductImageVo {
+  readonly id?: string;
+  readonly url: string;
+  readonly altText: string;
+  readonly position?: number;
+  readonly isPrimary?: boolean;
+  readonly width?: number;
+  readonly height?: number;
+}
+
 export interface ProductProps {
   readonly id: ProductId;
   readonly slug: string;
@@ -24,6 +34,7 @@ export interface ProductProps {
   readonly category: ProductCategory;
   readonly status?: ProductStatus;
   readonly publishAt?: Date;
+  readonly images?: readonly ProductImageVo[];
   readonly options?: readonly ProductOption[];
   readonly variants?: readonly ProductVariant[];
   readonly createdAt?: Date;
@@ -40,6 +51,7 @@ export class Product {
   readonly category: ProductCategory;
   private _status: ProductStatus;
   private _publishAt?: Date;
+  private readonly _images: ProductImageVo[];
   private readonly _options: ProductOption[];
   private readonly _variants: ProductVariant[];
   readonly createdAt: Date;
@@ -62,6 +74,7 @@ export class Product {
     this.category = props.category;
     this._status = props.status ?? 'DRAFT';
     this._publishAt = props.publishAt;
+    this._images = props.images ? [...props.images] : [];
     this._options = props.options ? [...props.options] : [];
     this._variants = props.variants ? [...props.variants] : [];
     this.createdAt = props.createdAt ?? new Date();
@@ -70,6 +83,14 @@ export class Product {
 
   get status(): ProductStatus {
     return this._status;
+  }
+
+  get images(): readonly ProductImageVo[] {
+    return [...this._images];
+  }
+
+  get primaryImage(): ProductImageVo | undefined {
+    return this._images.find((img) => img.isPrimary) ?? this._images[0];
   }
 
   get publishAt(): Date | undefined {
