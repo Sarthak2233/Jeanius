@@ -14,7 +14,7 @@ export interface RelatedProductsProps {
 export function RelatedProducts({
   products,
   title = 'Atelier Companion Craft',
-  subtitle = 'Curated cross-craft pairings connecting bespoke raw Japanese denim with hand-cast talismanic silver and bridle leather.',
+  subtitle = 'Curated companion creations individually cast and hand-chased at our Kathmandu atelier.',
   className = '',
 }: RelatedProductsProps) {
   if (products.length === 0) {

@@ -6,7 +6,7 @@
 
 // ================= Actors & Roles (JN-003) =================
 export type ActorRole =
-  'GUEST' | 'CUSTOMER' | 'MEMBER' | 'TAILOR' | 'JEWELLER' | 'FULFILLMENT' | 'SUPPORT' | 'ADMIN';
+  'GUEST' | 'CUSTOMER' | 'MEMBER' | 'JEWELLER' | 'FULFILLMENT' | 'SUPPORT' | 'ADMIN';
 
 export interface Actor {
   readonly id: string;
@@ -25,6 +25,8 @@ export * from './catalog/option-value.entity.js';
 export * from './catalog/product-option.entity.js';
 export * from './catalog/variant.entity.js';
 export * from './catalog/product.entity.js';
+export * from './catalog/category.entity.js';
+export * from './catalog/order-made-specification.vo.js';
 
 // Legacy compatibility aliases if needed
 export type { ProductVariant as ProductVariantInterface } from './catalog/variant.entity.js';
@@ -81,8 +83,7 @@ export function canTransitionPaymentStatus(current: string, next: string): boole
 export * from './production/production-stage.js';
 export * from './production/production-job.entity.js';
 
-// ================= Inventory & Selvedge Yardage (JN-085, JN-086) =================
-export * from './inventory/fabric-bolt.aggregate.js';
+// ================= Inventory & Precious Metal Stocks (Project 925) =================
 export * from './inventory/metal-stock.aggregate.js';
 export * from './inventory/inventory-reservation.entity.js';
 

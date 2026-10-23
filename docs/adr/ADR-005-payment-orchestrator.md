@@ -12,9 +12,9 @@ Jeanius Core Engineering Team
 ---
 
 ## Context and Problem Statement
-Jeanius operates from a workshop in Kathmandu, Nepal, while serving two distinct consumer markets:
-1. **International Customers (Global):** Primary consumer base purchasing limited-edition raw selvedge denim, paying in USD / EUR / GBP via credit/debit cards, Apple Pay, and Google Pay.
-2. **Domestic Customers (Nepal):** Local denim enthusiasts and walk-ins paying in NPR (Nepalese Rupee) via domestic mobile payment rails (eSewa, Khalti, Fonepay QR).
+Project 925 operates from its artisan workshop in Kathmandu, Nepal, serving two distinct consumer markets:
+1. **International Customers (Global):** Primary collector base purchasing limited-edition and order-made handcrafted .925 sterling silver jewellery, paying in USD / EUR / GBP via credit/debit cards, Apple Pay, and Google Pay.
+2. **Domestic Customers (Nepal):** Local jewellery connoisseurs and walk-ins paying in NPR (Nepalese Rupee) via domestic mobile payment rails (eSewa, Khalti, Fonepay QR).
 
 A single payment provider cannot serve both markets due to Nepal banking regulations and currency repatriation controls. Directly coupling the checkout flow to Stripe or eSewa would create severe code duplication, fragile branching logic, and vendor lock-in.
 

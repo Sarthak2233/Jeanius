@@ -1,14 +1,14 @@
 graph TD
     subgraph ClientAndDelivery["Delivery Runtimes (Next.js App Router)"]
         Storefront["apps/storefront<br/>• Public Catalog & Cart<br/>• /account/* (Customer)<br/>• /member/* (VIP Drops)"]
-        Admin["apps/admin<br/>• /workshop/tailor (Denim)<br/>• /workshop/jeweller (Jewellery)<br/>• /fulfillment & /support<br/>• /financials & /settings (Admin)"]
+        Admin["apps/admin<br/>• /workshop/jeweller (Kathmandu Atelier)<br/>• /categories (Dynamic Categories)<br/>• /fulfillment & /support<br/>• /financials & /settings (Admin)"]
         StoreMiddleware["Storefront Middleware<br/>• Session Token Refresh<br/>• Account & Member Guard"]
-        AdminMiddleware["Admin RBAC Middleware<br/>• Sub-path Role Gating<br/>• Tailor vs Jeweller Isolation"]
+        AdminMiddleware["Admin RBAC Middleware<br/>• Sub-path Role Gating<br/>• Jeweller & Admin RBAC Isolation"]
     end
 
     subgraph AppUseCases["Application Layer (packages/application)"]
         AuthCases["Auth & Session Use Cases<br/>• SignUpUseCase / LoginUseCase<br/>• LogoutUseCase / PasswordReset<br/>• GetSessionActorUseCase"]
-        ProfileCases["Dual-Craft Profile Use Cases<br/>• Denim Sizing (Waist / Inseam)<br/>• Jewellery Sizing (Ring Mandrel / Alloy)<br/>• Address Management"]
+        ProfileCases["Jewellery Sizing Profile Use Cases<br/>• Mandrel Sizing (US 3–16)<br/>• Wide Shank, Wrist Gap & Patina<br/>• Address Management"]
         GuardRules["Authorization & Boundary Guards<br/>• assertActorHasRole(actor, allowedRoles)<br/>• assertPrePointOfNoReturn(category, stage)<br/>• checkMembershipAccess(memberId)"]
     end
 
@@ -16,7 +16,7 @@ graph TD
         AuthGateway["packages/integrations<br/>• SupabaseAuthGateway (IAuthGateway)<br/>• SupabaseAdminClient (Service Role)"]
         DrizzleRepos["packages/database<br/>• DrizzleUserProfileRepository<br/>• DrizzleAddressRepository<br/>• DrizzleAuditLogRepository"]
         SupabaseAuthService["Supabase Auth Service<br/>• auth.users Table<br/>• JWT Access / Refresh Tokens<br/>• Email Verification & Password Recovery"]
-        PostgresRLS["Supabase PostgreSQL (RLS Enabled)<br/>• users_profile (auth.uid = id)<br/>• orders & order_lines (customer_id)<br/>• production_jobs (TAILOR vs JEWELLER)<br/>• audit_logs (append-only, admin read)"]
+        PostgresRLS["Supabase PostgreSQL (RLS Enabled)<br/>• users_profile (auth.uid = id)<br/>• orders & order_lines (customer_id)<br/>• production_jobs (JEWELLER & ADMIN)<br/>• audit_logs (append-only, admin read)"]
     end
 
     Storefront --> StoreMiddleware

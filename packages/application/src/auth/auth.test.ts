@@ -206,37 +206,37 @@ describe('State 05: Auth & Security — Application Layer', () => {
   });
 
   it('assertActorHasRole strictly enforces role boundaries', () => {
-    const tailorActor: Actor = { id: 't1', role: 'TAILOR', email: 'tailor@jeanius.co' };
     const jewellerActor: Actor = { id: 'j1', role: 'JEWELLER', email: 'jeweller@jeanius.co' };
+    const fulfillmentActor: Actor = {
+      id: 'f1',
+      role: 'FULFILLMENT',
+      email: 'fulfillment@jeanius.co',
+    };
     const guestActor: Actor = { id: 'g1', role: 'GUEST' };
-
-    // Tailor allowed on denim workshop
-    assert.doesNotThrow(() => assertActorHasRole(tailorActor, ['TAILOR', 'ADMIN']));
-
-    // Tailor forbidden on jeweller bench
-    assert.throws(() => assertActorHasRole(tailorActor, ['JEWELLER', 'ADMIN']), ForbiddenError);
 
     // Jeweller allowed on jewellery bench
     assert.doesNotThrow(() => assertActorHasRole(jewellerActor, ['JEWELLER', 'ADMIN']));
 
-    // Jeweller forbidden on denim cut tickets
-    assert.throws(() => assertActorHasRole(jewellerActor, ['TAILOR', 'ADMIN']), ForbiddenError);
+    // Jeweller forbidden on fulfillment operations
+    assert.throws(
+      () => assertActorHasRole(jewellerActor, ['FULFILLMENT', 'ADMIN']),
+      ForbiddenError,
+    );
+
+    // Fulfillment staff allowed on fulfillment
+    assert.doesNotThrow(() => assertActorHasRole(fulfillmentActor, ['FULFILLMENT', 'ADMIN']));
 
     // Guest rejected
     assert.throws(() => assertActorHasRole(guestActor, ['CUSTOMER']), UnauthorizedError);
   });
 
   it('assertPrePointOfNoReturn enforces craft-aware cancellation barriers', () => {
-    // Denim Point of No Return is 'CUTTING'
-    assert.doesNotThrow(() => assertPrePointOfNoReturn('BOTTOMS', 'QUEUED'));
-    assert.throws(() => assertPrePointOfNoReturn('BOTTOMS', 'CUTTING'), ForbiddenError);
-    assert.throws(() => assertPrePointOfNoReturn('BOTTOMS', 'SEWING'), ForbiddenError);
-
-    // Jewellery Point of No Return is 'CASTING'
-    assert.doesNotThrow(() => assertPrePointOfNoReturn('JEWELLERY', 'QUEUED'));
-    assert.throws(() => assertPrePointOfNoReturn('JEWELLERY', 'CASTING'), ForbiddenError);
-    assert.throws(() => assertPrePointOfNoReturn('JEWELLERY', 'SETTING'), ForbiddenError);
-    assert.throws(() => assertPrePointOfNoReturn('JEWELLERY', 'POLISHING'), ForbiddenError);
+    // Project 925 Point of No Return is 'CASTING'
+    assert.doesNotThrow(() => assertPrePointOfNoReturn('rings', 'QUEUED'));
+    assert.throws(() => assertPrePointOfNoReturn('rings', 'CASTING'), ForbiddenError);
+    assert.throws(() => assertPrePointOfNoReturn('rings', 'SETTING'), ForbiddenError);
+    assert.throws(() => assertPrePointOfNoReturn('bracelets-cuffs', 'PATINA'), ForbiddenError);
+    assert.throws(() => assertPrePointOfNoReturn('chains-links', 'POLISHING'), ForbiddenError);
   });
 
   it('CheckMembershipAccessUseCase gates VIP drops to MEMBER and ADMIN only', async () => {
@@ -256,7 +256,7 @@ describe('State 05: Auth & Security — Application Layer', () => {
     assert.equal(adminResult.isAllowed, true);
   });
 
-  it('CustomerProfileUseCase stores dual-craft sizing preferences (denim & jewellery)', async () => {
+  it('CustomerProfileUseCase stores jewellery sizing preferences', async () => {
     const profileRepo = new MockUserProfileRepository();
     const addressRepo = new MockAddressRepository();
 
@@ -272,12 +272,6 @@ describe('State 05: Auth & Security — Application Layer', () => {
     const useCase = new CustomerProfileUseCase(profileRepo, addressRepo);
 
     const updated = await useCase.updateProfile('cust_01', {
-      denimPreferences: {
-        waistInches: 32,
-        inseamInches: 34,
-        silhouette: 'SLIM_TAPERED',
-        hemAllowanceInches: 1.5,
-      },
       jewelleryPreferences: {
         ringSizeUs: 'US 10',
         ringMandrelMm: 19.8,
@@ -286,10 +280,10 @@ describe('State 05: Auth & Security — Application Layer', () => {
       },
     });
 
-    assert.equal(updated.denimPreferences?.waistInches, 32);
-    assert.equal(updated.denimPreferences?.silhouette, 'SLIM_TAPERED');
     assert.equal(updated.jewelleryPreferences?.ringSizeUs, 'US 10');
+    assert.equal(updated.jewelleryPreferences?.ringMandrelMm, 19.8);
     assert.equal(updated.jewelleryPreferences?.preferredAlloy, 'STERLING_SILVER_925');
+    assert.equal(updated.jewelleryPreferences?.preferredFinish, 'OXIDIZED_PATINA');
   });
 
   it('RecordPrivilegedActionUseCase logs administrative mutations into audit trail', async () => {
@@ -320,41 +314,32 @@ describe('State 05: Auth & Security — Application Layer', () => {
       role: 'CUSTOMER',
       createdAt: new Date(),
       updatedAt: new Date(),
-      denimPreferences: {
-        bottoms: {
-          waistInches: 31,
-          inseamInches: 33,
-          silhouette: 'SLIM_TAPERED',
-        },
-      },
       jewelleryPreferences: {
-        metals: {
-          preferredAlloy: 'STERLING_SILVER_925',
-          preferredFinish: 'OXIDIZED_PATINA',
-        },
+        ringSizeUs: 'US 10',
+        ringMandrelMm: 19.8,
+        preferredAlloy: 'STERLING_SILVER_925',
+        preferredFinish: 'OXIDIZED_PATINA',
       },
     });
 
     const useCase = new ResolveCustomizationDefaultsUseCase(profileRepo);
 
-    // 1. Authenticated user auto-fill for jeans
+    // 1. Authenticated user auto-fill for rings
     const userDefaults = await useCase.execute('usr_customizer_01', {
-      category: 'BOTTOMS',
-      subcategory: 'JEANS',
+      category: 'rings',
     });
     assert.equal(userDefaults.appliedFromVault, true);
     assert.equal(userDefaults.isComplete, true);
-    assert.equal(userDefaults.measurements['waistInches'], 31);
-    assert.equal(userDefaults.measurements['inseamInches'], 33);
-    assert.equal(userDefaults.measurements['silhouette'], 'SLIM_TAPERED');
+    assert.equal(userDefaults.measurements['ringSizeUs'], 'US 10');
+    assert.equal(userDefaults.measurements['ringMandrelMm'], 19.8);
+    assert.equal(userDefaults.materialPreferences['metalFinish'], 'OXIDIZED_PATINA');
 
     // 2. Guest user fallback
     const guestDefaults = await useCase.execute(null, {
-      category: 'BOTTOMS',
-      subcategory: 'JEANS',
+      category: 'rings',
     });
     assert.equal(guestDefaults.appliedFromVault, false);
     assert.equal(guestDefaults.isComplete, false);
-    assert.deepEqual(guestDefaults.missingFields, ['waistInches', 'inseamInches', 'silhouette']);
+    assert.deepEqual(guestDefaults.missingFields, ['ringSizeUs']);
   });
 });

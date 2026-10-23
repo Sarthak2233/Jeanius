@@ -35,7 +35,7 @@ The **Definition of Done (DoD)** establishes the non-negotiable quality criteria
 ## 3. Testing & Invariant Verification
 
 - [ ] **Domain Unit Tests:**
-  - 100% test coverage on domain calculation logic (e.g. inseam measurement bounds, currency conversions, pricing line items).
+  - 100% test coverage on domain calculation logic (e.g. ring mandrel measurement bounds, currency conversions, pricing line items).
   - Finite state machine transition tests verifying all valid paths and asserting that invalid transitions throw domain errors.
 - [ ] **Use Case Integration Tests:**
   - Critical paths (Checkout, Drop claim reservation, Workshop stage progression, Payment verification) covered with integration tests using mock repository ports.
@@ -49,7 +49,7 @@ The **Definition of Done (DoD)** establishes the non-negotiable quality criteria
 
 - [ ] **Declarative Schema:**
   - Table schemas, constraints, and relationships declared in `packages/database/src/schema/`.
-  - Enums and check constraints match domain value objects (e.g. Waist 28–42", Inseam 26–36").
+  - Enums and check constraints match domain value objects (e.g. Ring Size US 3–16, Wrist Gap 1.0–1.5").
 - [ ] **Versioned Migrations:**
   - Migrations generated via `drizzle-kit` as clean SQL files in `packages/database/drizzle/`.
   - Migrations are strictly forward-compatible and idempotent.

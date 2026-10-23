@@ -15,9 +15,9 @@ export function CatalogJsonLd({
   const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: `${categoryName} — Jeanius & Jewl Atelier`,
+    name: `${categoryName} — Project 925 Kathmandu Atelier`,
     description:
-      'Hand-cut raw Japanese selvedge denim and lost-wax cast talismanic jewellery crafted in our Kathmandu workshop.',
+      'Lost-wax cast and hand-carved .925 sterling silver jewellery crafted in our Kathmandu workshop.',
     itemListElement: products.map((product, idx) => ({
       '@type': 'ListItem',
       position: idx + 1,
@@ -26,7 +26,7 @@ export function CatalogJsonLd({
         name: product.title,
         description: product.description,
         image: product.primaryImage?.url || undefined,
-        url: `${siteUrl}/products/${product.slug}`,
+        url: `${siteUrl}/shop/${product.slug}`,
         category: product.category,
         offers: {
           '@type': 'Offer',

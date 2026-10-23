@@ -1,32 +1,11 @@
 /**
- * 8-stage OM manufacturing pipeline, CutTicket definition, and stage transition rules (JN-005).
+ * 8-stage OM Jewellery manufacturing pipeline and stage transition rules (Project 925).
+ * Strictly Kathmandu Metalsmith workshop stages.
  */
 import type { CommerceModel } from '../catalog/product-type.js';
 
 export type ProductionStage =
-  | 'QUEUED'
-  | 'CUTTING'
-  | 'SEWING'
-  | 'WASHING'
-  | 'HARDWARE'
-  | 'CASTING'
-  | 'SETTING'
-  | 'PATINA'
-  | 'POLISHING'
-  | 'QC'
-  | 'READY'
-  | 'SHIPPED';
-
-export const DENIM_PRODUCTION_STAGES: readonly ProductionStage[] = [
-  'QUEUED',
-  'CUTTING',
-  'SEWING',
-  'WASHING',
-  'HARDWARE',
-  'QC',
-  'READY',
-  'SHIPPED',
-] as const;
+  'QUEUED' | 'CASTING' | 'SETTING' | 'PATINA' | 'POLISHING' | 'QC' | 'READY' | 'SHIPPED';
 
 export const JEWELLERY_PRODUCTION_STAGES: readonly ProductionStage[] = [
   'QUEUED',
@@ -39,6 +18,8 @@ export const JEWELLERY_PRODUCTION_STAGES: readonly ProductionStage[] = [
   'SHIPPED',
 ] as const;
 
+export const PRODUCTION_STAGES = JEWELLERY_PRODUCTION_STAGES;
+
 export interface ProductionPolicy {
   readonly productType: CommerceModel;
   readonly minimumDays: number;
@@ -49,21 +30,7 @@ export interface ProductionPolicy {
   readonly effectiveUntil?: string;
 }
 
-export interface CutTicket {
-  readonly jobId: string;
-  readonly orderNumber: string;
-  readonly orderLineId: string;
-  readonly customerName?: string;
-  readonly measurements: Readonly<Record<string, string | number>>;
-  readonly fabricLot: string;
-  readonly threadColor: string;
-  readonly buttonFinish: string;
-  readonly pocketBagFabric: string;
-  readonly cutAt: string;
-  readonly artisanName?: string;
-}
-
-export interface JewelleryBenchTicket {
+export interface MetalsmithWorkTicket {
   readonly jobId: string;
   readonly orderNumber: string;
   readonly orderLineId: string;
@@ -71,6 +38,8 @@ export interface JewelleryBenchTicket {
   readonly ringSize?: string;
   readonly chainLength?: string;
   readonly metalAlloy: string;
+  readonly purity: string;
+  readonly metalLotNumber?: string;
   readonly finish: string;
   readonly engravingText?: string;
   readonly gemstone?: string;
@@ -78,32 +47,26 @@ export interface JewelleryBenchTicket {
   readonly metalsmithName?: string;
 }
 
-export type CraftTicket = CutTicket | JewelleryBenchTicket;
+// Backward compatibility alias
+export type JewelleryBenchTicket = MetalsmithWorkTicket;
+export type CraftTicket = MetalsmithWorkTicket;
 
 /**
  * Validates whether a production job can transition from current to next stage.
- * Forward advancement along the pipeline is allowed.
- * QC -> SEWING is permitted specifically for rework loop.
+ * Forward advancement along the Kathmandu metalsmithing pipeline is allowed.
+ * QC -> SETTING or QC -> POLISHING is permitted for rework loops.
  */
 export function canAdvanceProductionStage(
   current: ProductionStage,
   next: ProductionStage,
 ): boolean {
   if (current === next) return false;
-  if (current === 'QC' && next === 'SEWING') return true; // Denim rework loop
-  if (current === 'QC' && next === 'SETTING') return true; // Jewellery rework loop
+  if (current === 'QC' && (next === 'SETTING' || next === 'POLISHING')) return true; // Jewellery rework loop
 
-  const denimCurrentIndex = DENIM_PRODUCTION_STAGES.indexOf(current);
-  const denimNextIndex = DENIM_PRODUCTION_STAGES.indexOf(next);
+  const currentIndex = JEWELLERY_PRODUCTION_STAGES.indexOf(current);
+  const nextIndex = JEWELLERY_PRODUCTION_STAGES.indexOf(next);
 
-  if (denimCurrentIndex !== -1 && denimNextIndex === denimCurrentIndex + 1) {
-    return true;
-  }
-
-  const jewelCurrentIndex = JEWELLERY_PRODUCTION_STAGES.indexOf(current);
-  const jewelNextIndex = JEWELLERY_PRODUCTION_STAGES.indexOf(next);
-
-  if (jewelCurrentIndex !== -1 && jewelNextIndex === jewelCurrentIndex + 1) {
+  if (currentIndex !== -1 && nextIndex === currentIndex + 1) {
     return true;
   }
 
@@ -112,7 +75,7 @@ export function canAdvanceProductionStage(
 
 /**
  * Calculates estimated completion date dynamically based on order date and ProductionPolicy.
- * Automatically excludes Saturday (Nepal weekly rest day) and public holidays.
+ * Automatically excludes Saturday (Nepal weekly rest day) and public holidays in Kathmandu.
  */
 export function calculateEstimatedCompletion(orderDate: Date, policy: ProductionPolicy): Date {
   const result = new Date(orderDate.getTime());

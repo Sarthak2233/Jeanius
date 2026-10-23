@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { createStorefrontMetadata } from '../../lib/metadata';
 
 export const metadata: Metadata = createStorefrontMetadata({
-  title: 'Together — The Patina & Repair Journal',
+  title: 'Together — The Patina & Servicing Journal',
   description:
-    'Documenting the aging, fading, and lifelong repair journey of raw selvedge denim and solid sterling silver.',
+    'Documenting the natural oxidation, wear patterns, and lifelong servicing journey of solid .925 sterling silver.',
 });
 
 export default function TogetherPage() {
@@ -230,7 +230,7 @@ export default function TogetherPage() {
               margin: '0 0 1rem 0',
             }}
           >
-            Submit Garment or Ring for Workshop Servicing
+            Submit Talisman or Ring for Workshop Servicing
           </h2>
           <p
             style={{
@@ -241,9 +241,8 @@ export default function TogetherPage() {
               maxWidth: '640px',
             }}
           >
-            Whether your selvedge jeans require a chainstitch hem adjustment after wash or your
-            sterling silver signet ring needs ultrasonic reshaping, our Kathmandu and Seoul
-            workshops service all Jeanius pieces free of charge.
+            Whether your ring requires a size adjustment or your solid silver cuff needs ultrasonic
+            repolishing, our Kathmandu workshop services all Project 925 pieces free of charge.
           </p>
 
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>

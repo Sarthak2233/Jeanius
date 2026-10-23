@@ -66,8 +66,8 @@ export default async function MemberVipSalonPage() {
             lineHeight: 1.6,
           }}
         >
-          Welcome, {fullName}. You hold privileged early access to numbered bolt runs, deadstock
-          Japanese selvedge rolls, and limited metalsmith drops before public release.
+          Welcome, {fullName}. You hold privileged early access to numbered talisman runs, private
+          guild allocations, and limited metalsmith drops before public release.
         </p>
       </div>
 
@@ -208,7 +208,7 @@ export default async function MemberVipSalonPage() {
               Hand-Forged Edition • 15 Units
             </span>
             <h3 style={{ fontSize: '1.35rem', margin: '0.5rem 0 0 0', fontFamily: 'serif' }}>
-              Gilded Skull & Selvedge Signet Ring
+              Gilded Skull & Vajra Signet Ring
             </h3>
           </div>
           <div style={{ padding: '1.5rem' }}>

@@ -72,7 +72,7 @@ export default function StorefrontSignUpPage() {
           Create Profile
         </h1>
         <p style={{ color: '#64748b', fontSize: '0.875rem', margin: 0 }}>
-          Begin your journey with custom raw selvedge & hand-forged jewellery
+          Begin your journey with custom .925 sterling silver &amp; talismanic jewellery
         </p>
       </div>
 

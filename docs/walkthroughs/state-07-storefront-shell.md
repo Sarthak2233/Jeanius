@@ -102,7 +102,7 @@ flowchart TD
 - **[account-nav-state.tsx](file:///home/sarakb/projects/Jeanius/apps/storefront/components/account-nav-state.tsx):** Server-authenticated collector identity displaying role badge (`COLLECTOR`, `MEMBER ★`, `ADMIN`), name, `/account` link, and quick sign-out action; guest fallback with "Sign In" and "Register".
 
 ### F. Editorial Atelier Footer (JN-150)
-- **[storefront-footer.tsx](file:///home/sarakb/projects/Jeanius/apps/storefront/components/storefront-footer.tsx):** Studio manifesto header, 4-column Bento grid (Atelier Works, Craft & Sizing, Client Care & Policies, Studio Dispatch newsletter), copyright with dynamic year, social links (`X`, `Instagram`), and location telemetry (`Kathmandu & Seoul`).
+- **[storefront-footer.tsx](file:///home/sarakb/projects/Jeanius/apps/storefront/components/storefront-footer.tsx):** Studio manifesto header, 4-column Bento grid (Atelier Works, Craft & Sizing, Client Care & Policies, Studio Dispatch newsletter), copyright with dynamic year, social links (`X`, `Instagram`), and location telemetry (`Kathmandu Workshop`).
 
 ### G. Shell Accessibility & Automated Tests (JN-156)
 - **[shell.test.tsx](file:///home/sarakb/projects/Jeanius/apps/storefront/lib/shell.test.tsx):** Automated test suite verifying SEO metadata defaults, desktop navigation, mobile header, drawer overlays, search modal, cart bag, account state, and accessibility landmarks.
@@ -119,24 +119,24 @@ In response to visual testing feedback on layout density and typography fallback
 
 ### B. Two-Tier Header with Dedicated Search Discovery Sub-Bar
 - **Tier 1 (Main Navigation):**
-  - Brand wordmark with `Playfair Display` and `ATELIER · KTM & SEOUL` micro-badge.
+  - Brand wordmark with `Playfair Display` and `ATELIER · KATHMANDU` micro-badge.
   - Spaced canonical navigation links (`About/Guide`, `Shop (OM)`, `Drop 🔒 VIP`, `Together`, `Sizing`, `Contact`).
   - Elevated guest utilities with clean `USD ($)` currency badge, understated `Sign In`, and tactile rounded-pill `Register` button.
 - **Tier 2 (Discovery Sub-Bar — Placed Below):**
   - Moved search out of the crowded top navigation row into a dedicated, aesthetic secondary discovery bar.
   - Elongated pill-shaped search trigger with subtle inset shading, magnifying glass icon, and `<kbd>/</kbd>` keyboard indicator.
-  - Curated quick-filter discovery pills (`14oz Kurabo Selvedge`, `Ring Mandrel Chart`, `OM Lead Times`, `925 Sterling Silver`, `Drop 01 Vault`).
+  - Curated quick-filter discovery pills (`Ring Mandrel Chart`, `OM Lead Times`, `925 Sterling Silver`, `Drop 01 Vault`).
 
 ### C. Rich Atelier Home Page & Editorial Routes
 - **Home Page (`apps/storefront/app/page.tsx`):**
-  - Editorial hero with oversized serif typography ("PRECISION RAW SELVEDGE & BESPOKE SILVERSMITHING").
-  - Live workshop telemetry ribbon (`14-21 Workshop Days`, `Kurabo Mills 14oz`, `Solid 925 Sterling Silver`, `Lifetime Repair Backing`).
-  - Featured catalog bento grid showcasing **Lot 001 — Straight Raw Selvedge** ($280.00) and **Lot 002 — Solid Silver 925 Signet Ring** ($195.00).
-  - Atelier craft standards ("Point of No Return", "Heritage Metals & Dye", "Lifetime Workshop Backing").
+  - Editorial hero with oversized serif typography ("PROJECT 925 · KATHMANDU ARTISAN ATELIER").
+  - Live workshop telemetry ribbon (`14-21 Workshop Days`, `Solid 925 Sterling Silver`, `Lifetime Repair Backing`).
+  - Featured catalog bento grid showcasing handcrafted .925 sterling silver artisan pieces.
+  - Atelier craft standards ("Point of No Return", "Heritage Metals & Patina", "Lifetime Workshop Backing").
 - **Implemented Editorial Routes:**
-  - `/about`: Kathmandu cutting tables, Seoul bench, OM order protocol, lifetime warranty.
-  - `/sizing`: Denim flat measurement guide, 14oz Kurabo shrinkage matrix, and calibrated US ring mandrel table (US 5–13).
-  - `/contact`: Concierge consultation intake form and Kathmandu/Seoul physical studio directories.
+  - `/about`: Kathmandu Workshop lost-wax casting, repoussé craft, OM order protocol, lifetime warranty.
+  - `/sizing`: Calibrated US ring mandrel table (US 3–16), wide shank compensator, cuff gap, chain drape, and patina guide.
+  - `/contact`: Concierge consultation intake form and Kathmandu Workshop directory.
   - `/drop`: VIP Member vault gate with authentication check, member unlock banner, and archival drop previews.
   - `/together`: Patina journal, raw indigo fading timeline (Day 1, Month 6, Year 2), and lifetime repair intake CTA.
 

@@ -41,7 +41,7 @@ export async function updateAdminSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const role = (user?.user_metadata?.role as string) ?? '';
-  const allowedStaffRoles = ['ADMIN', 'TAILOR', 'JEWELLER', 'FULFILLMENT', 'SUPPORT'];
+  const allowedStaffRoles = ['ADMIN', 'JEWELLER', 'FULFILLMENT', 'SUPPORT'];
   const isStaffRole = allowedStaffRoles.includes(role);
 
   // Allow login page and auth callbacks
@@ -76,21 +76,8 @@ export async function updateAdminSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Strict RBAC Sub-path Guarding (JN-125):
-  // 1. Denim workshop: TAILOR or ADMIN
-  if (pathname.startsWith('/workshop/tailor')) {
-    if (role !== 'TAILOR' && role !== 'ADMIN') {
-      logger.warn('RBAC forbidden: Denim tailoring bench access denied', {
-        pathname,
-        userId: user.id,
-        role,
-        requiredRoles: ['TAILOR', 'ADMIN'],
-      });
-      return new NextResponse('Forbidden: Denim tailoring bench access only.', { status: 403 });
-    }
-  }
-
-  // 2. Jewellery metalsmith workshop: JEWELLER or ADMIN
+  // Strict RBAC Sub-path Guarding:
+  // 1. Jewellery metalsmith workshop: JEWELLER or ADMIN
   if (pathname.startsWith('/workshop/jeweller')) {
     if (role !== 'JEWELLER' && role !== 'ADMIN') {
       logger.warn('RBAC forbidden: Jewellery metalsmith bench access denied', {
@@ -105,7 +92,7 @@ export async function updateAdminSession(request: NextRequest) {
     }
   }
 
-  // 3. Fulfillment warehouse: FULFILLMENT or ADMIN
+  // 2. Fulfillment warehouse: FULFILLMENT or ADMIN
   if (pathname.startsWith('/fulfillment')) {
     if (role !== 'FULFILLMENT' && role !== 'ADMIN') {
       logger.warn('RBAC forbidden: Fulfillment station access denied', {
@@ -118,7 +105,7 @@ export async function updateAdminSession(request: NextRequest) {
     }
   }
 
-  // 4. Customer Support desk: SUPPORT or ADMIN
+  // 3. Customer Support desk: SUPPORT or ADMIN
   if (pathname.startsWith('/support')) {
     if (role !== 'SUPPORT' && role !== 'ADMIN') {
       logger.warn('RBAC forbidden: Customer support desk access denied', {
@@ -131,8 +118,9 @@ export async function updateAdminSession(request: NextRequest) {
     }
   }
 
-  // 5. Financials, Ledger, Staff Management: ADMIN strictly
+  // 4. Categories, Financials, Ledger, Staff Management: ADMIN strictly
   if (
+    pathname.startsWith('/categories') ||
     pathname.startsWith('/financials') ||
     pathname.startsWith('/staff') ||
     pathname.startsWith('/settings')

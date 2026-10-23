@@ -1,20 +1,19 @@
-# JEANIUS & JEWL — SYSTEM ARCHITECTURE OVERVIEW
+# PROJECT 925 — SYSTEM ARCHITECTURE OVERVIEW
 
 ## 1. Monorepo Structure
 
 ```text
-jeanius-and-jewl/
+jeanius/
 ├── apps/
-│   ├── storefront/                 # Customer-facing Next.js App
-│   └── admin/                      # Operations & workshop Next.js App
+│   ├── storefront/                 # Customer-facing Next.js App (Public, Customer, Member)
+│   └── admin/                      # Operations & Kathmandu Workshop Next.js App (Jeweller, Admin)
 │
 ├── packages/
 │   ├── domain/                     # Pure TypeScript DDD entities & value objects
-│   ├── application/                # Use cases, application services & ports
+│   ├── application/                # Use cases, application services & ports (ICategoryRepository, etc.)
 │   ├── database/                   # Supabase PostgreSQL + Drizzle ORM
 │   ├── contracts/                  # Zod validation schemas & shared contracts
 │   ├── integrations/               # Payment Orchestrator & external adapters
-│   ├── ui/                         # Design system tokens & React components
 │   ├── config/                     # Typed environment validation
 │   ├── observability/              # Structured logging & correlation tracking
 │   └── testing/                    # Test fixtures & domain factories
@@ -40,7 +39,7 @@ packages/domain (Entities, Value Objects)
 packages/database (Repositories implementing Ports) & packages/integrations (Gateways)
 ```
 
-1. **Domain:** Has zero dependencies. Contains core denim commerce logic (OM/DROP models, ProductionPolicy, Money, Address).
+1. **Domain:** Has zero dependencies. Contains core .925 sterling silver artisan jewellery logic (OM/DROP models, Category, ProductionPolicy, Money, Address).
 2. **Application:** Orchestrates business operations and defines repository and gateway interfaces (Ports).
 3. **Database & Integrations:** Implement application ports (Adapters).
 4. **Apps:** Consume `application` use-cases via Server Actions and Route Handlers. Zustand stores manage client-side UI states.

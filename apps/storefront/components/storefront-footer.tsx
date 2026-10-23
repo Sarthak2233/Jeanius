@@ -88,7 +88,7 @@ export function StorefrontFooter({ initialPages }: StorefrontFooterProps = {}) {
               marginBottom: '0.75rem',
             }}
           >
-            Jeanius &amp; Jewl Atelier
+            Project .925 Atelier
           </h2>
           <p
             style={{
@@ -256,7 +256,7 @@ export function StorefrontFooter({ initialPages }: StorefrontFooterProps = {}) {
                   href="/guide"
                   style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.85rem' }}
                 >
-                  Raw Selvedge Denim Rituals
+                  Newar Repoussé &amp; Chisel Rituals
                 </Link>
               </li>
             </ul>
@@ -418,8 +418,8 @@ export function StorefrontFooter({ initialPages }: StorefrontFooterProps = {}) {
           }}
         >
           <div>
-            © {currentYear} Jeanius &amp; Jewl Studio. All rights reserved. Precision Selvedge &amp;
-            Silversmithing.
+            © {currentYear} Project 925 Kathmandu Atelier. All rights reserved. Solid .925 Sterling
+            Silver Artisan Works.
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>

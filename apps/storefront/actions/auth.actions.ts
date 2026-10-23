@@ -204,7 +204,6 @@ export async function updateProfileAction(data: unknown): Promise<ActionResult<v
     logger.info('Customer profile update action started', {
       traceId,
       userId: user.id,
-      craftFocus: validated.craftFocus,
     });
     const useCase = new CustomerProfileUseCase(userProfileRepo, addressRepo);
 

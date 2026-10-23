@@ -1,37 +1,40 @@
 import { eq } from 'drizzle-orm';
-import type { Database } from '../../client';
-import { usersProfile } from '../../schema/auth-profile';
-import type { IUserProfileRepository } from '@jeanius/application';
 import {
   UserProfile,
-  createEntityId,
   type UserProfileProps,
+  createEntityId,
   type ActorRole,
 } from '@jeanius/domain';
+import type { IUserProfileRepository } from '@jeanius/application';
+import { db, type Database } from '../../client';
+import { usersProfile } from '../../schema/auth-profile';
 
 export class DrizzleUserProfileRepository implements IUserProfileRepository {
-  constructor(private readonly db: Database) {}
+  constructor(private readonly database: Database = db) {}
+
+  private get db(): Database {
+    return this.database;
+  }
 
   async findById(id: string): Promise<UserProfile | null> {
-    const records = await this.db
+    const [record] = await this.db
       .select()
       .from(usersProfile)
       .where(eq(usersProfile.id, id))
       .limit(1);
 
-    const record = records[0];
     if (!record) return null;
     return this.mapToDomain(record);
   }
 
   async findByEmail(email: string): Promise<UserProfile | null> {
-    const records = await this.db
+    const normalized = email.toLowerCase().trim();
+    const [record] = await this.db
       .select()
       .from(usersProfile)
-      .where(eq(usersProfile.email, email.toLowerCase().trim()))
+      .where(eq(usersProfile.email, normalized))
       .limit(1);
 
-    const record = records[0];
     if (!record) return null;
     return this.mapToDomain(record);
   }
@@ -46,7 +49,6 @@ export class DrizzleUserProfileRepository implements IUserProfileRepository {
         role: profile.role,
         phone: profile.phone ?? null,
         avatarUrl: profile.avatarUrl ?? null,
-        denimPreferences: (profile.denimPreferences as Record<string, unknown>) ?? null,
         jewelleryPreferences: (profile.jewelleryPreferences as Record<string, unknown>) ?? null,
         createdAt: profile.createdAt ?? new Date(),
         updatedAt: profile.updatedAt ?? new Date(),
@@ -69,11 +71,6 @@ export class DrizzleUserProfileRepository implements IUserProfileRepository {
     if (updates.phone !== undefined) valuesToUpdate.phone = updates.phone;
     if (updates.avatarUrl !== undefined) valuesToUpdate.avatarUrl = updates.avatarUrl;
     if (updates.role !== undefined) valuesToUpdate.role = updates.role;
-    if ('denimPreferences' in updates) {
-      valuesToUpdate.denimPreferences = updates.denimPreferences
-        ? (updates.denimPreferences as Record<string, unknown>)
-        : null;
-    }
     if ('jewelleryPreferences' in updates) {
       valuesToUpdate.jewelleryPreferences = updates.jewelleryPreferences
         ? (updates.jewelleryPreferences as Record<string, unknown>)
@@ -101,7 +98,6 @@ export class DrizzleUserProfileRepository implements IUserProfileRepository {
       role: row.role as ActorRole,
       phone: row.phone ?? undefined,
       avatarUrl: row.avatarUrl ?? undefined,
-      denimPreferences: (row.denimPreferences as UserProfileProps['denimPreferences']) ?? undefined,
       jewelleryPreferences:
         (row.jewelleryPreferences as UserProfileProps['jewelleryPreferences']) ?? undefined,
       createdAt: row.createdAt,

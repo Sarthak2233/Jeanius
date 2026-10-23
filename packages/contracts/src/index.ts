@@ -8,14 +8,53 @@ export const ActorRoleSchema = z.enum([
   'GUEST',
   'CUSTOMER',
   'MEMBER',
-  'TAILOR',
   'JEWELLER',
   'FULFILLMENT',
   'SUPPORT',
   'ADMIN',
 ]);
 
-export const ProductCategorySchema = z.enum(['BOTTOMS', 'TOPS', 'JEWELLERY', 'ACCESSORIES']);
+export const ProductCategorySchema = z.string().min(1);
+
+export const CategorySchema = z.object({
+  id: z.string().uuid(),
+  slug: z
+    .string()
+    .min(2)
+    .max(60)
+    .regex(/^[a-z0-9-]+$/),
+  name: z.string().min(2).max(100),
+  description: z.string().optional().nullable(),
+  sortOrder: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const CreateCategorySchema = z.object({
+  name: z.string().min(2, 'Category name must be at least 2 characters').max(100),
+  slug: z
+    .string()
+    .min(2)
+    .max(60)
+    .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
+  description: z.string().max(500).optional(),
+  sortOrder: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+});
+
+export const UpdateCategorySchema = z.object({
+  name: z.string().min(2).max(100).optional(),
+  slug: z
+    .string()
+    .min(2)
+    .max(60)
+    .regex(/^[a-z0-9-]+$/)
+    .optional(),
+  description: z.string().max(500).optional().nullable(),
+  sortOrder: z.number().int().optional(),
+  isActive: z.boolean().optional(),
+});
 
 export const CommerceModelSchema = z.enum(['OM', 'DROP', 'CUSTOM_ORDER']);
 
@@ -77,20 +116,7 @@ export const CreateCheckoutSchema = z.object({
 
 export const TransitionProductionStageSchema = z.object({
   jobId: z.string().uuid(),
-  stage: z.enum([
-    'QUEUED',
-    'CUTTING',
-    'SEWING',
-    'WASHING',
-    'HARDWARE',
-    'CASTING',
-    'SETTING',
-    'PATINA',
-    'POLISHING',
-    'QC',
-    'READY',
-    'SHIPPED',
-  ]),
+  stage: z.enum(['QUEUED', 'CASTING', 'SETTING', 'PATINA', 'POLISHING', 'QC', 'READY', 'SHIPPED']),
   notes: z.string().optional(),
 });
 
@@ -217,87 +243,7 @@ export const ResetPasswordSchema = z.object({
 });
 
 export const GenderProfileSchema = z.enum(['MEN', 'WOMEN', 'UNISEX']);
-export const MeasurementMethodSchema = z.enum(['GARMENT_FLAT', 'BODY_ANATOMICAL']);
 export const MeasurementUnitSchema = z.enum(['INCHES', 'CM']);
-export const StomachProfileSchema = z.enum(['FLAT', 'AVERAGE', 'ROUNDED', 'STOUT']);
-export const SeatProfileSchema = z.enum(['FLAT', 'AVERAGE', 'ROUNDED', 'STOUT']);
-export const RisePreferenceSchema = z.enum(['HIGH_RISE', 'MID_RISE', 'LOW_RISE']);
-
-export const BottomsMeasurementsSchema = z.object({
-  gender: GenderProfileSchema.optional(),
-  measurementMethod: MeasurementMethodSchema.optional(),
-  waistInches: z.number().min(20).max(60).optional(),
-  waistFlatInches: z.number().min(10).max(30).optional(),
-  naturalWaistInches: z.number().min(20).max(60).optional(),
-  hipsInches: z.number().min(26).max(70).optional(),
-  hipsFlatInches: z.number().min(13).max(35).optional(),
-  thighInches: z.number().min(14).max(42).optional(),
-  thighFlatInches: z.number().min(7).max(21).optional(),
-  kneeInches: z.number().min(10).max(32).optional(),
-  kneeFlatInches: z.number().min(5).max(16).optional(),
-  legOpeningInches: z.number().min(8).max(30).optional(),
-  legOpeningFlatInches: z.number().min(4).max(15).optional(),
-  inseamInches: z.number().min(20).max(45).optional(),
-  outseamInches: z.number().min(28).max(55).optional(),
-  frontRiseInches: z.number().min(7).max(20).optional(),
-  backRiseInches: z.number().min(10).max(25).optional(),
-  crotchTotalInches: z.number().min(18).max(40).optional(),
-  calfInches: z.number().min(10).max(25).optional(),
-  ankleInches: z.number().min(7).max(18).optional(),
-  silhouette: z
-    .enum(['STRAIGHT', 'SLIM_TAPERED', 'WIDE_LEG', 'RELAXED_TAPERED', 'BOOTCUT'])
-    .optional(),
-  risePreference: RisePreferenceSchema.optional(),
-  fitCut: z.enum(['SLIM', 'NORMAL', 'LOOSE']).optional(),
-  stomachProfile: StomachProfileSchema.optional(),
-  seatProfile: SeatProfileSchema.optional(),
-  hemAllowanceInches: z.number().min(0).max(4).optional(),
-});
-
-export const TopsMeasurementsSchema = z.object({
-  gender: GenderProfileSchema.optional(),
-  measurementMethod: MeasurementMethodSchema.optional(),
-  chestInches: z.number().min(28).max(65).optional(),
-  chestFlatInches: z.number().min(14).max(32.5).optional(),
-  bustInches: z.number().min(28).max(65).optional(),
-  underBustInches: z.number().min(24).max(55).optional(),
-  breastPointInches: z.number().min(7).max(18).optional(),
-  waistPointInches: z.number().min(12).max(25).optional(),
-  frontBustWidthInches: z.number().min(12).max(28).optional(),
-  naturalWaistInches: z.number().min(20).max(55).optional(),
-  stomachInches: z.number().min(24).max(60).optional(),
-  shoulderWidthInches: z.number().min(13).max(30).optional(),
-  shoulderSeamInches: z.number().min(4).max(12).optional(),
-  sleeveLengthInches: z.number().min(18).max(38).optional(),
-  shortSleeveLengthInches: z.number().min(6).max(18).optional(),
-  bicepInches: z.number().min(9).max(26).optional(),
-  wristInches: z.number().min(5).max(12).optional(),
-  armholeInches: z.number().min(14).max(30).optional(),
-  collarInches: z.number().min(11).max(24).optional(),
-  neckInches: z.number().min(11).max(24).optional(),
-  shirtLengthInches: z.number().min(20).max(45).optional(),
-  jacketLengthInches: z.number().min(24).max(45).optional(),
-  backLengthInches: z.number().min(18).max(42).optional(),
-  yokeInches: z.number().min(12).max(28).optional(),
-  cuffInches: z.number().min(7).max(16).optional(),
-  waistInches: z.number().min(24).max(60).optional(),
-  hipInches: z.number().min(28).max(65).optional(),
-  fitPreference: z.enum(['SLIM', 'REGULAR', 'BOXY', 'OVERSIZED']).optional(),
-  fitCut: z.enum(['SLIM', 'NORMAL', 'LOOSE']).optional(),
-  stomachProfile: StomachProfileSchema.optional(),
-});
-
-export const DenimPreferencesSchema = z.object({
-  bottoms: BottomsMeasurementsSchema.optional(),
-  tops: TopsMeasurementsSchema.optional(),
-  // Flat / legacy compatibility
-  waistInches: z.number().min(20).max(60).optional(),
-  inseamInches: z.number().min(20).max(45).optional(),
-  silhouette: z
-    .enum(['STRAIGHT', 'SLIM_TAPERED', 'WIDE_LEG', 'RELAXED_TAPERED', 'BOOTCUT'])
-    .optional(),
-  hemAllowanceInches: z.number().min(0).max(4).optional(),
-});
 
 export const RingMeasurementsSchema = z.object({
   ringSizeUs: z.string().optional(),
@@ -431,19 +377,11 @@ export const UpdateProfileSchema = z.object({
   fullName: z.string().min(2).optional(),
   phone: z.string().optional(),
   avatarUrl: z.string().url().optional(),
-  craftFocus: CraftFocusSchema.optional(),
-  denimPreferences: DenimPreferencesSchema.nullable().optional(),
   jewelleryPreferences: JewelleryPreferencesSchema.nullable().optional(),
-});
-
-export const UpdateGarmentPreferencesSchema = z.object({
-  denimPreferences: DenimPreferencesSchema.nullable(),
-  craftFocus: CraftFocusSchema.optional(),
 });
 
 export const UpdateJewelleryPreferencesSchema = z.object({
   jewelleryPreferences: JewelleryPreferencesSchema.nullable(),
-  craftFocus: CraftFocusSchema.optional(),
 });
 
 export const CreateAddressInputSchema = AddressSchema.extend({
@@ -480,9 +418,6 @@ export type SignUpDto = z.infer<typeof SignUpSchema>;
 export type LoginDto = z.infer<typeof LoginSchema>;
 export type RequestPasswordResetDto = z.infer<typeof RequestPasswordResetSchema>;
 export type ResetPasswordDto = z.infer<typeof ResetPasswordSchema>;
-export type BottomsMeasurementsDto = z.infer<typeof BottomsMeasurementsSchema>;
-export type TopsMeasurementsDto = z.infer<typeof TopsMeasurementsSchema>;
-export type DenimPreferencesDto = z.infer<typeof DenimPreferencesSchema>;
 export type RingMeasurementsDto = z.infer<typeof RingMeasurementsSchema>;
 export type WristMeasurementsDto = z.infer<typeof WristMeasurementsSchema>;
 export type NecklaceMeasurementsDto = z.infer<typeof NecklaceMeasurementsSchema>;
@@ -493,11 +428,7 @@ export type ResolvedCustomizationDefaultsDto = z.infer<typeof ResolvedCustomizat
 export type UpdateProfileDto = z.infer<typeof UpdateProfileSchema>;
 export type CreateAddressInputDto = z.infer<typeof CreateAddressInputSchema>;
 export type GenderProfileDto = z.infer<typeof GenderProfileSchema>;
-export type MeasurementMethodDto = z.infer<typeof MeasurementMethodSchema>;
 export type MeasurementUnitDto = z.infer<typeof MeasurementUnitSchema>;
-export type StomachProfileDto = z.infer<typeof StomachProfileSchema>;
-export type SeatProfileDto = z.infer<typeof SeatProfileSchema>;
-export type RisePreferenceDto = z.infer<typeof RisePreferenceSchema>;
 export type ContentPageStatusDto = z.infer<typeof ContentPageStatusSchema>;
 export type AnnouncementTypeDto = z.infer<typeof AnnouncementTypeSchema>;
 export type ContentPageDto = z.infer<typeof ContentPageSchema>;
@@ -506,9 +437,8 @@ export type UpdateContentPageDto = z.infer<typeof UpdateContentPageSchema>;
 export type AnnouncementDto = z.infer<typeof AnnouncementSchema>;
 export type CreateAnnouncementDto = z.infer<typeof CreateAnnouncementSchema>;
 export type UpdateAnnouncementDto = z.infer<typeof UpdateAnnouncementSchema>;
-export type CraftFocusDto = z.infer<typeof CraftFocusSchema>;
-export type UpdateGarmentPreferencesDto = z.infer<typeof UpdateGarmentPreferencesSchema>;
 export type UpdateJewelleryPreferencesDto = z.infer<typeof UpdateJewelleryPreferencesSchema>;
+export type CraftFocusDto = z.infer<typeof CraftFocusSchema>;
 
 // ================= Catalog Discovery & Filtering (JN-168 → JN-179) =================
 export const ProductSortOptionSchema = z.enum([
@@ -568,14 +498,99 @@ export const CatalogPageDtoSchema = z.object({
   pageSize: z.number().int().positive(),
   totalPages: z.number().int().nonnegative(),
   categoryCounts: z.array(CategoryCountDtoSchema),
-  selectedCategory: z.enum(['ALL', 'BOTTOMS', 'TOPS', 'JEWELLERY', 'ACCESSORIES']),
+  selectedCategory: z.string(),
   selectedCommerceModel: z.enum(['ALL', 'OM', 'DROP']),
   selectedSort: ProductSortOptionSchema,
 });
 
+export type CategoryDto = z.infer<typeof CategorySchema>;
+export type CreateCategoryDto = z.infer<typeof CreateCategorySchema>;
+export type UpdateCategoryDto = z.infer<typeof UpdateCategorySchema>;
 export type ProductSortOptionDto = z.infer<typeof ProductSortOptionSchema>;
 export type CatalogFilterCriteriaDto = z.infer<typeof CatalogFilterCriteriaSchema>;
 export type ProductImageDto = z.infer<typeof ProductImageDtoSchema>;
 export type ProductCardDto = z.infer<typeof ProductCardDtoSchema>;
 export type CategoryCountDto = z.infer<typeof CategoryCountDtoSchema>;
 export type CatalogPageDto = z.infer<typeof CatalogPageDtoSchema>;
+
+// --- State 10: Product Detail & Configurator Contracts (JN-180 - JN-198) ---
+
+export const OptionValueDtoSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  label: z.string(),
+  priceDeltaAmount: z.number().int().default(0),
+  priceDeltaCurrency: z.string().default('USD'),
+  isAvailable: z.boolean().default(true),
+  position: z.number().int().default(0),
+});
+
+export const ProductOptionDtoSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  code: z.string(),
+  position: z.number().int().default(0),
+  isRequired: z.boolean().default(true),
+  values: z.array(OptionValueDtoSchema).default([]),
+});
+
+export const ProductVariantDtoSchema = z.object({
+  id: z.string(),
+  sku: z.string(),
+  options: z.record(z.string(), z.string()),
+  additionalPriceAmount: z.number().int().default(0),
+  additionalPriceCurrency: z.string().default('USD'),
+  inventoryCount: z.number().int().default(0),
+  status: VariantStatusSchema,
+});
+
+export const ProductDetailDtoSchema = ProductCardDtoSchema.extend({
+  options: z.array(ProductOptionDtoSchema).default([]),
+  variants: z.array(ProductVariantDtoSchema).default([]),
+  leadTimeDays: z.number().int().optional(),
+  leadTimeDaysMin: z.number().int().optional(),
+  leadTimeDaysMax: z.number().int().optional(),
+  inputSpecifications: z.record(z.string(), z.unknown()).optional(),
+  priceRules: z.array(z.record(z.string(), z.unknown())).optional(),
+  craftSpecs: z.record(z.string(), z.string()).optional(),
+});
+
+export const ConfiguratorSelectionSchema = z.object({
+  productId: z.string().uuid(),
+  selectedOptions: z.record(z.string(), z.string()).default({}),
+  customSpecifications: z.record(z.string(), z.unknown()).optional(),
+  quantity: z.number().int().positive().max(10).default(1),
+});
+
+export const ResolvedVariantDtoSchema = z.object({
+  variantId: z.string().uuid(),
+  sku: z.string(),
+  unitPriceAmount: z.number().int(),
+  unitPriceCurrency: z.string(),
+  isAvailable: z.boolean(),
+  inventoryCount: z.number().int(),
+  selectedOptions: z.record(z.string(), z.string()),
+});
+
+export const AddToCartInputSchema = z.object({
+  productId: z.string().uuid(),
+  variantId: z.string().uuid().optional(),
+  sku: z.string(),
+  productTitle: z.string(),
+  productSlug: z.string(),
+  unitPriceAmount: z.number().int().nonnegative(),
+  unitPriceCurrency: z.string().default('USD'),
+  selectedOptions: z.record(z.string(), z.string()).default({}),
+  customSpecifications: z.record(z.string(), z.unknown()).optional(),
+  commerceModel: z.enum(['OM', 'DROP', 'CUSTOM_ORDER', 'PRE_ORDER']).default('OM'),
+  imageUrl: z.string().optional(),
+  quantity: z.number().int().positive().max(10).default(1),
+});
+
+export type OptionValueDto = z.infer<typeof OptionValueDtoSchema>;
+export type ProductOptionDto = z.infer<typeof ProductOptionDtoSchema>;
+export type ProductVariantDto = z.infer<typeof ProductVariantDtoSchema>;
+export type ProductDetailDto = z.infer<typeof ProductDetailDtoSchema>;
+export type ConfiguratorSelectionDto = z.infer<typeof ConfiguratorSelectionSchema>;
+export type ResolvedVariantDto = z.infer<typeof ResolvedVariantDtoSchema>;
+export type AddToCartInputDto = z.infer<typeof AddToCartInputSchema>;

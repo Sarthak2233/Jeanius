@@ -8,8 +8,8 @@ import { AdminInput } from '../components/admin-input';
 describe('Admin Operations Components (JN-133 & JN-134)', () => {
   describe('JN-133: AdminButton Component', () => {
     it('renders tactical bench action button with monospace typography', () => {
-      const html = renderToString(<AdminButton variant="bench">CONFIRM CUT TICKET</AdminButton>);
-      assert.ok(html.includes('CONFIRM CUT TICKET'));
+      const html = renderToString(<AdminButton variant="bench">CONFIRM CASTING TREE</AdminButton>);
+      assert.ok(html.includes('CONFIRM CASTING TREE'));
       assert.ok(html.includes('var(--bg-bench, #1e293b)'));
       assert.ok(html.includes('var(--font-mono, monospace)'));
       assert.ok(html.includes('var(--radius-none, 0px)'));
@@ -18,10 +18,10 @@ describe('Admin Operations Components (JN-133 & JN-134)', () => {
     it('renders telemetry cyan variant and shortcut badge', () => {
       const html = renderToString(
         <AdminButton variant="telemetry" shortcut="ENTER">
-          DISPATCH TO TAILOR
+          DISPATCH TO JEWELLER
         </AdminButton>,
       );
-      assert.ok(html.includes('DISPATCH TO TAILOR'));
+      assert.ok(html.includes('DISPATCH TO JEWELLER'));
       assert.ok(html.includes('var(--color-telemetry, #38bdf8)'));
       assert.ok(html.includes('<kbd'));
       assert.ok(html.includes('ENTER'));

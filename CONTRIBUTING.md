@@ -1,26 +1,25 @@
-# Contributing to Jeanius & Jewl
+# Contributing to Project 925
 
-Thank you for contributing to **Jeanius & Jewl** — a precision atelier uniting artisanal handmade raw denim and handcrafted precious metal jewellery based in Kathmandu, Nepal, serving global craft enthusiasts.
+Thank you for contributing to **Project 925** — an artisan direct-to-consumer atelier dedicated exclusively to handcrafted .925 sterling silver jewellery based strictly in the Kathmandu Workshop, Nepal.
 
 ---
 
 ## 1. Monorepo Architecture & Principles
 
-Jeanius & Jewl is structured as a **Domain-Driven Design (DDD) Modular Monolith** managed with Turborepo and pnpm workspaces:
+Project 925 is structured as a **Domain-Driven Design (DDD) Modular Monolith** managed with Turborepo and pnpm workspaces:
 
 ```text
-jeanius-and-jewl/
+jeanius/
 ├── apps/
 │   ├── storefront/          # Customer-facing Next.js App Router (Public, Customer, Member)
-│   └── admin/               # Internal operations portal (Artisans, Fulfillment, Support, Admin)
+│   └── admin/               # Internal operations portal (Jewellers, Fulfillment, Support, Admin)
 │
 ├── packages/
 │   ├── domain/              # Pure TypeScript business invariants (0 external dependencies)
-│   ├── application/         # Use cases and port interfaces (IOrderRepository, IPaymentGateway)
+│   ├── application/         # Use cases and port interfaces (IOrderRepository, ICategoryRepository, IPaymentGateway)
 │   ├── database/            # Supabase PostgreSQL models & Drizzle ORM repository adapters
 │   ├── contracts/           # Shared Zod validation schemas and API DTOs
 │   ├── integrations/        # Provider adapters (Stripe, eSewa, DHL, SendGrid)
-│   ├── ui/                  # Restrained atelier design system components and tokens (indigo, silver, brass)
 │   ├── config/              # Shared typed environment configuration
 │   ├── observability/       # Structured logging, correlation IDs, and error tracking
 │   └── testing/             # Shared mock factories and test utilities

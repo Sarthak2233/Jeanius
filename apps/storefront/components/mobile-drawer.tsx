@@ -136,7 +136,7 @@ export function MobileDrawer({
             }}
           >
             <span>Region: Worldwide (USD)</span>
-            <span>Kathmandu &amp; Seoul</span>
+            <span>Kathmandu Workshop</span>
           </div>
         </div>
       </div>

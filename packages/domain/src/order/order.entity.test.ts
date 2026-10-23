@@ -106,16 +106,16 @@ describe('Order Aggregate Root', () => {
       total: new Money(30000, 'USD'),
     });
 
-    const cuttingJob = new ProductionJob({
+    const castingJob = new ProductionJob({
       id: createEntityId('job-002'),
       orderId: order.id,
       orderLineId: createEntityId('line-om-01'),
-      currentStage: 'CUTTING', // Fabric bolt has already been cut!
+      currentStage: 'CASTING', // Silver has already been cast!
       targetCompletionDate: new Date(Date.now() + 10 * 86400000),
     });
 
-    assert.equal(order.canCancel([cuttingJob]), false);
-    assert.throws(() => order.cancel('Customer changed mind', [cuttingJob]), DomainError);
+    assert.equal(order.canCancel([castingJob]), false);
+    assert.throws(() => order.cancel('Customer changed mind', [castingJob]), DomainError);
   });
 
   it('correctly identifies multi-package split fulfillment eligibility', () => {

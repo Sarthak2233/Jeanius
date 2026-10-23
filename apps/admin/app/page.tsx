@@ -5,13 +5,15 @@ import type { ProductionStage } from '@jeanius/domain';
 import { db, DrizzleAuditLogRepository } from '@jeanius/database';
 import { AdminNav } from '../components/admin-nav';
 import { AuditActionTrigger } from '../components/audit-action-trigger';
+import { AtelierSettingsControl } from '../components/atelier-settings-control';
+import { getAtelierSettingAction } from '../actions/settings.actions';
 
 const STAGES: readonly ProductionStage[] = [
   'QUEUED',
-  'CUTTING',
-  'SEWING',
-  'WASHING',
-  'HARDWARE',
+  'CASTING',
+  'SETTING',
+  'PATINA',
+  'POLISHING',
   'QC',
   'READY',
   'SHIPPED',
@@ -20,6 +22,8 @@ const STAGES: readonly ProductionStage[] = [
 export default async function AdminDashboardPage() {
   const auditRepo = new DrizzleAuditLogRepository(db);
   const recentLogs = await auditRepo.findRecent(10).catch(() => []);
+  const settingRes = await getAtelierSettingAction<number>('member_om_order_threshold');
+  const threshold = typeof settingRes.data === 'number' ? settingRes.data : 2;
 
   return (
     <div>
@@ -40,10 +44,10 @@ export default async function AdminDashboardPage() {
             <h1
               style={{ fontSize: '1.75rem', letterSpacing: '0.05em', margin: 0, color: '#f8fafc' }}
             >
-              JEANIUS WORKSHOP OPERATIONS
+              PROJECT 925 WORKSHOP OPERATIONS
             </h1>
             <p style={{ color: '#94a3b8', margin: '0.25rem 0 0 0', fontSize: '0.9rem' }}>
-              Dual-Craft Atelier Operations (Bespoke Denim & Handcrafted Precious Jewellery)
+              Kathmandu Artisan Metalsmithing Operations (Pure .925 Sterling Silver Atelier)
             </p>
           </div>
           <span
@@ -57,9 +61,12 @@ export default async function AdminDashboardPage() {
               fontWeight: 600,
             }}
           >
-            Director Control Plane • Kathmandu
+            Director Control Plane • Kathmandu Workshop
           </span>
         </header>
+
+        {/* Atelier Settings & Drop Gating Policy Control */}
+        <AtelierSettingsControl initialThreshold={threshold} />
 
         {/* Specialized Workbenches Grid */}
         <section style={{ marginBottom: '2.5rem' }}>
@@ -83,7 +90,7 @@ export default async function AdminDashboardPage() {
             }}
           >
             <Link
-              href="/workshop/tailor"
+              href="/categories"
               style={{
                 textDecoration: 'none',
                 background: '#1e293b',
@@ -99,25 +106,26 @@ export default async function AdminDashboardPage() {
               <div
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
               >
-                <span style={{ fontSize: '1.2rem' }}>✂️</span>
+                <span style={{ fontSize: '1.2rem' }}>🏷️</span>
                 <span
                   style={{
                     fontSize: '0.7rem',
                     padding: '0.2rem 0.5rem',
                     borderRadius: '4px',
-                    background: '#0369a1',
+                    background: '#0284c7',
                     color: '#ffffff',
                     fontWeight: 700,
                   }}
                 >
-                  TAILOR
+                  ADMIN
                 </span>
               </div>
               <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#f8fafc' }}>
-                Denim Cutting Bench
+                Jewellery Categories
               </h3>
               <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8', lineHeight: 1.4 }}>
-                Bespoke waist, inseam, rise cuts and selvedge bolt yardage allocation.
+                Dynamic category taxonomy, custom category provision, and storefront filter
+                ordering.
               </p>
             </Link>
 

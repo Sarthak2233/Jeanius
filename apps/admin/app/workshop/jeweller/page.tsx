@@ -86,13 +86,13 @@ export default function JewellerWorkbenchPage() {
             }}
           >
             <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase' }}>
-              Solid Yellow Brass
+              Sterling Silver Ingots
             </span>
             <h3 style={{ fontSize: '1.2rem', margin: '0.35rem 0', color: '#f8fafc' }}>
-              MS-BR-01 (Cartridge Brass)
+              KTM-925-INGOT-02 (Pure .925 Silver)
             </h3>
             <p style={{ margin: 0, color: '#f59e0b', fontSize: '0.9rem', fontWeight: 600 }}>
-              10,000.00g Available Stock
+              15,000.00g Available Stock
             </p>
           </div>
 

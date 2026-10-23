@@ -49,7 +49,7 @@ export function DesktopHeader({
         <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
           <Link
             href="/"
-            aria-label="Jeanius &amp; Jewl Home"
+            aria-label="Project 925 Home"
             style={{
               textDecoration: 'none',
               color: '#0f172a',
@@ -68,7 +68,7 @@ export function DesktopHeader({
                 whiteSpace: 'nowrap',
               }}
             >
-              Jeanius &amp; Jewl
+              Project 925
             </span>
             <span
               style={{
@@ -81,7 +81,7 @@ export function DesktopHeader({
                 textTransform: 'uppercase',
               }}
             >
-              ATELIER · KTM
+              KATHMANDU · .925 ATELIER
             </span>
           </Link>
 
@@ -344,7 +344,7 @@ export function DesktopHeader({
                 transition: 'border-color 150ms ease, color 150ms ease',
               }}
             >
-              14oz Kurabo Selvedge
+              .925 Hand-Carved Rings
             </button>
 
             <Link
@@ -376,11 +376,11 @@ export function DesktopHeader({
                 transition: 'border-color 150ms ease, color 150ms ease',
               }}
             >
-              OM Lead Times (14-21d)
+              OM Bench Queue (10-18d)
             </Link>
 
             <Link
-              href="/pages/kathmandu-atelier"
+              href="/about"
               style={{
                 textDecoration: 'none',
                 border: '1px solid #e2e8f0',
@@ -392,7 +392,7 @@ export function DesktopHeader({
                 transition: 'border-color 150ms ease, color 150ms ease',
               }}
             >
-              Kathmandu Atelier
+              Kathmandu Workshop
             </Link>
 
             <button
@@ -410,7 +410,7 @@ export function DesktopHeader({
                 transition: 'border-color 150ms ease, color 150ms ease',
               }}
             >
-              925 Sterling Silver
+              Lost-Wax Cast Pendants
             </button>
 
             <Link

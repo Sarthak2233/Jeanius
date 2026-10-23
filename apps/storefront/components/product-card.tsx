@@ -13,15 +13,11 @@ export interface ProductCardProps {
 }
 
 export function ProductCard({ product, priority = false }: ProductCardProps) {
-  const isApparel = product.category === 'BOTTOMS' || product.category === 'TOPS';
-  const aspectRatio = isApparel ? '4:5' : '1:1';
+  const aspectRatio = '1:1';
 
   const imageUrl = product.primaryImage?.url || product.images[0]?.url || '/placeholder-craft.png';
 
-  const productHref =
-    product.commerceModel === 'OM'
-      ? `/customize?product=${product.slug}`
-      : `/products/${product.slug}`;
+  const productHref = `/shop/${product.slug}`;
 
   const isSoldOut = product.status === 'SOLD_OUT';
   const isScheduled = product.status === 'SCHEDULED';
@@ -31,7 +27,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
     : isSoldOut
       ? 'Archived Edition'
       : product.commerceModel === 'OM'
-        ? '14–21 Day Tailoring Queue'
+        ? '14–21 Day Silversmithing Bench Queue'
         : 'Ready to Dispatch (48h)';
 
   return (
@@ -97,7 +93,11 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             }`}
             aria-disabled={isSoldOut}
           >
-            {product.commerceModel === 'OM' ? 'Tailor Spec' : isSoldOut ? 'Sold Out' : 'Acquire'}
+            {product.commerceModel === 'OM'
+              ? 'Configure Piece'
+              : isSoldOut
+                ? 'Sold Out'
+                : 'Acquire Piece'}
           </Link>
         </div>
       </div>

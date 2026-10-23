@@ -6,7 +6,8 @@
 import { type Money } from '../common/money.vo.js';
 import { DomainError } from '../errors/index.js';
 
-export const NEPAL_DENIM_HS_CODE = '6203.42.0000'; // Men's or boys' cotton denim trousers
+export const NEPAL_JEWELLERY_HS_CODE = '7113.11.0000'; // Articles of jewellery and parts thereof, of silver (.925)
+export const NEPAL_DENIM_HS_CODE = NEPAL_JEWELLERY_HS_CODE; // Compatibility alias
 
 export interface ExportDeclarationProps {
   readonly hsCode?: string;

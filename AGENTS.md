@@ -1,6 +1,6 @@
-# AGENTS.md — Engineering & Documentation Rules for Jeanius & Jewl
+# AGENTS.md — Engineering & Documentation Rules for Project 925
 
-This file defines the project-wide operational rules, architectural constraints, and workflow standards for all AI agents and human contributors working in the **Jeanius & Jewl** monorepo.
+This file defines the project-wide operational rules, architectural constraints, and workflow standards for all AI agents and human contributors working in the **Project 925** monorepo (Kathmandu Workshop).
 
 ---
 
@@ -72,4 +72,5 @@ Every specialized engineering rule lives in `.agents/rules/`. Consult the corres
 | **Git Commits** | Authoring conventional commits, PR prep | [.agents/rules/commit-rules.md](../.agents/rules/commit-rules.md) |
 | **Diagram Workflow** | Adding or editing architectural diagrams | [.agents/rules/diagram-workflow.md](../.agents/rules/diagram-workflow.md) |
 | **UI & Frontend Design** | Authoring components, layouts, animations, design tokens | [.agents/rules/ui-architecture-rules.md](../.agents/rules/ui-architecture-rules.md) |
+| **Order-Made vs. DROP** | Authoring catalog schemas, configurator, cart/order lines, or workshop bench tickets | [.agents/rules/order-made-vs-drop-rules.md](../.agents/rules/order-made-vs-drop-rules.md) |
 

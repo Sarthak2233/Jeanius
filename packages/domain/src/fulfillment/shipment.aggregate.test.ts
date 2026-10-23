@@ -80,7 +80,7 @@ describe('Shipment Aggregate & Split Fulfillment', () => {
   });
 
   it('validates Nepal export customs declaration rules', () => {
-    assert.equal(exportDecl.hsCode, '6203.42.0000');
+    assert.equal(exportDecl.hsCode, '7113.11.0000');
     assert.equal(exportDecl.countryOfOrigin, 'NP');
     assert.equal(exportDecl.netWeightKg, 0.85);
 

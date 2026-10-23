@@ -6,9 +6,9 @@ flowchart TD
     classDef output fill:#2e1065,stroke:#c084fc,stroke-width:1.5px,color:#f3e8ff;
 
     subgraph UserInterface ["Atelier Storefront & Studio (Next.js 15 App Router)"]
-        Configurator["Bespoke Product Configurator<br/>(/configure or Order-Made Product Page)"]:::client
+        Configurator["Bespoke Product Configurator<br/>(/shop/[slug] or Order-Made Product Page)"]:::client
         ServerAction["resolveCustomizationDefaultsAction()<br/>(Server Action with Session Check)"]:::client
-        Configurator -->|"Request Sizing Defaults (Category + Subcategory)"| ServerAction
+        Configurator -->|"Request Sizing Defaults (Category: Rings / Cuffs / Chains)"| ServerAction
     end
 
     subgraph AppLayer ["Application Orchestration (@jeanius/application)"]
@@ -18,22 +18,19 @@ flowchart TD
         UseCase -->|Lookup Authenticated Vault| ProfilePort
     end
 
-    subgraph VaultData ["Customer Atelier Vault (users_profile.jsonb)"]
-        DenimVault["denimPreferences<br/>• bottoms: waist, inseam, rise, thigh, knee, leg opening, silhouette, hem<br/>• tops: chest, shoulders, sleeve, back length, neck, fit"]:::vault
-        JewelleryVault["jewelleryPreferences<br/>• rings: US size, mandrel mm, knuckle, finger<br/>• wrists: circumference, cuff gap, fit<br/>• necklaces: neck circ, chain length, chain style<br/>• metals: alloy, finish"]:::vault
-        ProfilePort --> DenimVault
+    subgraph VaultData ["Customer Atelier Vault (users_profile.jewellery_preferences)"]
+        JewelleryVault["jewelleryPreferences<br/>• rings: US size (3–16), mandrel mm, wide shank, finger<br/>• wrists: circumference, cuff gap, fit comfort<br/>• necklaces: chain length (18–28 in), drape style<br/>• finishes: patina finish, alloy, engraving"]:::vault
         ProfilePort --> JewelleryVault
     end
 
     subgraph DomainResolver ["Pure Domain Resolver (@jeanius/domain)"]
         Engine["resolveAtelierCustomizationDefaults(profile, context)"]:::resolver
-        DenimVault -->|Profile Props| Engine
         JewelleryVault -->|Profile Props| Engine
         UseCase -->|Invoke Resolver| Engine
     end
 
     subgraph ResolvedState ["Resolved Customization Defaults"]
-        ResolvedData["ResolvedCustomizationDefaults<br/>• measurements (waist/inseam OR chest/sleeve OR ring/wrist)<br/>• materialPreferences (alloy, finish)<br/>• isComplete & missingFields<br/>• appliedFromVault: true/false"]:::output
+        ResolvedData["ResolvedCustomizationDefaults<br/>• measurements (ringSize / wristCircumference / chainLength)<br/>• materialPreferences (finish, alloy, engraving)<br/>• isComplete & missingFields<br/>• appliedFromVault: true/false"]:::output
         Engine --> ResolvedData
         ResolvedData -->|Auto-fill form inputs| Configurator
     end

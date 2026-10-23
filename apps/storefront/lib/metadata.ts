@@ -1,31 +1,32 @@
 import type { Metadata } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://jeanius.studio';
-const DEFAULT_TITLE = 'Jeanius & Jewl — Handmade Denim & Jewellery Studio';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://project925.studio';
+const DEFAULT_TITLE = 'Project 925 — Kathmandu .925 Sterling Silver Atelier';
 const DEFAULT_DESCRIPTION =
-  'Precision handmade selvedge denim craftsmanship and bespoke sterling silver jewellery. Order-Made (OM) & Limited Drop collections from our Kathmandu & Seoul ateliers.';
+  'Bespoke hand-carved and lost-wax cast .925 sterling silver jewellery. Order-Made (OM) & Limited Drop collections from our Kathmandu workshop.';
 
 export const defaultStorefrontMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: DEFAULT_TITLE,
-    template: '%s | Jeanius & Jewl',
+    template: '%s | Project 925',
   },
   description: DEFAULT_DESCRIPTION,
   keywords: [
-    'handmade denim',
-    'selvedge denim',
+    'solid sterling silver 925',
     'bespoke jewellery',
     'order-made',
-    'sterling silver 925',
-    'raw denim',
+    'Kathmandu silver',
+    'lost-wax casting',
+    'repoussé talisman',
     'artisan atelier',
-    'Kathmandu denim',
-    'Seoul jewellery',
+    'signet ring',
+    'hand-carved cuff',
+    'Himalayan silversmithing',
   ],
-  authors: [{ name: 'Jeanius & Jewl Atelier Studio' }],
-  creator: 'Jeanius & Jewl',
-  publisher: 'Jeanius & Jewl',
+  authors: [{ name: 'Project 925 Kathmandu Atelier' }],
+  creator: 'Project 925',
+  publisher: 'Project 925',
   robots: {
     index: true,
     follow: true,
@@ -34,7 +35,7 @@ export const defaultStorefrontMetadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: '/',
-    siteName: 'Jeanius & Jewl',
+    siteName: 'Project 925',
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
     images: [
@@ -42,7 +43,7 @@ export const defaultStorefrontMetadata: Metadata = {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Jeanius & Jewl Atelier — Raw Selvedge Denim & Sterling Silver Jewellery',
+        alt: 'Project 925 Kathmandu Atelier — Solid .925 Sterling Silver Artisan Jewellery',
       },
     ],
   },
@@ -50,7 +51,7 @@ export const defaultStorefrontMetadata: Metadata = {
     card: 'summary_large_image',
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
-    creator: '@jeanius_jewl',
+    creator: '@project925_ktm',
     images: ['/og-image.jpg'],
   },
   icons: {
@@ -59,13 +60,15 @@ export const defaultStorefrontMetadata: Metadata = {
   },
 };
 
-/**
- * Creates page-specific metadata with consistent defaults.
- */
-export function createStorefrontMetadata(overrides: Partial<Metadata> = {}): Metadata {
+export function createStorefrontMetadata(overrides: Partial<Metadata>): Metadata {
   return {
     ...defaultStorefrontMetadata,
     ...overrides,
+    title: overrides.title
+      ? typeof overrides.title === 'string'
+        ? overrides.title
+        : overrides.title
+      : defaultStorefrontMetadata.title,
     openGraph: {
       ...defaultStorefrontMetadata.openGraph,
       ...overrides.openGraph,

@@ -4,7 +4,45 @@
 
 export type CommerceModel = 'OM' | 'DROP' | 'CUSTOM_ORDER' | 'PRE_ORDER';
 
-export type ProductCategory = 'BOTTOMS' | 'TOPS' | 'JEWELLERY' | 'ACCESSORIES';
+export interface BuiltInCategory {
+  readonly slug: string;
+  readonly name: string;
+  readonly description: string;
+}
+
+export const BUILT_IN_CATEGORIES: readonly BuiltInCategory[] = [
+  { slug: 'rings', name: 'Rings', description: 'Signet, Solitaire, and Chiseled Mandrel Rings' },
+  {
+    slug: 'bracelets',
+    name: 'Bracelets & Cuffs',
+    description: 'Hand-Forged Torques and Solid Silver Cuffs',
+  },
+  {
+    slug: 'necklaces',
+    name: 'Necklaces & Pendants',
+    description: 'Cast Amulets, Reliquaries, and Chokers',
+  },
+  {
+    slug: 'earrings',
+    name: 'Earrings & Studs',
+    description: 'Brutalist Hoops, Cast Studs, and Ear Cuffs',
+  },
+  {
+    slug: 'chains',
+    name: 'Chains & Links',
+    description: 'Heavy Curb, Anchor, and Figaro Silver Links',
+  },
+  {
+    slug: 'artefacts',
+    name: 'Artefacts & Silverware',
+    description: 'Hand-Beaten Ceremonial Silverware and Vessels',
+  },
+] as const;
+
+export type BuiltInCategorySlug =
+  'rings' | 'bracelets' | 'necklaces' | 'earrings' | 'chains' | 'artefacts';
+
+export type ProductCategory = BuiltInCategorySlug | (string & {});
 
 export type ProductStatus = 'DRAFT' | 'SCHEDULED' | 'PUBLISHED' | 'SOLD_OUT' | 'ARCHIVED';
 

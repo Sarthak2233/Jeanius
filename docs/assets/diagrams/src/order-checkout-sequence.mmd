@@ -7,12 +7,12 @@ sequenceDiagram
     participant Application as packages/application
     participant Database as packages/database (Drizzle)
     participant Orchestrator as packages/integrations (Payment)
-    actor Workshop as apps/admin (Tailor)
+    actor Workshop as apps/admin (Jeweller)
 
-    Customer->>Storefront: Views Lot 001 Straight Raw Denim
-    Customer->>Zustand: Selects Fit=Straight, Waist=32, Inseam=34
+    Customer->>Storefront: Views Lot J01 .925 Signet Ring
+    Customer->>Zustand: Selects Size=US 10, Finish=Antiqued Patina
     Note over Zustand: Updates UI interaction state locally
-    Customer->>Storefront: Clicks "Order Custom Jeans"
+    Customer->>Storefront: Clicks "Order Custom Piece"
     Storefront->>ServerAction: submitCheckout(orderPayload)
     ServerAction->>Application: CheckoutService.initiateCheckout()
     Application->>Database: Verify current price & create PENDING Order
@@ -22,5 +22,5 @@ sequenceDiagram
     Orchestrator->>Storefront: Webhook notification (/api/webhooks/*)
     Storefront->>Application: Mark Order PAID & spawn ProductionJob(QUEUED)
     Application->>Database: Persist ProductionJob in PostgreSQL
-    Workshop->>Database: Views OM Production Board in apps/admin
-    Note over Workshop: Tailor advances job: QUEUED → CUTTING → SEWING...
+    Workshop->>Database: Views OM Bench Queue in apps/admin
+    Note over Workshop: Jeweller advances job: QUEUED → CASTING → SETTING...

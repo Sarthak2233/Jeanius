@@ -15,7 +15,7 @@ stateDiagram-v2
         }
         
         state OM_PACKAGE {
-            [*] --> IN_PRODUCTION: Craftsman cutting & tailoring (7-14 days)
+            [*] --> IN_PRODUCTION: Craftsman casting & bench finishing (7-14 days)
             IN_PRODUCTION --> READY_DISPATCH_OM: Workshop QC passed
             READY_DISPATCH_OM --> SHIPPED_OM: Courier tracking assigned (Package 2)
         }
@@ -25,7 +25,7 @@ stateDiagram-v2
     SHIPPED_OM --> DELIVERED_ALL: All packages delivered
     DELIVERED_PARTIAL --> DELIVERED_ALL: Final package arrives
     
-    PAID --> REFUNDED: Cancelled prior to cutting (OM only)
+    PAID --> REFUNDED: Cancelled prior to casting (OM only)
     DELIVERED_ALL --> RETURNED: Return inspected & accepted (DROP only, 5-day window)
     
     CANCELLED --> [*]

@@ -18,40 +18,45 @@ interface ShopPageProps {
 }
 
 const CATEGORY_SEO_MAP: Record<string, { title: string; description: string }> = {
-  BOTTOMS: {
-    title: 'Bespoke Raw Selvedge Denim Jeans & Trousers | Jeanius & Jewl',
+  rings: {
+    title: 'Hand-Carved .925 Sterling Silver Rings | Project 925',
     description:
-      'Explore hand-cut raw Japanese selvedge denim from Kurabo & Kuroki Mills. Tailored to your exact anatomical measurements on Union Special 43200G machines.',
+      'Explore hand-carved wax matrices cast in solid .925 sterling silver. Signets, talismanic bands, and comfort-fit rings tuned to exact mandrel measurements.',
   },
-  TOPS: {
-    title: 'Bespoke Denim Jackets & Artisanal Overshirts | Jeanius & Jewl',
+  'bracelets-cuffs': {
+    title: 'Solid Silver Chiseled Cuffs & Heavy Bracelets | Project 925',
     description:
-      'Discover Type II raw denim jackets and rope-dyed western overshirts crafted with knife pleats and vintage hardware in Kathmandu.',
+      'Forged from heavy triangular silver bar stock with sacred Newar chiseling and calibrated entrance wrist gaps at our Kathmandu workshop.',
   },
-  JEWELLERY: {
-    title: 'Hand-Forged Sterling Silver & Brass Jewellery | Jeanius & Jewl',
+  'necklaces-pendants': {
+    title: 'Talismanic Pendants & Sacred Amulets | Project 925',
     description:
-      'Talismanic .925 sterling silver signet rings, hand-forged raw brass cuffs, and heavy curb denim wallet chains cast by master metalsmiths.',
+      'Lost-wax cast sacred Nepalese deities, vajras, and repoussé amulets crafted in solid .925 silver with intentional shadow patina.',
   },
-  ACCESSORIES: {
-    title: 'Tochigi Bridle Leather Belts & Silver Slides | Jeanius & Jewl',
+  'chains-links': {
+    title: 'Solid Sterling Silver Chains & Hand-Drawn Links | Project 925',
     description:
-      'Vegetable-tanned Japanese bridle leather belts with hand-cast solid brass buckles and engraved silver bandana slides.',
+      'Hand-linked curb, cable, and heavy talisman chains drawn from fine .925 silver wire with substantial fluid drape.',
+  },
+  artefacts: {
+    title: 'Sacred Atelier Artefacts & Silversmith Objects | Project 925',
+    description:
+      'One-of-a-kind Kathmandu workshop sculptures, talismanic altar bells, and repoussé ritual objects in solid sterling silver.',
   },
   ALL: {
-    title: 'Atelier Catalog — Raw Selvedge Denim & Artisanal Jewellery | Jeanius & Jewl',
+    title: 'Atelier Catalog — Handcrafted .925 Sterling Silver Jewellery | Project 925',
     description:
-      'Discover the complete Jeanius & Jewl collection: order-made Japanese selvedge denim and hand-crafted artisanal jewellery from our Kathmandu workshop.',
+      'Discover the complete Project 925 collection: order-made .925 sterling silver rings, heavy cuffs, and sacred talismans from our Kathmandu workshop.',
   },
 };
 
 export async function generateMetadata(props: ShopPageProps): Promise<Metadata> {
   const searchParams = await props.searchParams;
-  const categoryKey = searchParams.category?.toUpperCase() || 'ALL';
+  const categoryKey = searchParams.category?.toLowerCase() || 'ALL';
   const seo = CATEGORY_SEO_MAP[categoryKey] ?? {
-    title: 'Atelier Catalog — Raw Selvedge Denim & Artisanal Jewellery | Jeanius & Jewl',
+    title: 'Atelier Catalog — Handcrafted .925 Sterling Silver Jewellery | Project 925',
     description:
-      'Discover the complete Jeanius & Jewl collection: order-made Japanese selvedge denim and hand-crafted artisanal jewellery from our Kathmandu workshop.',
+      'Discover the complete Project 925 collection: order-made .925 sterling silver rings, heavy cuffs, and sacred talismans from our Kathmandu workshop.',
   };
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const canonicalUrl =
@@ -67,14 +72,14 @@ export async function generateMetadata(props: ShopPageProps): Promise<Metadata> 
       title: seo.title,
       description: seo.description,
       url: canonicalUrl,
-      siteName: 'Jeanius & Jewl Atelier',
+      siteName: 'Project 925 Kathmandu Atelier',
       type: 'website',
       images: [
         {
-          url: `${process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321'}/storage/v1/object/public/product-media/products/lot-001-straight-selvedge/primary.png`,
+          url: `${process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321'}/storage/v1/object/public/product-media/products/lot-r01-vajra-signet-ring/primary.png`,
           width: 600,
-          height: 750,
-          alt: 'Jeanius & Jewl Atelier Collection',
+          height: 600,
+          alt: 'Project 925 Kathmandu Atelier Collection',
         },
       ],
     },
@@ -84,8 +89,7 @@ export async function generateMetadata(props: ShopPageProps): Promise<Metadata> 
 export default async function ShopPage(props: ShopPageProps) {
   const searchParams = await props.searchParams;
 
-  const category = (searchParams.category?.toUpperCase() || 'ALL') as
-    'ALL' | 'BOTTOMS' | 'TOPS' | 'JEWELLERY' | 'ACCESSORIES';
+  const category = searchParams.category || 'ALL';
   const sortBy = (searchParams.sort || 'FEATURED') as
     'FEATURED' | 'PRICE_ASC' | 'PRICE_DESC' | 'NEWEST' | 'TITLE_ASC';
   const searchQuery = searchParams.search || '';
@@ -107,18 +111,13 @@ export default async function ShopPage(props: ShopPageProps) {
     page: 1,
     pageSize: 12,
     totalPages: 0,
-    categoryCounts: [
-      { category: 'BOTTOMS', count: 0 },
-      { category: 'TOPS', count: 0 },
-      { category: 'JEWELLERY', count: 0 },
-      { category: 'ACCESSORIES', count: 0 },
-    ],
+    categoryCounts: [],
     selectedCategory: 'ALL',
     selectedCommerceModel: 'OM',
     selectedSort: 'FEATURED',
   };
 
-  // Fetch cross-craft companion recommendations if single category filtered
+  // Fetch companion recommendations if single category filtered
   let companionProducts: readonly ProductCardDto[] = [];
   if (category !== 'ALL' && catalogData.products.length > 0) {
     const firstProduct = catalogData.products[0];
@@ -132,14 +131,16 @@ export default async function ShopPage(props: ShopPageProps) {
 
   const categoryTitle =
     category === 'ALL'
-      ? 'Order-Made Atelier Collection'
-      : category === 'BOTTOMS'
-        ? 'Bespoke Raw Selvedge Denim Bottoms'
-        : category === 'TOPS'
-          ? 'Bespoke Denim Jackets & Overshirts'
-          : category === 'JEWELLERY'
-            ? 'Hand-Cast Silver & Brass Jewellery'
-            : 'Bridle Leather & Silver Accessories';
+      ? 'Order-Made Jewellery Collection'
+      : category === 'rings'
+        ? 'Solid .925 Sterling Silver Rings'
+        : category === 'bracelets-cuffs'
+          ? 'Heavy Silver Cuffs & Bracelets'
+          : category === 'necklaces-pendants'
+            ? 'Talismanic Pendants & Sacred Amulets'
+            : category === 'chains-links'
+              ? 'Hand-Drawn Solid Silver Chains'
+              : 'Atelier Artefacts & Sculptures';
 
   return (
     <div className="catalog-page">
@@ -155,15 +156,15 @@ export default async function ShopPage(props: ShopPageProps) {
         <header className="catalog-header">
           <div className="catalog-header-badge">
             <span className="catalog-pulse-dot" />
-            Kathmandu Workshop Bespoke Queue
+            Kathmandu Workshop Silversmithing Queue
           </div>
 
           <h1 className="catalog-title">{categoryTitle}</h1>
 
           <p className="catalog-manifesto">
-            Every garment and jewel in our Order-Made collection is created with intentional
-            slowness. Tailored from uncut Japanese raw selvedge bolts and cast precious metals to
-            your exact anatomical measurements on vintage Union Special machines.
+            Every piece in our Order-Made collection is created with intentional slowness.
+            Individually cast from molten .925 sterling silver grain to your exact mandrel and wrist
+            calibrations at our Kathmandu workshop.
           </p>
 
           {/* Bespoke Queue Legend & Drop Vault Gateway */}
@@ -171,7 +172,7 @@ export default async function ShopPage(props: ShopPageProps) {
             <div className="catalog-legend-badge catalog-legend-om">
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#d97706' }} />
               <span>
-                <strong>OM:</strong> 14–21 Day Bespoke Cutting Table Queue
+                <strong>OM:</strong> 10–18 Day Silversmithing Bench Queue
               </span>
             </div>
             <Link
@@ -179,36 +180,22 @@ export default async function ShopPage(props: ShopPageProps) {
               className="catalog-legend-badge catalog-legend-drop"
               style={{ textDecoration: 'none', cursor: 'pointer' }}
             >
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563eb' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#059669' }} />
               <span>
-                <strong>DROP:</strong> Ready to Ship Editions (Members Only 🔒) →
+                <strong>LIMITED DROP:</strong> Ready to Dispatch (48h) →
               </span>
             </Link>
           </div>
         </header>
 
-        {/* Interactive Catalog Component */}
-        <Suspense
-          fallback={
-            <div
-              style={{
-                padding: '6rem 0',
-                textAlign: 'center',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.875rem',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              Loading atelier collections...
-            </div>
-          }
-        >
+        {/* Dynamic Interactive Filter & Grid System */}
+        <Suspense fallback={<div className="catalog-loading">Loading atelier works...</div>}>
           <ShopCatalogClient initialData={catalogData} />
         </Suspense>
-
-        {/* Related Products Companion Rail (JN-177) */}
+        <p>Related Products Section</p>
+        {/* Cross-Category Recommendations */}
         {companionProducts.length > 0 && (
-          <aside style={{ marginTop: '5rem' }}>
+          <aside className="catalog-companion-section">
             <RelatedProducts products={companionProducts} />
           </aside>
         )}

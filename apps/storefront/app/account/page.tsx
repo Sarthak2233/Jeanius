@@ -47,8 +47,6 @@ export default async function AccountPage() {
         fullName: profile.fullName,
         phone: profile.phone,
         role: profile.role,
-        craftFocus: profile.craftFocus,
-        denimPreferences: profile.denimPreferences,
         jewelleryPreferences: profile.jewelleryPreferences,
       }}
       addresses={addresses.map((a) => ({

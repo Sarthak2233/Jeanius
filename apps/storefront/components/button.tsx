@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 
 export interface ButtonProps {
+  readonly id?: string;
   readonly variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
   readonly size?: 'sm' | 'md' | 'lg';
   readonly fullWidth?: boolean;
@@ -19,6 +20,7 @@ export interface ButtonProps {
 }
 
 export function Button({
+  id,
   variant = 'primary',
   size = 'md',
   fullWidth = false,
@@ -100,6 +102,7 @@ export function Button({
 
   return (
     <button
+      id={id}
       type={type}
       disabled={isDisabled}
       aria-disabled={isDisabled}
