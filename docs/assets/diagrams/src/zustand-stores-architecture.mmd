@@ -3,7 +3,9 @@ flowchart TD
     classDef store fill:#14532d,stroke:#4ade80,stroke-width:1.5px,color:#dcfce7;
     classDef storage fill:#451a03,stroke:#fb923c,stroke-width:1.5px,color:#ffedd5;
     classDef server fill:#18181b,stroke:#a1a1aa,stroke-width:1.5px,color:#f4f4f5;
-    classDef boundary fill:#831843,stroke:#f472b6,stroke-width:1.5px,color:#fdf2f8;
+    classDef app fill:#312e81,stroke:#a5b4fc,stroke-width:1.5px,color:#e0e7ff;
+    classDef domain fill:#831843,stroke:#f472b6,stroke-width:1.5px,color:#fdf2f8;
+    classDef database fill:#0f172a,stroke:#38bdf8,stroke-width:1.5px,color:#e0f2fe;
 
     subgraph StorefrontViews ["Storefront UI Presentation Layer (apps/storefront/components)"]
         PDP["Product Detail & Configurator<br/>(/shop/[slug])<br/>• Size Mandrel Selector<br/>• Finish Swatches<br/>• Price Delta Telemetry"]:::client
@@ -29,10 +31,23 @@ flowchart TD
         DraftStorage["sessionStorage Adapter<br/>('jeanius_configurator_draft_v1')<br/>• PDP Active Selections Draft<br/>• Preserves State on Navigation"]:::storage
     end
 
-    subgraph ServerSyncBoundary ["Server Synchronization & Merge Boundary (JN-205, JN-206)"]
-        CartActions["Cart Server Actions<br/>(apps/storefront/actions/cart.actions.ts)<br/>• fetchServerCartAction()<br/>• syncCartWithServerAction()<br/>• mergeGuestCartAction()"]:::server
-        MergePolicy["Deterministic Merge Policy<br/>• Key: productId + variantId + optionsHash<br/>• Matched Lines: Sum quantity <= max<br/>• Guest Only: Append to DB Cart<br/>• Server Only: Keep in DB Cart"]:::boundary
-        DbCart["Supabase DB Persistence<br/>• carts table (customer_id)<br/>• cart_lines table (options, specs)"]:::server
+    subgraph ServerActionBoundary ["Storefront Server Actions Boundary (apps/storefront/actions/cart.actions.ts)"]
+        CartActions["Cart Server Actions<br/>• fetchServerCartAction()<br/>• syncCartWithServerAction()<br/>• mergeGuestCartAction()<br/>• mapCartToDto()"]:::server
+    end
+
+    subgraph ApplicationLayer ["Application Layer (packages/application)"]
+        CartService["CartService (Application Orchestrator)<br/>• getCartByCustomerId()<br/>• syncCart()<br/>• mergeGuestCart()<br/>• clearCart()"]:::app
+        CartPort["ICartRepository (Port Interface)<br/>• findById()<br/>• findByCustomerId()<br/>• save()<br/>• delete()"]:::app
+    end
+
+    subgraph DomainLayer ["Domain Layer (packages/domain - Pure DDD)"]
+        CartEntity["Cart Aggregate Root<br/>• addLine()<br/>• mergeLines()<br/>• calculateSubtotal()<br/>• Clamping qty <= 10<br/>• Invariant verification"]:::domain
+        CartLineEntity["CartLine Entity<br/>• computeCartLineFingerprint()<br/>• calculateLineTotal()"]:::domain
+    end
+
+    subgraph DatabaseLayer ["Database Layer (packages/database)"]
+        CartRepo["DrizzleCartRepository (Adapter)<br/>• Implements ICartRepository<br/>• Explicit ACID transaction<br/>• Bidirectional entity/row mapping"]:::database
+        DbTables["PostgreSQL Schema<br/>• carts table<br/>• cart_lines table"]:::database
     end
 
     PDP -->|User selects size / finish| ConfigStore
@@ -53,8 +68,13 @@ flowchart TD
     CartStore <-->|Persist & Hydrate| CartStorage
     ConfigStore <-->|Persist Active Draft| DraftStorage
 
-    CartStore -->|Collector Signs In| CartActions
-    CartActions --> MergePolicy
-    MergePolicy --> DbCart
-    DbCart -->|Canonical Merged Lines| CartActions
-    CartActions -->|Update Local State| CartStore
+    CartStore -->|Collector Signs In / Syncs| CartActions
+    CartActions -->|Invokes use cases| CartService
+    CartService -->|Instantiates & mutates| CartEntity
+    CartEntity --> CartLineEntity
+    CartService -->|Calls repository port| CartPort
+    CartPort -.->|Implemented by| CartRepo
+    CartRepo -->|ACID transactions| DbTables
+    CartRepo -->|Returns domain entities| CartService
+    CartService -->|Returns Cart aggregate| CartActions
+    CartActions -->|Returns CartDto| CartStore

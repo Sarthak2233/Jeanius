@@ -1,6 +1,7 @@
 'use server';
 
-import { db, carts, cartLines, eq } from '@jeanius/database';
+import { db, DrizzleCartRepository } from '@jeanius/database';
+import { CartService } from '@jeanius/application';
 import {
   type CartDto,
   type CartItemDto,
@@ -8,6 +9,7 @@ import {
   MergeCartInputSchema,
 } from '@jeanius/contracts';
 import { createLogger, generateTraceId } from '@jeanius/observability';
+import { type Cart, computeCartLineFingerprint } from '@jeanius/domain';
 import { createClient } from '../lib/supabase/server';
 
 const logger = createLogger('storefront:cart-actions');
@@ -21,6 +23,40 @@ export interface ActionResult<T> {
   };
 }
 
+function getCartService(): CartService {
+  const repo = new DrizzleCartRepository(db);
+  return new CartService(repo);
+}
+
+function mapCartToDto(cart: Cart): CartDto {
+  const items: CartItemDto[] = cart.lines.map((line) => ({
+    id: line.id,
+    productId: line.productId,
+    variantId: line.variantId ?? undefined,
+    sku: `SKU-${line.productId.slice(0, 8)}`,
+    title: line.productTitle,
+    slug: line.productTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+    commerceModel: line.commerceModel,
+    unitPriceAmount: line.unitPrice.amount,
+    unitPriceCurrency: line.unitPrice.currency,
+    selectedOptions: { ...line.selectedOptions },
+    customSpecifications: line.customSpecifications
+      ? (line.customSpecifications as Record<string, string | number | boolean>)
+      : undefined,
+    quantity: line.quantity,
+  }));
+
+  return {
+    id: cart.id,
+    customerId: cart.customerId ?? null,
+    items,
+    totalCount: cart.itemCount(),
+    subtotalAmount: cart.calculateSubtotal().amount,
+    currency: cart.currency,
+    updatedAt: cart.updatedAt.toISOString(),
+  };
+}
+
 /**
  * Computes a deterministic identity fingerprint for a cart line.
  * Time: O(m log m) where m is option count (typically <= 5)
@@ -31,17 +67,7 @@ export function computeLineItemFingerprint(item: {
   readonly selectedOptions?: Record<string, string>;
   readonly customSpecifications?: Record<string, unknown>;
 }): string {
-  const optKey = Object.entries(item.selectedOptions ?? {})
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([k, v]) => `${k}:${v}`)
-    .join('|');
-
-  const specKey = Object.entries(item.customSpecifications ?? {})
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([k, v]) => `${k}:${String(v)}`)
-    .join('|');
-
-  return `${item.productId}:${item.variantId ?? 'none'}:${optKey}:${specKey}`;
+  return computeCartLineFingerprint(item);
 }
 
 /**
@@ -102,51 +128,19 @@ export async function fetchServerCartAction(): Promise<ActionResult<CartDto | nu
       return { success: true, data: null };
     }
 
-    const cartRecords = await db.select().from(carts).where(eq(carts.customerId, userId)).limit(1);
+    const service = getCartService();
+    const cart = await service.getCartByCustomerId(userId);
 
-    if (cartRecords.length === 0) {
+    if (!cart) {
       return { success: true, data: null };
     }
 
-    const currentCart = cartRecords[0]!;
-    const rawLines = await db.select().from(cartLines).where(eq(cartLines.cartId, currentCart.id));
-
-    const items: CartItemDto[] = rawLines.map((line) => ({
-      id: line.id,
-      productId: line.productId,
-      variantId: line.variantId ?? undefined,
-      sku: `SKU-${line.productId.slice(0, 8)}`,
-      title: line.productTitle,
-      slug: line.productTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      commerceModel: line.commerceModel as 'OM' | 'DROP' | 'CUSTOM_ORDER' | 'PRE_ORDER',
-      unitPriceAmount: line.unitPriceAmount,
-      unitPriceCurrency: line.unitPriceCurrency,
-      selectedOptions: (line.selectedOptions as Record<string, string>) ?? {},
-      customSpecifications: line.customSpecifications as
-        Record<string, string | number | boolean> | undefined,
-      quantity: line.quantity,
-    }));
-
-    const totalCount = items.reduce((sum, item) => sum + item.quantity, 0);
-    const subtotalAmount = items.reduce(
-      (sum, item) => sum + item.unitPriceAmount * item.quantity,
-      0,
-    );
-
-    const cartDto: CartDto = {
-      id: currentCart.id,
-      customerId: userId,
-      items,
-      totalCount,
-      subtotalAmount,
-      currency: currentCart.currency,
-      updatedAt: currentCart.updatedAt.toISOString(),
-    };
+    const cartDto = mapCartToDto(cart);
 
     logger.info('Server cart retrieved successfully', {
       traceId,
       userId,
-      itemCount: items.length,
+      itemCount: cartDto.items.length,
       durationMs: Date.now() - startTime,
     });
 
@@ -204,62 +198,9 @@ export async function syncCartWithServerAction(
       return { success: true, data: null };
     }
 
-    // Find or create cart for user
-    const existingCarts = await db
-      .select()
-      .from(carts)
-      .where(eq(carts.customerId, userId))
-      .limit(1);
-
-    let cartId: string;
-    if (existingCarts.length === 0) {
-      const [newCart] = await db
-        .insert(carts)
-        .values({
-          customerId: userId,
-          currency: items[0]?.unitPriceCurrency ?? 'USD',
-        })
-        .returning();
-      cartId = newCart!.id;
-    } else {
-      cartId = existingCarts[0]!.id;
-    }
-
-    // Replace lines in transaction
-    await db.delete(cartLines).where(eq(cartLines.cartId, cartId));
-
-    if (items.length > 0) {
-      await db.insert(cartLines).values(
-        items.map((item) => ({
-          cartId,
-          productId: item.productId,
-          variantId: item.variantId ?? null,
-          productTitle: item.title,
-          commerceModel: item.commerceModel,
-          unitPriceAmount: item.unitPriceAmount,
-          unitPriceCurrency: item.unitPriceCurrency,
-          quantity: item.quantity,
-          selectedOptions: item.selectedOptions,
-          customSpecifications: item.customSpecifications,
-        })),
-      );
-    }
-
-    const totalCount = items.reduce((sum, item) => sum + item.quantity, 0);
-    const subtotalAmount = items.reduce(
-      (sum, item) => sum + item.unitPriceAmount * item.quantity,
-      0,
-    );
-
-    const updatedDto: CartDto = {
-      id: cartId,
-      customerId: userId,
-      items,
-      totalCount,
-      subtotalAmount,
-      currency: items[0]?.unitPriceCurrency ?? 'USD',
-      updatedAt: new Date().toISOString(),
-    };
+    const service = getCartService();
+    const cart = await service.syncCart(userId, items);
+    const updatedDto = mapCartToDto(cart);
 
     logger.info('Server cart synchronized', {
       traceId,
@@ -318,124 +259,39 @@ export async function mergeGuestCartAction(rawInput: unknown): Promise<ActionRes
     if (!userId) {
       return {
         success: false,
-        error: { code: 'UNAUTHORIZED', message: 'Authentication required to merge cart' },
+        error: {
+          code: 'UNAUTHENTICATED',
+          message: 'User must be signed in to merge cart',
+        },
       };
     }
 
-    // 1. Retrieve or create server cart
-    const existingCarts = await db
-      .select()
-      .from(carts)
-      .where(eq(carts.customerId, userId))
-      .limit(1);
+    const service = getCartService();
+    const mergedCart = await service.mergeGuestCart(userId, guestItems);
+    const mergedDto = mapCartToDto(mergedCart);
 
-    let cartId: string;
-    if (existingCarts.length === 0) {
-      const [newCart] = await db
-        .insert(carts)
-        .values({
-          customerId: userId,
-          currency: guestItems[0]?.unitPriceCurrency ?? 'USD',
-        })
-        .returning();
-      cartId = newCart!.id;
-    } else {
-      cartId = existingCarts[0]!.id;
-    }
-
-    // 2. Fetch existing server lines
-    const rawServerLines = await db.select().from(cartLines).where(eq(cartLines.cartId, cartId));
-
-    const serverItems: CartItemDto[] = rawServerLines.map((line) => ({
-      id: line.id,
-      productId: line.productId,
-      variantId: line.variantId ?? undefined,
-      sku: `SKU-${line.productId.slice(0, 8)}`,
-      title: line.productTitle,
-      slug: line.productTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      commerceModel: line.commerceModel as 'OM' | 'DROP' | 'CUSTOM_ORDER' | 'PRE_ORDER',
-      unitPriceAmount: line.unitPriceAmount,
-      unitPriceCurrency: line.unitPriceCurrency,
-      selectedOptions: (line.selectedOptions as Record<string, string>) ?? {},
-      customSpecifications: line.customSpecifications as
-        Record<string, string | number | boolean> | undefined,
-      quantity: line.quantity,
-    }));
-
-    // 3. Execute pure deterministic merge algorithm
-    const mergedItems = mergeCartLinesPure(serverItems, guestItems);
-
-    // 4. Overwrite cart_lines with canonical merged set
-    await db.delete(cartLines).where(eq(cartLines.cartId, cartId));
-
-    if (mergedItems.length > 0) {
-      await db.insert(cartLines).values(
-        mergedItems.map((item) => ({
-          cartId,
-          productId: item.productId,
-          variantId: item.variantId ?? null,
-          productTitle: item.title,
-          commerceModel: item.commerceModel,
-          unitPriceAmount: item.unitPriceAmount,
-          unitPriceCurrency: item.unitPriceCurrency,
-          quantity: item.quantity,
-          selectedOptions: item.selectedOptions,
-          customSpecifications: item.customSpecifications,
-        })),
-      );
-    }
-
-    const totalCount = mergedItems.reduce((sum, item) => sum + item.quantity, 0);
-    const subtotalAmount = mergedItems.reduce(
-      (sum, item) => sum + item.unitPriceAmount * item.quantity,
-      0,
-    );
-
-    const mergedDto: CartDto = {
-      id: cartId,
-      customerId: userId,
-      items: mergedItems,
-      totalCount,
-      subtotalAmount,
-      currency: mergedItems[0]?.unitPriceCurrency ?? 'USD',
-      updatedAt: new Date().toISOString(),
-    };
-
-    logger.info('Guest cart successfully merged with member cart', {
+    logger.info('Guest cart merged successfully with server', {
       traceId,
       userId,
-      guestLineCount: guestItems.length,
-      serverLineCount: serverItems.length,
-      mergedLineCount: mergedItems.length,
+      guestItemCount: guestItems.length,
+      finalItemCount: mergedDto.items.length,
+      totalCount: mergedDto.totalCount,
       durationMs: Date.now() - startTime,
     });
 
     return { success: true, data: mergedDto };
   } catch (error) {
-    logger.error('Failed to merge guest cart with server cart', {
+    logger.error('Failed to merge guest cart with server', {
       traceId,
       error: error instanceof Error ? error.message : String(error),
       durationMs: Date.now() - startTime,
     });
 
-    // In case of error (e.g. database offline), perform client-side pure merge fallback
-    const fallbackMerged = mergeCartLinesPure([], guestItems);
-    const totalCount = fallbackMerged.reduce((sum, item) => sum + item.quantity, 0);
-    const subtotalAmount = fallbackMerged.reduce(
-      (sum, item) => sum + item.unitPriceAmount * item.quantity,
-      0,
-    );
-
     return {
-      success: true,
-      data: {
-        id: 'fallback-cart',
-        customerId: null,
-        items: fallbackMerged,
-        totalCount,
-        subtotalAmount,
-        currency: fallbackMerged[0]?.unitPriceCurrency ?? 'USD',
-        updatedAt: new Date().toISOString(),
+      success: false,
+      error: {
+        code: 'MERGE_FAILED',
+        message: 'Could not merge cart lines. Preserving local state.',
       },
     };
   }

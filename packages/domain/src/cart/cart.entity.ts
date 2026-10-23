@@ -4,7 +4,7 @@
  */
 import type { CartId, CustomerId, CartLineId } from '../common/entity-id.js';
 import { Money, type Currency } from '../common/money.vo.js';
-import type { CartLine } from './cart-line.entity.js';
+import { type CartLine, computeCartLineFingerprint } from './cart-line.entity.js';
 import { DomainError } from '../errors/index.js';
 
 export interface CartProps {
@@ -47,16 +47,34 @@ export class Cart {
         `Cannot add line with currency ${line.unitPrice.currency} to cart with ${this.currency}`,
       );
     }
-    const existing = this._lines.find(
-      (l) =>
-        l.variantId === line.variantId &&
-        JSON.stringify(l.selectedOptions) === JSON.stringify(line.selectedOptions),
-    );
+    const targetFingerprint = computeCartLineFingerprint(line);
+    const existing = this._lines.find((l) => computeCartLineFingerprint(l) === targetFingerprint);
 
     if (existing) {
       existing.updateQuantity(existing.quantity + line.quantity);
     } else {
       this._lines.push(line);
+    }
+    this._updatedAt = new Date();
+  }
+
+  mergeLines(incomingLines: readonly CartLine[]): void {
+    for (const line of incomingLines) {
+      this.addLine(line);
+    }
+  }
+
+  replaceLines(newLines: readonly CartLine[]): void {
+    for (const line of newLines) {
+      if (line.unitPrice.currency !== this.currency) {
+        throw new DomainError(
+          `Cannot replace lines with currency ${line.unitPrice.currency} in cart with ${this.currency}`,
+        );
+      }
+    }
+    this._lines.length = 0;
+    for (const line of newLines) {
+      this.addLine(line);
     }
     this._updatedAt = new Date();
   }

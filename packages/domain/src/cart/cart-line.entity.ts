@@ -11,28 +11,51 @@ export interface CartLineProps {
   readonly id: CartLineId;
   readonly cartId: CartId;
   readonly productId: ProductId;
-  readonly variantId: VariantId;
+  readonly variantId?: VariantId;
   readonly productTitle: string;
   readonly commerceModel: CommerceModel;
   readonly unitPrice: Money;
   readonly quantity: number;
   readonly selectedOptions: Readonly<Record<string, string>>;
   readonly customTailoringMeasurements?: Readonly<Record<string, number | string>>;
-  readonly customSpecifications?: Readonly<Record<string, number | string>>;
+  readonly customSpecifications?: Readonly<Record<string, unknown>>;
+}
+
+/**
+ * Computes deterministic identity fingerprint for a cart line.
+ * Time: O(m log m) where m is option count (typically <= 5)
+ */
+export function computeCartLineFingerprint(line: {
+  readonly productId: string;
+  readonly variantId?: string | null;
+  readonly selectedOptions?: Readonly<Record<string, string>>;
+  readonly customSpecifications?: Readonly<Record<string, unknown>>;
+}): string {
+  const optKey = Object.entries(line.selectedOptions ?? {})
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}:${v}`)
+    .join('|');
+
+  const specKey = Object.entries(line.customSpecifications ?? {})
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}:${String(v)}`)
+    .join('|');
+
+  return `${line.productId}:${line.variantId ?? 'none'}:${optKey}:${specKey}`;
 }
 
 export class CartLine {
   readonly id: CartLineId;
   readonly cartId: CartId;
   readonly productId: ProductId;
-  readonly variantId: VariantId;
+  readonly variantId?: VariantId;
   readonly productTitle: string;
   readonly commerceModel: CommerceModel;
   readonly unitPrice: Money;
   private _quantity: number;
   readonly selectedOptions: Readonly<Record<string, string>>;
   readonly customTailoringMeasurements?: Readonly<Record<string, number | string>>;
-  readonly customSpecifications?: Readonly<Record<string, number | string>>;
+  readonly customSpecifications?: Readonly<Record<string, unknown>>;
 
   constructor(props: CartLineProps) {
     if (props.quantity <= 0) {
@@ -48,7 +71,7 @@ export class CartLine {
     this.productTitle = props.productTitle;
     this.commerceModel = props.commerceModel;
     this.unitPrice = props.unitPrice;
-    this._quantity = props.quantity;
+    this._quantity = Math.min(10, props.quantity);
     this.selectedOptions = { ...props.selectedOptions };
     this.customTailoringMeasurements = props.customTailoringMeasurements
       ? { ...props.customTailoringMeasurements }
@@ -70,6 +93,6 @@ export class CartLine {
     if (qty <= 0) {
       throw new DomainError(`Updated cart line quantity must be greater than 0, received: ${qty}`);
     }
-    this._quantity = qty;
+    this._quantity = Math.min(10, qty);
   }
 }
