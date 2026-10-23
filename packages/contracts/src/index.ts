@@ -587,6 +587,42 @@ export const AddToCartInputSchema = z.object({
   quantity: z.number().int().positive().max(10).default(1),
 });
 
+export const CartItemSchema = z.object({
+  id: z.string(),
+  productId: z.string(),
+  variantId: z.string().optional(),
+  sku: z.string(),
+  title: z.string(),
+  slug: z.string(),
+  commerceModel: z.enum(['OM', 'DROP', 'CUSTOM_ORDER', 'PRE_ORDER']).default('OM'),
+  unitPriceAmount: z.number().int().nonnegative(),
+  unitPriceCurrency: z.string().default('USD'),
+  selectedOptions: z.record(z.string(), z.string()).default({}),
+  customSpecifications: z
+    .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
+    .optional(),
+  imageUrl: z.string().optional(),
+  quantity: z.number().int().positive().max(10).default(1),
+});
+
+export const CartDtoSchema = z.object({
+  id: z.string(),
+  customerId: z.string().nullable().optional(),
+  items: z.array(CartItemSchema),
+  totalCount: z.number().int().nonnegative(),
+  subtotalAmount: z.number().int().nonnegative(),
+  currency: z.string().default('USD'),
+  updatedAt: z.string(),
+});
+
+export const SyncCartInputSchema = z.object({
+  items: z.array(CartItemSchema),
+});
+
+export const MergeCartInputSchema = z.object({
+  guestItems: z.array(CartItemSchema),
+});
+
 export type OptionValueDto = z.infer<typeof OptionValueDtoSchema>;
 export type ProductOptionDto = z.infer<typeof ProductOptionDtoSchema>;
 export type ProductVariantDto = z.infer<typeof ProductVariantDtoSchema>;
@@ -594,3 +630,7 @@ export type ProductDetailDto = z.infer<typeof ProductDetailDtoSchema>;
 export type ConfiguratorSelectionDto = z.infer<typeof ConfiguratorSelectionSchema>;
 export type ResolvedVariantDto = z.infer<typeof ResolvedVariantDtoSchema>;
 export type AddToCartInputDto = z.infer<typeof AddToCartInputSchema>;
+export type CartItemDto = z.infer<typeof CartItemSchema>;
+export type CartDto = z.infer<typeof CartDtoSchema>;
+export type SyncCartInputDto = z.infer<typeof SyncCartInputSchema>;
+export type MergeCartInputDto = z.infer<typeof MergeCartInputSchema>;

@@ -1,46 +1,56 @@
 import { create } from 'zustand';
 
 export interface ConfiguratorState {
-  basePriceAmount: number;
-  selectedOptions: Record<string, string>;
-  quantity: number;
-  unitPriceAmount: number;
-  unitPriceCurrency: string;
-  activeSku: string | null;
-  activeVariantId: string | null;
-  isAvailable: boolean;
-  inventoryCount: number;
-  isResolving: boolean;
-  validationErrors: string[];
-  vaultDefaults: Record<string, string>;
+  // State
+  readonly basePriceAmount: number;
+  readonly unitPriceAmount: number;
+  readonly unitPriceCurrency: string;
+  readonly selectedOptions: Record<string, string>;
+  readonly customSpecifications: Record<string, string | number | boolean>;
+  readonly quantity: number;
+  readonly activeSku: string | null;
+  readonly activeVariantId: string | null;
+  readonly isAvailable: boolean;
+  readonly inventoryCount: number;
+  readonly isResolving: boolean;
+  readonly validationErrors: readonly string[];
+  readonly vaultDefaults: Record<string, string>;
+  readonly productSlug: string | null;
 
-  setOption: (code: string, value: string) => void;
-  setQuantity: (quantity: number) => void;
-  initProduct: (
+  // Actions
+  readonly initProduct: (
     basePriceAmount: number,
-    basePriceCurrency: string,
+    basePriceCurrency?: string,
     initialOptions?: Record<string, string>,
+    vaultDefaults?: Record<string, string>,
+    productSlug?: string,
   ) => void;
-  setResolvedVariant: (data: {
-    variantId?: string;
-    sku: string;
-    unitPriceAmount: number;
-    unitPriceCurrency?: string;
-    isAvailable: boolean;
-    inventoryCount: number;
-    selectedOptions?: Record<string, string>;
+  readonly setOption: (code: string, value: string) => void;
+  readonly setCustomSpecification: (key: string, value: string | number | boolean) => void;
+  readonly setQuantity: (quantity: number) => void;
+  readonly setResolvedVariant: (data: {
+    readonly variantId?: string;
+    readonly sku: string;
+    readonly unitPriceAmount: number;
+    readonly unitPriceCurrency?: string;
+    readonly isAvailable: boolean;
+    readonly inventoryCount: number;
+    readonly selectedOptions?: Record<string, string>;
   }) => void;
-  setVaultDefaults: (defaults: Record<string, string>) => void;
-  setValidationErrors: (errors: string[]) => void;
-  resetConfiguration: () => void;
+  readonly setVaultDefaults: (defaults: Record<string, string>) => void;
+  readonly applyVaultDefaults: () => void;
+  readonly setValidationErrors: (errors: readonly string[]) => void;
+  readonly setIsResolving: (isResolving: boolean) => void;
+  readonly resetConfiguration: () => void;
 }
 
 export const useConfiguratorStore = create<ConfiguratorState>((set) => ({
   basePriceAmount: 0,
-  selectedOptions: {},
-  quantity: 1,
   unitPriceAmount: 0,
   unitPriceCurrency: 'USD',
+  selectedOptions: {},
+  customSpecifications: {},
+  quantity: 1,
   activeSku: null,
   activeVariantId: null,
   isAvailable: true,
@@ -48,6 +58,31 @@ export const useConfiguratorStore = create<ConfiguratorState>((set) => ({
   isResolving: false,
   validationErrors: [],
   vaultDefaults: {},
+  productSlug: null,
+
+  initProduct: (
+    basePriceAmount,
+    basePriceCurrency = 'USD',
+    initialOptions = {},
+    vaultDefaults = {},
+    productSlug,
+  ) =>
+    set({
+      basePriceAmount,
+      unitPriceAmount: basePriceAmount,
+      unitPriceCurrency: basePriceCurrency,
+      selectedOptions: { ...initialOptions },
+      customSpecifications: {},
+      quantity: 1,
+      activeSku: null,
+      activeVariantId: null,
+      isAvailable: true,
+      inventoryCount: 99,
+      isResolving: false,
+      validationErrors: [],
+      vaultDefaults: { ...vaultDefaults },
+      productSlug: productSlug ?? null,
+    }),
 
   setOption: (code, value) =>
     set((state) => ({
@@ -58,23 +93,16 @@ export const useConfiguratorStore = create<ConfiguratorState>((set) => ({
       validationErrors: [],
     })),
 
-  setQuantity: (quantity) => set({ quantity: Math.max(1, quantity) }),
-
-  initProduct: (basePriceAmount, basePriceCurrency = 'USD', initialOptions = {}) =>
-    set({
-      basePriceAmount,
-      selectedOptions: { ...initialOptions },
-      quantity: 1,
-      unitPriceAmount: basePriceAmount,
-      unitPriceCurrency: basePriceCurrency,
-      activeSku: null,
-      activeVariantId: null,
-      isAvailable: true,
-      inventoryCount: 99,
-      isResolving: false,
+  setCustomSpecification: (key, value) =>
+    set((state) => ({
+      customSpecifications: {
+        ...state.customSpecifications,
+        [key]: value,
+      },
       validationErrors: [],
-      vaultDefaults: {},
-    }),
+    })),
+
+  setQuantity: (quantity) => set({ quantity: Math.min(10, Math.max(1, quantity)) }),
 
   setResolvedVariant: (data) =>
     set((state) => ({
@@ -87,22 +115,66 @@ export const useConfiguratorStore = create<ConfiguratorState>((set) => ({
       isResolving: false,
     })),
 
-  setVaultDefaults: (defaults) => set({ vaultDefaults: defaults }),
+  setVaultDefaults: (defaults) => set({ vaultDefaults: { ...defaults } }),
 
-  setValidationErrors: (errors) => set({ validationErrors: errors }),
+  applyVaultDefaults: () =>
+    set((state) => ({
+      selectedOptions: {
+        ...state.vaultDefaults,
+        ...state.selectedOptions,
+      },
+      validationErrors: [],
+    })),
+
+  setValidationErrors: (errors) => set({ validationErrors: [...errors] }),
+
+  setIsResolving: (isResolving) => set({ isResolving }),
 
   resetConfiguration: () =>
-    set({
+    set((state) => ({
       selectedOptions: {},
+      customSpecifications: {},
       quantity: 1,
-      unitPriceAmount: 0,
-      unitPriceCurrency: 'USD',
+      unitPriceAmount: state.basePriceAmount,
       activeSku: null,
       activeVariantId: null,
       isAvailable: true,
       inventoryCount: 99,
       isResolving: false,
       validationErrors: [],
-      vaultDefaults: {},
-    }),
+    })),
 }));
+
+// ============================================================================
+// Fine-Grained Performance Selectors (JN-202)
+// ============================================================================
+
+export const selectConfiguredOptions = (state: ConfiguratorState): Record<string, string> =>
+  state.selectedOptions;
+
+export const selectConfiguredCustomSpecifications = (
+  state: ConfiguratorState,
+): Record<string, string | number | boolean> => state.customSpecifications;
+
+export const selectConfiguredUnitPrice = (state: ConfiguratorState): number =>
+  state.unitPriceAmount;
+
+export const selectConfiguredCurrency = (state: ConfiguratorState): string =>
+  state.unitPriceCurrency;
+
+export const selectConfiguredQuantity = (state: ConfiguratorState): number => state.quantity;
+
+export const selectConfiguredSku = (state: ConfiguratorState): string | null => state.activeSku;
+
+export const selectConfiguredVariantId = (state: ConfiguratorState): string | null =>
+  state.activeVariantId;
+
+export const selectIsConfigValid = (state: ConfiguratorState): boolean =>
+  state.validationErrors.length === 0;
+
+export const selectIsConfigAvailable = (state: ConfiguratorState): boolean => state.isAvailable;
+
+export const selectConfiguratorValidationErrors = (state: ConfiguratorState): readonly string[] =>
+  state.validationErrors;
+
+export const selectIsConfigResolving = (state: ConfiguratorState): boolean => state.isResolving;

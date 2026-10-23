@@ -438,16 +438,16 @@ apps/storefront/
 
 | ID     | Task                                 | Description                                         | Status      |
 | ------ | ------------------------------------ | --------------------------------------------------- | ----------- |
-| JN-199 | Create Cart store                    | Cart UI/client state.                               | NOT_STARTED |
-| JN-200 | Create Configurator store            | Product configuration state.                        | NOT_STARTED |
-| JN-201 | Create UI store                      | Drawer/search/modal state where useful.             | NOT_STARTED |
-| JN-202 | Define store selectors               | Prevent unnecessary rerenders.                      | NOT_STARTED |
-| JN-203 | Define persistence strategy          | Persist appropriate guest cart/configuration state. | NOT_STARTED |
-| JN-204 | Implement guest cart persistence     | Local/browser persistence.                          | NOT_STARTED |
-| JN-205 | Implement authenticated cart sync    | Server-backed cart synchronization.                 | NOT_STARTED |
-| JN-206 | Implement guest/login cart merge     | Explicit merge policy.                              | NOT_STARTED |
-| JN-207 | Prevent server/client state mismatch | Hydration-safe implementation.                      | NOT_STARTED |
-| JN-208 | Test store behavior                  | Unit tests for cart/configurator.                   | NOT_STARTED |
+| JN-199 | Create Cart store                    | Cart UI/client state.                               | COMPLETED   |
+| JN-200 | Create Configurator store            | Product configuration state.                        | COMPLETED   |
+| JN-201 | Create UI store                      | Drawer/search/modal state where useful.             | COMPLETED   |
+| JN-202 | Define store selectors               | Prevent unnecessary rerenders.                      | COMPLETED   |
+| JN-203 | Define persistence strategy          | Persist appropriate guest cart/configuration state. | COMPLETED   |
+| JN-204 | Implement guest cart persistence     | Local/browser persistence.                          | COMPLETED   |
+| JN-205 | Implement authenticated cart sync    | Server-backed cart synchronization.                 | COMPLETED   |
+| JN-206 | Implement guest/login cart merge     | Explicit merge policy.                              | COMPLETED   |
+| JN-207 | Prevent server/client state mismatch | Hydration-safe implementation.                      | COMPLETED   |
+| JN-208 | Test store behavior                  | Unit tests for cart/configurator.                   | COMPLETED   |
 
 **Important distinction:** Zustand should manage **client interaction state**. It should **not** become the authoritative source of product price, inventory, variant availability or order state.
 

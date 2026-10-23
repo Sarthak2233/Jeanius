@@ -4,7 +4,13 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCartStore } from '../stores';
+import {
+  useCartStore,
+  selectCartItems,
+  selectIsCartDrawerOpen,
+  selectCartTotalCount,
+  selectCartSubtotal,
+} from '../stores';
 import { Drawer } from './drawer';
 import { EmptyState } from './empty-state';
 import { Button } from './button';
@@ -30,18 +36,17 @@ export function CartDrawer({
   itemCount: controlledItemCount,
 }: CartDrawerProps = {}) {
   const router = useSafeRouter();
-  const storeIsOpen = useCartStore((state) => state.isCartDrawerOpen);
+  const storeIsOpen = useCartStore(selectIsCartDrawerOpen);
   const storeClose = useCartStore((state) => state.closeCartDrawer);
-  const items = useCartStore((state) => state.items);
+  const items = useCartStore(selectCartItems);
   const removeItem = useCartStore((state) => state.removeItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
-  const getTotalCount = useCartStore((state) => state.getTotalCount);
-  const getSubtotalAmount = useCartStore((state) => state.getSubtotalAmount);
+  const storeTotalCount = useCartStore(selectCartTotalCount);
+  const subtotal = useCartStore(selectCartSubtotal);
 
   const isCartDrawerOpen = controlledIsOpen ?? storeIsOpen;
   const closeCartDrawer = controlledOnClose ?? storeClose;
-  const totalCount = controlledItemCount ?? getTotalCount();
-  const subtotal = getSubtotalAmount();
+  const totalCount = controlledItemCount ?? storeTotalCount;
 
   const handleProceedToCheckout = () => {
     closeCartDrawer();
