@@ -18,7 +18,7 @@ export function DesktopHeader({
   isAuthenticated,
   role = 'COLLECTOR',
   fullName = 'Collector',
-  cartItemCount,
+  cartItemCount = 0,
 }: DesktopHeaderProps) {
   const isMemberOrAdmin = role === 'MEMBER' || role === 'ADMIN';
   const openSearch = useUiStore((state) => state.openSearch);

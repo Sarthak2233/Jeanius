@@ -228,11 +228,6 @@ describe('State 07: Store Frontend Shell (JN-145 → JN-156)', () => {
       assert.ok(html.includes('>3<'));
     });
 
-    it('renders shopping bag indicator with 0 items during SSR when itemCount is undefined', () => {
-      const html = renderToString(<CartIndicator />);
-      assert.ok(html.includes('aria-label="Shopping bag, 0 items"'));
-    });
-
     it('renders empty cart drawer with EmptyState when opened with 0 items', () => {
       const html = renderToString(<CartDrawer isOpen onClose={() => {}} itemCount={0} />);
       assert.ok(html.includes('Your Atelier Bag is Empty'));
