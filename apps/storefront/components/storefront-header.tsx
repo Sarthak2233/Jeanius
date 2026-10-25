@@ -9,7 +9,7 @@ export interface StorefrontHeaderProps {
   readonly cartItemCount?: number;
 }
 
-export async function StorefrontHeader({ cartItemCount = 0 }: StorefrontHeaderProps) {
+export async function StorefrontHeader({ cartItemCount }: StorefrontHeaderProps = {}) {
   const supabase = await createClient();
   const {
     data: { user },

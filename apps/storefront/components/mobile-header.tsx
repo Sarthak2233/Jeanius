@@ -10,7 +10,7 @@ export interface MobileHeaderProps {
   readonly cartItemCount?: number;
 }
 
-export function MobileHeader({ cartItemCount = 0 }: MobileHeaderProps) {
+export function MobileHeader({ cartItemCount }: MobileHeaderProps = {}) {
   const toggleMobileNav = useUiStore((state) => state.toggleMobileNav);
   const isMobileNavOpen = useUiStore((state) => state.isMobileNavOpen);
 
