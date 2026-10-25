@@ -1,0 +1,55 @@
+flowchart TD
+    classDef client fill:#1e1b4b,stroke:#818cf8,stroke-width:1.5px,color:#e0e7ff;
+    classDef step fill:#14532d,stroke:#4ade80,stroke-width:1.5px,color:#dcfce7;
+    classDef server fill:#18181b,stroke:#a1a1aa,stroke-width:1.5px,color:#f4f4f5;
+    classDef app fill:#312e81,stroke:#a5b4fc,stroke-width:1.5px,color:#e0e7ff;
+    classDef domain fill:#831843,stroke:#f472b6,stroke-width:1.5px,color:#fdf2f8;
+    classDef database fill:#0f172a,stroke:#38bdf8,stroke-width:1.5px,color:#e0f2fe;
+
+    subgraph StorefrontUI ["Storefront UI Checkout Stage (apps/storefront/app/checkout)"]
+        CheckoutView["CheckoutView (JN-223)<br/>• Step 1: Contact & International Address<br/>• Step 2: Order Review & Policy Accept<br/>• Step 3: Payment Initiation & Recovery"]:::client
+        CheckoutSummary["CheckoutSummary (JN-224)<br/>• Bespoke OM Mandrel/Tailoring Specs<br/>• DROP In-Stock Line Breakdown<br/>• Subtotal & Express Shipping Tier"]:::client
+        PolicyNotices["Atelier Policy Panel (JN-230, JN-231)<br/>• OM Lead Time: 7-14d Bench + 2-4d DHL<br/>• DROP Policy: 5-Day Unworn Window<br/>• APO/FPO Delivery Guard (JN-228)"]:::step
+        RecoveryBanner["Failure Recovery Banner (JN-239)<br/>• Retain Form State<br/>• Drift/Stock Error Remediation"]:::client
+    end
+
+    subgraph ServerBoundary ["Storefront Server Actions (apps/storefront/actions/checkout.actions.ts)"]
+        InitAction["initiateCheckoutAction()<br/>• Validates CreateCheckoutSchema<br/>• Captures Client Idempotency Key<br/>• Invokes Application Layer"]:::server
+        ValidateAddressAction["validateAddressAction()<br/>• Pre-validates Country & APO/FPO<br/>• Computes Shipping Tier"]:::server
+    end
+
+    subgraph ApplicationLayer ["Application Layer (packages/application)"]
+        CheckoutService["CheckoutService (JN-233, JN-237)<br/>• Address & Country Validation (JN-227)<br/>• APO/FPO Military Rejection (JN-228)<br/>• Shipping Tier Calculation (JN-229)<br/>• Idempotency Deduplication (JN-234)<br/>• Price Drift Verification (JN-235)<br/>• DROP Stock Verification (JN-236)"]:::app
+        OrderPort["IOrderRepository (Port)<br/>• findByIdempotencyKey()<br/>• save(order, tx)"]:::app
+        CartPort["ICartRepository (Port)<br/>• findById()<br/>• deleteCartLines()"]:::app
+        PaymentPort["IPaymentGateway (Port)<br/>• initiatePayment(order)"]:::app
+    end
+
+    subgraph DomainLayer ["Domain Layer (packages/domain - Pure DDD)"]
+        OrderEntity["Order Aggregate Root (JN-073)<br/>• OrderNumber Generation<br/>• Status: PENDING / PAID<br/>• requiresWorkshopProduction()"]:::domain
+        OrderLineEntity["OrderLine Snapshot (JN-074)<br/>• Immutable Unit Price<br/>• Frozen Custom Specifications<br/>• Allocated Metal/Bolt Slot"]:::domain
+        AddressVO["Address Value Object (JN-065)<br/>• Courier Dispatch Requirement<br/>• International Country Checking<br/>• Single/Multi-Line Formatter"]:::domain
+        MoneyVO["Money Value Object (JN-059)<br/>• Currency Isolation<br/>• Subtotal + Shipping Arithmetic"]:::domain
+    end
+
+    subgraph DatabaseLayer ["Database Layer (packages/database)"]
+        OrderRepo["DrizzleOrderRepository (JN-051)<br/>• ACID Transaction Boundary<br/>• Orders & OrderLines Insertion<br/>• Idempotency Key Lock Registration"]:::database
+        DbTables["PostgreSQL Schema<br/>• orders table<br/>• order_lines table<br/>• idempotency_keys table"]:::database
+    end
+
+    CheckoutView -->|User Enters Shipping Details| ValidateAddressAction
+    ValidateAddressAction -->|Country & APO Check| AddressVO
+    CheckoutView -->|Submit Order| InitAction
+    InitAction -->|Orchestrate Checkout| CheckoutService
+    CheckoutService -->|Enforce Address Rules| AddressVO
+    CheckoutService -->|Verify Prices & Stock| CartPort
+    CheckoutService -->|Check Duplicate Order| OrderPort
+    CheckoutService -->|Construct Aggregate| OrderEntity
+    OrderEntity -->|Encapsulate Lines| OrderLineEntity
+    OrderEntity -->|Calculate Totals| MoneyVO
+    CheckoutService -->|Atomic Transaction Save| OrderRepo
+    OrderRepo --> DbTables
+    CheckoutService -->|Initiate Payment Session| PaymentPort
+    CheckoutService -->|Return Session or Error| InitAction
+    InitAction -->|Render Order Confirmation| CheckoutView
+    InitAction -->|Display Actionable Recovery| RecoveryBanner

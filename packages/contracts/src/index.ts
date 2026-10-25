@@ -112,6 +112,44 @@ export const CreateCheckoutSchema = z.object({
   cartId: z.string().uuid(),
   customerEmail: z.string().email(),
   shippingAddress: AddressSchema,
+  billingAddress: AddressSchema.optional(),
+  idempotencyKey: z.string().min(8).optional(),
+  confirmedPriceChanges: z.boolean().optional(),
+});
+
+export const CreateCheckoutInputSchema = CreateCheckoutSchema;
+
+export const CheckoutResultSchema = z.object({
+  success: z.boolean(),
+  orderId: z.string().uuid(),
+  orderNumber: z.string(),
+  paymentUrl: z.string(),
+  totalAmount: z.number().int().nonnegative(),
+  currency: z.string(),
+  status: z.enum(['PENDING', 'PAID', 'FAILED']),
+  warnings: z.array(z.lazy(() => CartItemWarningSchema)).optional(),
+});
+
+export const ValidateAddressInputSchema = z.object({
+  address: AddressSchema,
+  cartSubtotalCents: z.number().int().nonnegative(),
+  currency: z.string().default('USD'),
+});
+
+export const AddressValidationResultSchema = z.object({
+  isDeliverable: z.boolean(),
+  isMilitary: z.boolean(),
+  reason: z.string().optional(),
+  shippingCostAmount: z.number().int().nonnegative(),
+  currency: z.string(),
+  isFreeShipping: z.boolean(),
+  courier: z.string(),
+  leadTime: z.object({
+    productionMinDays: z.number().int(),
+    productionMaxDays: z.number().int(),
+    shippingMinDays: z.number().int(),
+    shippingMaxDays: z.number().int(),
+  }),
 });
 
 export const TransitionProductionStageSchema = z.object({
@@ -677,3 +715,7 @@ export type ValidatedCartDto = z.infer<typeof ValidatedCartDtoSchema>;
 export type UpdateCartItemQuantityDto = z.infer<typeof UpdateCartItemQuantitySchema>;
 export type RemoveCartItemDto = z.infer<typeof RemoveCartItemSchema>;
 export type ValidateCartInputDto = z.infer<typeof ValidateCartInputSchema>;
+export type CreateCheckoutInputDto = z.infer<typeof CreateCheckoutInputSchema>;
+export type CheckoutResultDto = z.infer<typeof CheckoutResultSchema>;
+export type ValidateAddressInputDto = z.infer<typeof ValidateAddressInputSchema>;
+export type AddressValidationResultDto = z.infer<typeof AddressValidationResultSchema>;

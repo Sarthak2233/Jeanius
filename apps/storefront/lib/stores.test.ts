@@ -33,6 +33,10 @@ import {
   ValidatedCartDtoSchema,
   UpdateCartItemQuantitySchema,
   RemoveCartItemSchema,
+  CreateCheckoutInputSchema,
+  ValidateAddressInputSchema,
+  AddressValidationResultSchema,
+  CheckoutResultSchema,
 } from '@jeanius/contracts';
 
 describe('State 11: Zustand Stores & Client State Management (JN-199 → JN-208)', () => {
@@ -616,6 +620,74 @@ describe('State 11: Zustand Stores & Client State Management (JN-199 → JN-208)
         false,
       );
       assert.strictEqual(RemoveCartItemSchema.safeParse({ lineId: 'line-1' }).success, true);
+    });
+
+    it('validates State 13 checkout contract schemas (JN-223 -> JN-239)', () => {
+      const validAddress = {
+        fullName: 'John Doe',
+        addressLine1: '742 Evergreen Terrace',
+        city: 'Springfield',
+        stateOrProvince: 'OR',
+        postalCode: '97477',
+        country: 'US',
+        phone: '+1-555-123-4567',
+      };
+
+      const validCheckout = {
+        cartId: 'a0000000-0000-0000-0000-000000000001',
+        customerEmail: 'john@example.com',
+        shippingAddress: validAddress,
+        idempotencyKey: 'idemp-token-12345',
+        confirmedPriceChanges: false,
+      };
+
+      assert.strictEqual(CreateCheckoutInputSchema.safeParse(validCheckout).success, true);
+
+      // Rejects invalid email
+      assert.strictEqual(
+        CreateCheckoutInputSchema.safeParse({ ...validCheckout, customerEmail: 'not-an-email' })
+          .success,
+        false,
+      );
+
+      // ValidateAddressInputSchema
+      assert.strictEqual(
+        ValidateAddressInputSchema.safeParse({
+          address: validAddress,
+          cartSubtotalCents: 28000,
+          currency: 'USD',
+        }).success,
+        true,
+      );
+
+      // AddressValidationResultSchema
+      const validationResult = {
+        isDeliverable: true,
+        isMilitary: false,
+        shippingCostAmount: 2500,
+        currency: 'USD',
+        isFreeShipping: false,
+        courier: 'DHL Worldwide Express',
+        leadTime: {
+          productionMinDays: 7,
+          productionMaxDays: 14,
+          shippingMinDays: 2,
+          shippingMaxDays: 4,
+        },
+      };
+      assert.strictEqual(AddressValidationResultSchema.safeParse(validationResult).success, true);
+
+      // CheckoutResultSchema
+      const checkoutResult = {
+        success: true,
+        orderId: 'a0000000-0000-0000-0000-000000000001',
+        orderNumber: 'JNS-2026-0001',
+        paymentUrl: '/checkout/confirmation?orderId=a0000000-0000-0000-0000-000000000001',
+        totalAmount: 30500,
+        currency: 'USD',
+        status: 'PENDING' as const,
+      };
+      assert.strictEqual(CheckoutResultSchema.safeParse(checkoutResult).success, true);
     });
   });
 });
