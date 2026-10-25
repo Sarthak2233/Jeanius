@@ -24,12 +24,15 @@ import {
   selectActiveModalId,
   type CartItem,
 } from '../stores';
-import { computeLineItemFingerprint, mergeCartLinesPure } from '../actions/cart.actions';
+import { computeLineItemFingerprint, mergeCartLinesPure } from './cart-utils';
 import {
   CartItemSchema,
   CartDtoSchema,
   SyncCartInputSchema,
   MergeCartInputSchema,
+  ValidatedCartDtoSchema,
+  UpdateCartItemQuantitySchema,
+  RemoveCartItemSchema,
 } from '@jeanius/contracts';
 
 describe('State 11: Zustand Stores & Client State Management (JN-199 → JN-208)', () => {
@@ -571,6 +574,48 @@ describe('State 11: Zustand Stores & Client State Management (JN-199 → JN-208)
 
       const mergePayload = { guestItems: [{ ...samplePendant, id: 'line-2' }] };
       assert.strictEqual(MergeCartInputSchema.safeParse(mergePayload).success, true);
+    });
+
+    it('validates ValidatedCartDto with warnings and shipping calculation', () => {
+      const validated = {
+        id: 'cart-1',
+        customerId: 'cust-1',
+        items: [{ ...sampleRing, id: 'line-1' }],
+        totalCount: 1,
+        subtotalAmount: 32000,
+        estimatedShippingAmount: 0,
+        grandTotalAmount: 32000,
+        currency: 'USD',
+        warnings: [
+          {
+            lineId: 'line-1',
+            code: 'QUANTITY_CLAMPED' as const,
+            message: 'Stock limited to 1',
+            previousValue: 2,
+            currentValue: 1,
+          },
+        ],
+        hasUnavailableItems: false,
+        hasPriceChanges: false,
+        updatedAt: new Date().toISOString(),
+      };
+      assert.strictEqual(ValidatedCartDtoSchema.safeParse(validated).success, true);
+    });
+
+    it('validates UpdateCartItemQuantity and RemoveCartItem payloads', () => {
+      assert.strictEqual(
+        UpdateCartItemQuantitySchema.safeParse({ lineId: 'line-1', quantity: 3 }).success,
+        true,
+      );
+      assert.strictEqual(
+        UpdateCartItemQuantitySchema.safeParse({ lineId: 'line-1', quantity: 0 }).success,
+        false,
+      );
+      assert.strictEqual(
+        UpdateCartItemQuantitySchema.safeParse({ lineId: 'line-1', quantity: 15 }).success,
+        false,
+      );
+      assert.strictEqual(RemoveCartItemSchema.safeParse({ lineId: 'line-1' }).success, true);
     });
   });
 });

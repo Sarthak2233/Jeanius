@@ -1,15 +1,20 @@
 'use server';
 
-import { db, DrizzleCartRepository } from '@jeanius/database';
+import { db, DrizzleCartRepository, DrizzleProductRepository } from '@jeanius/database';
 import { CartService } from '@jeanius/application';
 import {
   type CartDto,
   type CartItemDto,
+  type ValidatedCartDto,
   SyncCartInputSchema,
   MergeCartInputSchema,
+  AddToCartInputSchema,
+  UpdateCartItemQuantitySchema,
+  RemoveCartItemSchema,
+  ValidateCartInputSchema,
 } from '@jeanius/contracts';
 import { createLogger, generateTraceId } from '@jeanius/observability';
-import { type Cart, computeCartLineFingerprint } from '@jeanius/domain';
+import { type Cart } from '@jeanius/domain';
 import { createClient } from '../lib/supabase/server';
 
 const logger = createLogger('storefront:cart-actions');
@@ -25,7 +30,8 @@ export interface ActionResult<T> {
 
 function getCartService(): CartService {
   const repo = new DrizzleCartRepository(db);
-  return new CartService(repo);
+  const productRepo = new DrizzleProductRepository(db);
+  return new CartService(repo, productRepo);
 }
 
 function mapCartToDto(cart: Cart): CartDto {
@@ -55,54 +61,6 @@ function mapCartToDto(cart: Cart): CartDto {
     currency: cart.currency,
     updatedAt: cart.updatedAt.toISOString(),
   };
-}
-
-/**
- * Computes a deterministic identity fingerprint for a cart line.
- * Time: O(m log m) where m is option count (typically <= 5)
- */
-export function computeLineItemFingerprint(item: {
-  readonly productId: string;
-  readonly variantId?: string | null;
-  readonly selectedOptions?: Record<string, string>;
-  readonly customSpecifications?: Record<string, unknown>;
-}): string {
-  return computeCartLineFingerprint(item);
-}
-
-/**
- * Pure function: merges guest cart items with existing server cart lines.
- * Time: O(n + m) using hash indexing (DSA Rule 6.1 and 6.3)
- */
-export function mergeCartLinesPure(
-  serverLines: readonly CartItemDto[],
-  guestLines: readonly CartItemDto[],
-): CartItemDto[] {
-  const mergedMap = new Map<string, CartItemDto>();
-
-  // 1. Index server lines
-  for (const sLine of serverLines) {
-    const fp = computeLineItemFingerprint(sLine);
-    mergedMap.set(fp, { ...sLine });
-  }
-
-  // 2. Merge guest lines
-  for (const gLine of guestLines) {
-    const fp = computeLineItemFingerprint(gLine);
-    const existing = mergedMap.get(fp);
-
-    if (existing) {
-      const combinedQty = Math.min(10, existing.quantity + gLine.quantity);
-      mergedMap.set(fp, {
-        ...existing,
-        quantity: combinedQty,
-      });
-    } else {
-      mergedMap.set(fp, { ...gLine });
-    }
-  }
-
-  return Array.from(mergedMap.values());
 }
 
 /**
@@ -293,6 +251,264 @@ export async function mergeGuestCartAction(rawInput: unknown): Promise<ActionRes
         code: 'MERGE_FAILED',
         message: 'Could not merge cart lines. Preserving local state.',
       },
+    };
+  }
+}
+
+/**
+ * Server-authoritative cart recalculation & stock validation action (JN-214, JN-215, JN-216, JN-217).
+ */
+export async function validateAndRecalculateCartAction(
+  rawInput?: unknown,
+): Promise<ActionResult<ValidatedCartDto>> {
+  const traceId = generateTraceId();
+  const startTime = Date.now();
+
+  try {
+    let userId: string | null = null;
+    try {
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      userId = user?.id ?? null;
+    } catch {
+      userId = null;
+    }
+
+    let itemsToValidate: CartItemDto[] = [];
+
+    if (rawInput) {
+      const parseResult = ValidateCartInputSchema.safeParse(rawInput);
+      if (parseResult.success) {
+        itemsToValidate = parseResult.data.items;
+      }
+    }
+
+    const service = getCartService();
+
+    // If authenticated and no items supplied, fetch from server cart
+    if (userId && itemsToValidate.length === 0) {
+      const existing = await service.getCartByCustomerId(userId);
+      if (existing) {
+        itemsToValidate = mapCartToDto(existing).items;
+      }
+    }
+
+    const validatedResult = await service.validateAndRecalculateCart(
+      itemsToValidate,
+      userId ?? undefined,
+    );
+
+    logger.info('Cart validated and recalculated via server action', {
+      traceId,
+      userId: userId ?? undefined,
+      itemCount: validatedResult.items.length,
+      warningsCount: validatedResult.warnings.length,
+      durationMs: Date.now() - startTime,
+    });
+
+    return { success: true, data: validatedResult };
+  } catch (error) {
+    logger.error('Failed to validate and recalculate cart', {
+      traceId,
+      error: error instanceof Error ? error.message : String(error),
+      durationMs: Date.now() - startTime,
+    });
+
+    return {
+      success: false,
+      error: {
+        code: 'VALIDATION_FAILED',
+        message: 'Could not validate cart totals against catalog.',
+      },
+    };
+  }
+}
+
+/**
+ * Add item to server-persisted cart for authenticated collectors (JN-211).
+ */
+export async function addItemToCartAction(rawInput: unknown): Promise<ActionResult<CartDto>> {
+  const traceId = generateTraceId();
+  const startTime = Date.now();
+
+  const parseResult = AddToCartInputSchema.safeParse(rawInput);
+  if (!parseResult.success) {
+    return {
+      success: false,
+      error: { code: 'VALIDATION_ERROR', message: 'Invalid item payload' },
+    };
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return {
+        success: false,
+        error: { code: 'UNAUTHENTICATED', message: 'User must be signed in' },
+      };
+    }
+
+    const service = getCartService();
+    const cart = await service.addItem(user.id, parseResult.data);
+    const cartDto = mapCartToDto(cart);
+
+    logger.info('Item added to cart via server action', {
+      traceId,
+      userId: user.id,
+      productId: parseResult.data.productId,
+      durationMs: Date.now() - startTime,
+    });
+
+    return { success: true, data: cartDto };
+  } catch (error) {
+    logger.error('Failed to add item to cart', {
+      traceId,
+      error: error instanceof Error ? error.message : String(error),
+      durationMs: Date.now() - startTime,
+    });
+
+    return {
+      success: false,
+      error: { code: 'ADD_ITEM_FAILED', message: 'Could not add item to cart' },
+    };
+  }
+}
+
+/**
+ * Update cart item quantity action (JN-212).
+ */
+export async function updateCartItemQuantityAction(
+  rawInput: unknown,
+): Promise<ActionResult<CartDto>> {
+  const traceId = generateTraceId();
+  const startTime = Date.now();
+
+  const parseResult = UpdateCartItemQuantitySchema.safeParse(rawInput);
+  if (!parseResult.success) {
+    return {
+      success: false,
+      error: { code: 'VALIDATION_ERROR', message: 'Invalid quantity payload' },
+    };
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return {
+        success: false,
+        error: { code: 'UNAUTHENTICATED', message: 'User must be signed in' },
+      };
+    }
+
+    const service = getCartService();
+    const cart = await service.updateLineQuantity(
+      user.id,
+      parseResult.data.lineId,
+      parseResult.data.quantity,
+    );
+    const cartDto = mapCartToDto(cart);
+
+    return { success: true, data: cartDto };
+  } catch (error) {
+    logger.error('Failed to update cart line quantity', {
+      traceId,
+      error: error instanceof Error ? error.message : String(error),
+      durationMs: Date.now() - startTime,
+    });
+
+    return {
+      success: false,
+      error: { code: 'UPDATE_QUANTITY_FAILED', message: 'Could not update line quantity' },
+    };
+  }
+}
+
+/**
+ * Remove cart item action (JN-213).
+ */
+export async function removeCartItemAction(rawInput: unknown): Promise<ActionResult<CartDto>> {
+  const traceId = generateTraceId();
+  const startTime = Date.now();
+
+  const parseResult = RemoveCartItemSchema.safeParse(rawInput);
+  if (!parseResult.success) {
+    return {
+      success: false,
+      error: { code: 'VALIDATION_ERROR', message: 'Invalid removal payload' },
+    };
+  }
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return {
+        success: false,
+        error: { code: 'UNAUTHENTICATED', message: 'User must be signed in' },
+      };
+    }
+
+    const service = getCartService();
+    const cart = await service.removeLine(user.id, parseResult.data.lineId);
+    const cartDto = mapCartToDto(cart);
+
+    return { success: true, data: cartDto };
+  } catch (error) {
+    logger.error('Failed to remove cart line', {
+      traceId,
+      error: error instanceof Error ? error.message : String(error),
+      durationMs: Date.now() - startTime,
+    });
+
+    return {
+      success: false,
+      error: { code: 'REMOVE_ITEM_FAILED', message: 'Could not remove line from cart' },
+    };
+  }
+}
+
+/**
+ * Clear customer cart action.
+ */
+export async function clearCartAction(): Promise<ActionResult<void>> {
+  const traceId = generateTraceId();
+  const startTime = Date.now();
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const service = getCartService();
+      await service.clearCart(user.id);
+    }
+
+    return { success: true };
+  } catch (error) {
+    logger.error('Failed to clear cart', {
+      traceId,
+      error: error instanceof Error ? error.message : String(error),
+      durationMs: Date.now() - startTime,
+    });
+
+    return {
+      success: false,
+      error: { code: 'CLEAR_FAILED', message: 'Could not clear cart' },
     };
   }
 }

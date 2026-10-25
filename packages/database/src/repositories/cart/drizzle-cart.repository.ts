@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, lt } from 'drizzle-orm';
 import {
   Cart,
   CartLine,
@@ -112,6 +112,21 @@ export class DrizzleCartRepository implements ICartRepository {
   async delete(id: string): Promise<void> {
     await this.database.delete(carts).where(eq(carts.id, id));
     this.logger.debug('Cart deleted', { id });
+  }
+
+  async deleteExpiredCarts(olderThan: Date): Promise<number> {
+    const expired = await this.database
+      .select({ id: carts.id })
+      .from(carts)
+      .where(lt(carts.updatedAt, olderThan));
+
+    if (expired.length === 0) {
+      return 0;
+    }
+
+    await this.database.delete(carts).where(lt(carts.updatedAt, olderThan));
+    this.logger.info('Deleted expired carts', { count: expired.length, olderThan });
+    return expired.length;
   }
 
   private mapToDomain(

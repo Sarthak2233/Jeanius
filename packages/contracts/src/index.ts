@@ -623,6 +623,43 @@ export const MergeCartInputSchema = z.object({
   guestItems: z.array(CartItemSchema),
 });
 
+export const CartItemWarningCodeSchema = z.enum([
+  'PRICE_CHANGED',
+  'OUT_OF_STOCK',
+  'QUANTITY_CLAMPED',
+  'DISCONTINUED',
+  'CUSTOMIZATION_MISMATCH',
+]);
+
+export const CartItemWarningSchema = z.object({
+  lineId: z.string(),
+  code: CartItemWarningCodeSchema,
+  message: z.string(),
+  previousValue: z.union([z.string(), z.number()]).optional(),
+  currentValue: z.union([z.string(), z.number()]).optional(),
+});
+
+export const ValidatedCartDtoSchema = CartDtoSchema.extend({
+  warnings: z.array(CartItemWarningSchema).default([]),
+  hasUnavailableItems: z.boolean().default(false),
+  hasPriceChanges: z.boolean().default(false),
+  estimatedShippingAmount: z.number().int().nonnegative().default(0),
+  grandTotalAmount: z.number().int().nonnegative(),
+});
+
+export const UpdateCartItemQuantitySchema = z.object({
+  lineId: z.string(),
+  quantity: z.number().int().positive().max(10),
+});
+
+export const RemoveCartItemSchema = z.object({
+  lineId: z.string(),
+});
+
+export const ValidateCartInputSchema = z.object({
+  items: z.array(CartItemSchema),
+});
+
 export type OptionValueDto = z.infer<typeof OptionValueDtoSchema>;
 export type ProductOptionDto = z.infer<typeof ProductOptionDtoSchema>;
 export type ProductVariantDto = z.infer<typeof ProductVariantDtoSchema>;
@@ -634,3 +671,9 @@ export type CartItemDto = z.infer<typeof CartItemSchema>;
 export type CartDto = z.infer<typeof CartDtoSchema>;
 export type SyncCartInputDto = z.infer<typeof SyncCartInputSchema>;
 export type MergeCartInputDto = z.infer<typeof MergeCartInputSchema>;
+export type CartItemWarningCode = z.infer<typeof CartItemWarningCodeSchema>;
+export type CartItemWarningDto = z.infer<typeof CartItemWarningSchema>;
+export type ValidatedCartDto = z.infer<typeof ValidatedCartDtoSchema>;
+export type UpdateCartItemQuantityDto = z.infer<typeof UpdateCartItemQuantitySchema>;
+export type RemoveCartItemDto = z.infer<typeof RemoveCartItemSchema>;
+export type ValidateCartInputDto = z.infer<typeof ValidateCartInputSchema>;
