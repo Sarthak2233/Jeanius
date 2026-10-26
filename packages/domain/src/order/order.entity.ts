@@ -106,6 +106,22 @@ export class Order {
     this._updatedAt = new Date();
   }
 
+  markPaymentPending(): void {
+    if (this._paymentStatus === 'PAID') {
+      return;
+    }
+    this._paymentStatus = 'PENDING';
+    this._updatedAt = new Date();
+  }
+
+  markPaymentFailed(): void {
+    if (this._paymentStatus === 'PAID') {
+      return;
+    }
+    this._paymentStatus = 'FAILED';
+    this._updatedAt = new Date();
+  }
+
   transitionStatus(next: OrderStatus): void {
     if (this._status === next) return;
     if (this._status === 'CANCELLED' || this._status === 'REFUNDED') {

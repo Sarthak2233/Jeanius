@@ -5,8 +5,10 @@ import {
   DrizzleOrderRepository,
   DrizzleCartRepository,
   DrizzleProductRepository,
+  DrizzlePaymentRepository,
 } from '@jeanius/database';
-import { CheckoutService } from '@jeanius/application';
+import { CheckoutService, PaymentOrchestrator } from '@jeanius/application';
+import { SimulatedBankAdapter } from '@jeanius/integrations';
 import {
   type CheckoutResultDto,
   type AddressValidationResultDto,
@@ -31,7 +33,14 @@ function getCheckoutService(): CheckoutService {
   const orderRepo = new DrizzleOrderRepository(db);
   const cartRepo = new DrizzleCartRepository(db);
   const productRepo = new DrizzleProductRepository(db);
-  return new CheckoutService(orderRepo, cartRepo, productRepo);
+  const paymentRepo = new DrizzlePaymentRepository(db);
+  const bankAdapter = new SimulatedBankAdapter();
+  const paymentGateway = new PaymentOrchestrator({
+    paymentRepository: paymentRepo,
+    orderRepository: orderRepo,
+    providers: [bankAdapter],
+  });
+  return new CheckoutService(orderRepo, cartRepo, productRepo, paymentGateway);
 }
 
 /**
@@ -162,6 +171,8 @@ export interface OrderConfirmationDto {
   readonly orderNumber: string;
   readonly customerEmail: string;
   readonly status: string;
+  readonly paymentStatus: string;
+  readonly voucherReference?: string;
   readonly totalAmount: number;
   readonly currency: string;
   readonly shippingAddress: {
@@ -194,6 +205,10 @@ export async function getOrderConfirmationAction(
       };
     }
 
+    const paymentRepo = new DrizzlePaymentRepository(db);
+    const payments = await paymentRepo.findByOrderId(order.id);
+    const latestPayment = payments[payments.length - 1];
+
     return {
       success: true,
       data: {
@@ -201,6 +216,8 @@ export async function getOrderConfirmationAction(
         orderNumber: order.orderNumber,
         customerEmail: order.customerEmail,
         status: order.status,
+        paymentStatus: latestPayment?.status ?? order.paymentStatus,
+        voucherReference: latestPayment?.notes ?? latestPayment?.voucherReference,
         totalAmount: order.total.amount,
         currency: order.currency,
         shippingAddress: {

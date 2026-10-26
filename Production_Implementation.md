@@ -515,27 +515,27 @@ PaymentOrchestrator
         └── FutureProviderAdapter
 ```
 
-| ID     | Task                             | Description                               | Status      |
-| ------ | -------------------------------- | ----------------------------------------- | ----------- |
-| JN-240 | Define PaymentProvider interface | Provider-independent contract.            | NOT_STARTED |
-| JN-241 | Define PaymentIntent             | Internal payment abstraction.             | NOT_STARTED |
-| JN-242 | Define webhook contract          | Provider-independent webhook processing.  | NOT_STARTED |
-| JN-243 | Define refund contract           | Provider-independent refund API.          | NOT_STARTED |
-| JN-244 | Build PaymentOrchestrator        | Route payments to providers.              | NOT_STARTED |
-| JN-245 | Build provider configuration     | Environment-based provider selection.     | NOT_STARTED |
-| JN-246 | Implement first provider         | Production payment provider.              | NOT_STARTED |
-| JN-247 | Implement second provider        | Nepal/international coverage as required. | NOT_STARTED |
-| JN-248 | Implement webhook verification   | Signature/authenticity.                   | NOT_STARTED |
-| JN-249 | Implement webhook idempotency    | Duplicate events safe.                    | NOT_STARTED |
-| JN-250 | Implement payment reconciliation | Internal/provider consistency.            | NOT_STARTED |
-| JN-251 | Implement refund orchestration   | Full/partial refunds.                     | NOT_STARTED |
-| JN-252 | Separate display currency        | Customer-facing currency.                 | NOT_STARTED |
-| JN-253 | Separate settlement currency     | Merchant settlement currency.             | NOT_STARTED |
-| JN-254 | Implement payment audit trail    | Financial state changes.                  | NOT_STARTED |
-| JN-255 | Test failed payment              | Failure/retry.                            | NOT_STARTED |
-| JN-256 | Test duplicate payment           | Idempotency.                              | NOT_STARTED |
-| JN-257 | Test duplicate webhook           | Idempotency.                              | NOT_STARTED |
-| JN-258 | Test refund                      | Refund lifecycle.                         | NOT_STARTED |
+| ID     | Task                             | Description                               | Status    |
+| ------ | -------------------------------- | ----------------------------------------- | --------- |
+| JN-240 | Define PaymentProvider interface | Provider-independent contract.            | COMPLETED |
+| JN-241 | Define PaymentIntent             | Internal payment abstraction.             | COMPLETED |
+| JN-242 | Define webhook contract          | Provider-independent webhook processing.  | COMPLETED |
+| JN-243 | Define refund contract           | Provider-independent refund API.          | COMPLETED |
+| JN-244 | Build PaymentOrchestrator        | Route payments to providers.              | COMPLETED |
+| JN-245 | Build provider configuration     | Environment-based provider selection.     | COMPLETED |
+| JN-246 | Implement first provider         | Production payment provider.              | COMPLETED |
+| JN-247 | Implement second provider        | Nepal/international coverage as required. | COMPLETED |
+| JN-248 | Implement webhook verification   | Signature/authenticity.                   | COMPLETED |
+| JN-249 | Implement webhook idempotency    | Duplicate events safe.                    | COMPLETED |
+| JN-250 | Implement payment reconciliation | Internal/provider consistency.            | COMPLETED |
+| JN-251 | Implement refund orchestration   | Full/partial refunds.                     | COMPLETED |
+| JN-252 | Separate display currency        | Customer-facing currency.                 | COMPLETED |
+| JN-253 | Separate settlement currency     | Merchant settlement currency.             | COMPLETED |
+| JN-254 | Implement payment audit trail    | Financial state changes.                  | COMPLETED |
+| JN-255 | Test failed payment              | Failure/retry.                            | COMPLETED |
+| JN-256 | Test duplicate payment           | Idempotency.                              | COMPLETED |
+| JN-257 | Test duplicate webhook           | Idempotency.                              | COMPLETED |
+| JN-258 | Test refund                      | Refund lifecycle.                         | COMPLETED |
 
 ---
 

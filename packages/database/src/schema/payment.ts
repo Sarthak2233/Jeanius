@@ -2,7 +2,13 @@ import { pgTable, text, timestamp, integer, jsonb, uuid, index, check } from 'dr
 import { sql } from 'drizzle-orm';
 import { orders, paymentStatusEnum } from './order';
 
-export const paymentProviderEnum = ['STRIPE', 'ESEWA', 'KHALTI', 'FONEPAY'] as const;
+export const paymentProviderEnum = [
+  'BANK_TRANSFER',
+  'STRIPE',
+  'ESEWA',
+  'KHALTI',
+  'FONEPAY',
+] as const;
 
 export const payments = pgTable(
   'payments',
@@ -13,9 +19,13 @@ export const payments = pgTable(
       .references(() => orders.id, { onDelete: 'cascade' }),
     amount: integer('amount').notNull(),
     currency: text('currency').notNull().default('USD'),
+    settlementAmount: integer('settlement_amount'),
+    settlementCurrency: text('settlement_currency').default('USD'),
     provider: text('provider', { enum: paymentProviderEnum }).notNull(),
     status: text('status', { enum: paymentStatusEnum }).notNull().default('INITIATED'),
     transactionId: text('transaction_id'),
+    voucherReference: text('voucher_reference'),
+    notes: text('notes'),
     idempotencyKey: text('idempotency_key').notNull().unique(),
     refundedAmount: integer('refunded_amount').notNull().default(0),
     refundedCurrency: text('refunded_currency').notNull().default('USD'),
@@ -26,6 +36,7 @@ export const payments = pgTable(
     index('idx_payments_order_id').on(table.orderId),
     index('idx_payments_idempotency_key').on(table.idempotencyKey),
     index('idx_payments_transaction_id').on(table.transactionId),
+    index('idx_payments_voucher_ref').on(table.voucherReference),
     index('idx_payments_status').on(table.status),
     check('chk_payments_amount', sql`${table.amount} >= 0`),
     check('chk_payments_refunded_amount', sql`${table.refundedAmount} >= 0`),

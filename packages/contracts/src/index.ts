@@ -719,3 +719,103 @@ export type CreateCheckoutInputDto = z.infer<typeof CreateCheckoutInputSchema>;
 export type CheckoutResultDto = z.infer<typeof CheckoutResultSchema>;
 export type ValidateAddressInputDto = z.infer<typeof ValidateAddressInputSchema>;
 export type AddressValidationResultDto = z.infer<typeof AddressValidationResultSchema>;
+
+// ================= State 14: Payment Orchestrator Contracts (JN-240 → JN-258) =================
+
+export const PaymentProviderSchema = z.enum([
+  'BANK_TRANSFER',
+  'STRIPE',
+  'ESEWA',
+  'KHALTI',
+  'FONEPAY',
+]);
+
+export const PaymentIntentDtoSchema = z.object({
+  paymentId: z.string(),
+  orderId: z.string(),
+  orderNumber: z.string(),
+  amount: z.number().int().nonnegative(),
+  currency: z.string(),
+  settlementAmount: z.number().int().nonnegative(),
+  settlementCurrency: z.string(),
+  provider: PaymentProviderSchema,
+  status: PaymentStatusSchema,
+  paymentUrl: z.string(),
+  transactionId: z.string().optional(),
+  idempotencyKey: z.string(),
+  voucherReference: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export const InitiatePaymentInputSchema = z.object({
+  orderId: z.string().uuid(),
+  provider: PaymentProviderSchema.default('BANK_TRANSFER'),
+  idempotencyKey: z.string().min(8).optional(),
+});
+
+export const InitiatePaymentResultSchema = z.object({
+  success: z.boolean(),
+  paymentId: z.string(),
+  orderId: z.string(),
+  orderNumber: z.string(),
+  paymentUrl: z.string(),
+  status: PaymentStatusSchema,
+  amount: z.number().int().nonnegative(),
+  currency: z.string(),
+  transactionId: z.string().optional(),
+  voucherReference: z.string().optional(),
+});
+
+export const ConfirmBankTransferInputSchema = z.object({
+  paymentId: z.string(),
+  voucherReference: z.string().min(3, 'Bank voucher or transfer reference is required'),
+  notes: z.string().max(500).optional(),
+});
+
+export const ConfirmBankTransferResultSchema = z.object({
+  success: z.boolean(),
+  paymentId: z.string(),
+  orderId: z.string(),
+  orderNumber: z.string(),
+  status: PaymentStatusSchema,
+  voucherReference: z.string(),
+  confirmationUrl: z.string(),
+});
+
+export const SimulateBankSettlementInputSchema = z.object({
+  paymentId: z.string(),
+  action: z.enum(['SETTLE', 'FAIL', 'REFUND']),
+  reason: z.string().optional(),
+  amountCents: z.number().int().positive().optional(),
+});
+
+export const SimulateBankSettlementResultSchema = z.object({
+  success: z.boolean(),
+  paymentId: z.string(),
+  newStatus: PaymentStatusSchema,
+  transactionId: z.string().optional(),
+  message: z.string(),
+});
+
+export const PaymentWebhookPayloadSchema = z.object({
+  provider: PaymentProviderSchema,
+  signature: z.string(),
+  payload: z.record(z.string(), z.unknown()),
+});
+
+export const RefundPaymentInputSchema = z.object({
+  paymentId: z.string(),
+  amountCents: z.number().int().positive(),
+  reason: z.string().min(5, 'Reason must be at least 5 characters'),
+});
+
+export type PaymentProviderDto = z.infer<typeof PaymentProviderSchema>;
+export type PaymentIntentDto = z.infer<typeof PaymentIntentDtoSchema>;
+export type InitiatePaymentInputDto = z.infer<typeof InitiatePaymentInputSchema>;
+export type InitiatePaymentResultDto = z.infer<typeof InitiatePaymentResultSchema>;
+export type ConfirmBankTransferInputDto = z.infer<typeof ConfirmBankTransferInputSchema>;
+export type ConfirmBankTransferResultDto = z.infer<typeof ConfirmBankTransferResultSchema>;
+export type SimulateBankSettlementInputDto = z.infer<typeof SimulateBankSettlementInputSchema>;
+export type SimulateBankSettlementResultDto = z.infer<typeof SimulateBankSettlementResultSchema>;
+export type PaymentWebhookPayloadDto = z.infer<typeof PaymentWebhookPayloadSchema>;
+export type RefundPaymentInputDto = z.infer<typeof RefundPaymentInputSchema>;

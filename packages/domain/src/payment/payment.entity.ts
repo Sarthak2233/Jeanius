@@ -7,16 +7,19 @@ import { Money } from '../common/money.vo.js';
 import type { PaymentStatus } from '../order/order.entity.js';
 import { DomainError } from '../errors/index.js';
 
-export type PaymentProvider = 'STRIPE' | 'ESEWA' | 'KHALTI' | 'FONEPAY';
+export type PaymentProvider = 'BANK_TRANSFER' | 'STRIPE' | 'ESEWA' | 'KHALTI' | 'FONEPAY';
 
 export interface PaymentProps {
   readonly id: PaymentId;
   readonly orderId: OrderId;
   readonly amount: Money;
+  readonly settlementAmount?: Money;
   readonly provider: PaymentProvider;
   readonly status?: PaymentStatus;
   readonly transactionId?: string;
+  readonly voucherReference?: string;
   readonly idempotencyKey: string;
+  readonly notes?: string;
   readonly refundedAmount?: Money;
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
@@ -26,10 +29,13 @@ export class Payment {
   readonly id: PaymentId;
   readonly orderId: OrderId;
   readonly amount: Money;
+  readonly settlementAmount: Money;
   readonly provider: PaymentProvider;
   private _status: PaymentStatus;
   private _transactionId?: string;
+  private _voucherReference?: string;
   readonly idempotencyKey: string;
+  private _notes?: string;
   private _refundedAmount: Money;
   readonly createdAt: Date;
   private _updatedAt: Date;
@@ -42,10 +48,13 @@ export class Payment {
     this.id = props.id;
     this.orderId = props.orderId;
     this.amount = props.amount;
+    this.settlementAmount = props.settlementAmount ?? props.amount;
     this.provider = props.provider;
     this._status = props.status ?? 'INITIATED';
     this._transactionId = props.transactionId;
+    this._voucherReference = props.voucherReference;
     this.idempotencyKey = props.idempotencyKey.trim();
+    this._notes = props.notes;
     this._refundedAmount = props.refundedAmount ?? Money.zero(props.amount.currency);
     this.createdAt = props.createdAt ?? new Date();
     this._updatedAt = props.updatedAt ?? new Date();
@@ -59,12 +68,38 @@ export class Payment {
     return this._transactionId;
   }
 
+  get voucherReference(): string | undefined {
+    return this._voucherReference;
+  }
+
+  get notes(): string | undefined {
+    return this._notes;
+  }
+
   get refundedAmount(): Money {
     return this._refundedAmount;
   }
 
   get updatedAt(): Date {
     return this._updatedAt;
+  }
+
+  markPending(transactionId: string, notes?: string, voucherReference?: string): void {
+    if (this._status === 'PAID') {
+      throw new DomainError('Cannot mark an already paid payment as pending');
+    }
+    if (this._status === 'FAILED' || this._status === 'EXPIRED') {
+      throw new DomainError(`Cannot mark payment with status ${this._status} as pending`);
+    }
+    this._transactionId = transactionId;
+    if (voucherReference !== undefined) {
+      this._voucherReference = voucherReference;
+    }
+    if (notes !== undefined) {
+      this._notes = notes;
+    }
+    this._status = 'PENDING';
+    this._updatedAt = new Date();
   }
 
   settle(transactionId: string): void {

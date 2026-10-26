@@ -104,6 +104,15 @@ export type InventoryReservationExpiredEvent = DomainEvent<{
 
 // ================= Payment Events =================
 
+export type PaymentPendingEvent = DomainEvent<{
+  readonly paymentId: PaymentId;
+  readonly orderId: OrderId;
+  readonly amount: Money;
+  readonly provider: string;
+  readonly transactionId: string;
+  readonly notes?: string;
+}>;
+
 export type PaymentSettledEvent = DomainEvent<{
   readonly paymentId: PaymentId;
   readonly orderId: OrderId;
