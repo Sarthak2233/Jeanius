@@ -5,9 +5,9 @@ import { listPublishedContentPagesAction } from '../../actions/content.actions';
 import { createStorefrontMetadata } from '../../lib/metadata';
 
 export const metadata: Metadata = createStorefrontMetadata({
-  title: 'Atelier Stories & Archive — Jeanius Atelier',
+  title: 'Atelier Stories & Archive — Project 925',
   description:
-    'Explore craft monographs, origin journals, and atelier dispatches from Kathmandu and Seoul.',
+    'Explore craft monographs, origin journals, and atelier dispatches from Kathmandu Workshop.',
 });
 
 const CORE_STATIC_SLUGS = new Set([
@@ -271,7 +271,7 @@ export default async function AtelierArchivePage() {
                 Origins &amp; Protocol &rarr;
               </div>
               <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                About Jeanius &amp; Jewl atelier
+                About Project 925 Kathmandu workshop
               </div>
             </Link>
 
@@ -296,7 +296,7 @@ export default async function AtelierArchivePage() {
                 Precision Sizing Studio &rarr;
               </div>
               <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                Shrinkage and measurement guides
+                Ring mandrel and jewellery sizing guides
               </div>
             </Link>
 
@@ -321,7 +321,7 @@ export default async function AtelierArchivePage() {
                 Craft &amp; Care Rituals &rarr;
               </div>
               <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                Selvedge soak &amp; silver patina
+                Silver polish &amp; dark patina care
               </div>
             </Link>
 

@@ -11,12 +11,14 @@ export async function generateMetadata(): Promise<Metadata> {
     return createStorefrontMetadata({
       title: `${result.data.title} — The Atelier Protocol`,
       description:
-        result.data.metaDescription || 'Origins of Jeanius & Jewl and our Order-Made philosophy.',
+        result.data.metaDescription ||
+        'Origins of Project 925 and our Order-Made silversmithing covenant.',
     });
   }
   return createStorefrontMetadata({
-    title: 'About Jeanius & Jewl Atelier',
-    description: 'Origins of Jeanius & Jewl, our Kathmandu denim tables, and silversmithing bench.',
+    title: 'About Project 925 Kathmandu Atelier',
+    description:
+      'Origins of Project 925, our Kathmandu metalsmithing bench, and .925 sterling silver lost-wax casting.',
   });
 }
 
@@ -45,7 +47,7 @@ export default async function AboutPage() {
             marginBottom: '0.75rem',
           }}
         >
-          ATELIER ORIGINS &amp; OPERATIONAL RULES
+          KATHMANDU WORKSHOP · ATELIER ORIGINS &amp; OPERATIONAL RULES
         </div>
 
         {page ? (
@@ -61,12 +63,11 @@ export default async function AboutPage() {
                 marginBottom: '1.5rem',
               }}
             >
-              About Jeanius &amp; Jewl Atelier
+              About Project 925 Kathmandu Atelier
             </h1>
             <p style={{ color: '#475569', lineHeight: 1.75, fontSize: '1.1rem' }}>
-              Founded on the uncompromising intersection of heritage denim tailoring and artisanal
-              silversmithing. We operate between two dedicated workshops: our denim cutting tables
-              in Kathmandu and our jewellery bench in Seoul.
+              Founded on the uncompromising craft of Himalayan lost-wax casting and hand-carved .925
+              sterling silver talismanic jewellery. We operate strictly from our Kathmandu workshop.
             </p>
           </div>
         )}
@@ -119,7 +120,7 @@ export default async function AboutPage() {
               border: '1px solid #cbd5e1',
             }}
           >
-            Read Selvedge Care Rituals
+            Read Silver Care &amp; Patina Rituals
           </Link>
         </div>
       </article>

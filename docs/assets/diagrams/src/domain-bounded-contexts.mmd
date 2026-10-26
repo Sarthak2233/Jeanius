@@ -1,15 +1,15 @@
 graph TD
     subgraph Core Commerce Contexts
-        Catalog["Catalog and Product<br/>• Denim & Jewellery, Options, Variants"]
+        Catalog["Catalog and Product<br/>• .925 Sterling Silver, Options, Variants, Dynamic Categories"]
         Cart["Cart and Checkout<br/>• CartLines, Currency, Taxes"]
         Order["Order Management<br/>• Orders, Lines, Snapshot"]
         Payment["Payment and Reconciliation<br/>• PaymentIntents, Webhooks"]
     end
 
     subgraph Operations and Fulfillment Contexts
-        Production["OM Workshop Operations<br/>• 8 Stages, Cut & Bench Tickets, Artisans"]
-        Inventory["DROP Inventory<br/>• Physical Stock, Reservations"]
-        Shipping["Shipment and Logistics<br/>• Waybills, Tracking, Carriers"]
+        Production["OM Workshop Operations<br/>• 8 Stages, Bench Tickets, Jewellers (Kathmandu Workshop)"]
+        Inventory["DROP Inventory<br/>• Physical Silver Stock, Reservations"]
+        Shipping["Shipment and Logistics<br/>• Waybills, Tracking, HS 7113.11"]
     end
 
     subgraph Customer and Community Contexts
@@ -19,7 +19,7 @@ graph TD
 
     Cart -->|References Variant| Catalog
     Order -->|Created from| Cart
-    Order -->|Snapshots Price and Fit| Catalog
+    Order -->|Snapshots Price and Specs| Catalog
     Payment -->|Authorizes and Settles| Order
     Production -->|Fulfills OM Lines| Order
     Inventory -->|Fulfills DROP Lines| Order

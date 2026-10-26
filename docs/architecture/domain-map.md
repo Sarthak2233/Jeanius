@@ -1,8 +1,8 @@
-# JEANIUS & JEWL — DOMAIN MAP & ARCHITECTURAL BOUNDARIES (JN-016 to JN-019)
+# PROJECT 925 — DOMAIN MAP & ARCHITECTURAL BOUNDARIES (JN-016 to JN-019)
 
 ## 1. Subdomain Map & Bounded Contexts (JN-016)
 
-The Jeanius & Jewl platform is architected as a **Domain-Driven Design (DDD) Modular Monolith**. Business capabilities are decomposed into 8 distinct Bounded Contexts, each maintaining its own ubiquitous language, domain models, and business invariants:
+Project 925 is architected as a **Domain-Driven Design (DDD) Modular Monolith**. Business capabilities are decomposed into 8 distinct Bounded Contexts, each maintaining its own ubiquitous language, domain models, and business invariants:
 
 ![Domain Bounded Contexts](../assets/diagrams/domain-bounded-contexts.svg)
 
@@ -12,16 +12,16 @@ The Jeanius & Jewl platform is architected as a **Domain-Driven Design (DDD) Mod
 ```mermaid
 graph TD
     subgraph Core Commerce Contexts
-        Catalog["Catalog and Product<br/>• Denim & Jewellery, Options, Variants"]
+        Catalog["Catalog and Product<br/>• .925 Sterling Silver, Options, Variants, Dynamic Categories"]
         Cart["Cart and Checkout<br/>• CartLines, Currency, Taxes"]
         Order["Order Management<br/>• Orders, Lines, Snapshot"]
         Payment["Payment and Reconciliation<br/>• PaymentIntents, Webhooks"]
     end
 
     subgraph Operations and Fulfillment Contexts
-        Production["OM Workshop Operations<br/>• 8 Stages, Cut & Bench Tickets, Artisans"]
-        Inventory["DROP Inventory<br/>• Physical Stock, Reservations"]
-        Shipping["Shipment and Logistics<br/>• Waybills, Tracking, Carriers"]
+        Production["OM Workshop Operations<br/>• 8 Stages, Bench Tickets, Jewellers (Kathmandu Workshop)"]
+        Inventory["DROP Inventory<br/>• Physical Silver Stock, Reservations"]
+        Shipping["Shipment and Logistics<br/>• Waybills, Tracking, HS 7113.11"]
     end
 
     subgraph Customer and Community Contexts
@@ -31,7 +31,7 @@ graph TD
 
     Cart -->|References Variant| Catalog
     Order -->|Created from| Cart
-    Order -->|Snapshots Price and Fit| Catalog
+    Order -->|Snapshots Price and Specs| Catalog
     Payment -->|Authorizes and Settles| Order
     Production -->|Fulfills OM Lines| Order
     Inventory -->|Fulfills DROP Lines| Order
@@ -49,13 +49,13 @@ graph TD
 
 | Bounded Context | Core Responsibility | Key Domain Entities & Value Objects | Upstream Dependencies |
 | :--- | :--- | :--- | :--- |
-| **Catalog & Product** | Product catalog management, fit configurations, fabric specs, and scheduled releases. | `Product`, `ProductOption`, `OptionValue`, `Variant`, `ScheduledRelease` | None (Independent) |
+| **Catalog & Product** | Product catalog management, dynamic categories, ring/cuff/chain sizing options, and scheduled releases. | `Product`, `Category`, `ProductOption`, `OptionValue`, `Variant`, `ScheduledRelease` | None (Independent) |
 | **Cart & Checkout** | Ephemeral shopping session state, line configuration validation, tax & currency conversion. | `Cart`, `CartLine`, `Money`, `SelectedOptions` | Catalog (Read-Only) |
 | **Order Management** | Authoritative commercial contracts formed after payment, immutable item snapshots. | `Order`, `OrderLine`, `ShippingAddress`, `OrderStatus` | Cart, Payment, Customer |
 | **Payment & Billing** | Multi-rail payment intents (Stripe USD / eSewa NPR), webhook processing, financial audit. | `PaymentIntent`, `PaymentTransaction`, `ReconciliationRecord` | Order (Amount & Reference) |
-| **OM Manufacturing** | Workshop job queuing across 8 artisanal stations, Cut Ticket generation, tailor assignment. | `ProductionJob`, `ProductionStage`, `CutTicket`, `Artisan`, `DefectLog` | Order (OM Lines) |
+| **OM Manufacturing** | Workshop job queuing across 8 artisanal bench stations, Bench Ticket generation, jeweller assignment. | `ProductionJob`, `ProductionStage`, `BenchTicket`, `Artisan`, `DefectLog` | Order (OM Lines) |
 | **DROP Inventory** | Pre-manufactured batch inventory staging, atomic reservations, warehouse restock. | `InventoryItem`, `StockReservation`, `BatchCount` | Order (DROP Lines) |
-| **Shipment & Logistics**| Courier waybill registration (DHL/Aramex/Nepal Post), international customs, tracking. | `Shipment`, `Waybill`, `CarrierTracking`, `CustomsDeclaration` | Production, Inventory |
+| **Shipment & Logistics**| Courier waybill registration (DHL/Aramex/Nepal Post), international customs (HS 7113.11), tracking. | `Shipment`, `Waybill`, `CarrierTracking`, `CustomsDeclaration` | Production, Inventory |
 | **Customer & Member** | Account security, authentication profiles, Together drop authorization privileges. | `CustomerProfile`, `MembershipTier`, `AccessPermission` | None |
 | **Support & Inquiries** | Bespoke custom-order quotes, Instagram inquiry routing, SLA escalation tracking. | `CustomOrderInquiry`, `BespokeQuote`, `SupportTicket` | Customer, Order |
 
@@ -69,7 +69,7 @@ To preserve modularity and prevent the monorepo from decaying into a "big ball o
 
 | Upstream Context | Downstream Context | Relationship Pattern | Integration Mechanism |
 | :--- | :--- | :--- | :--- |
-| **Catalog** | **Cart & Checkout** | Customer / Supplier | Direct read via `ICatalogQueryService` |
+| **Catalog** | **Cart & Checkout** | Customer / Supplier | Direct read via `ICatalogQueryService` & `ICategoryRepository` |
 | **Cart** | **Order Management** | Customer / Supplier | Cart converted to immutable Order via `CreateOrder` use case |
 | **Order Management** | **OM Manufacturing** | Shared Kernel (Order IDs) | Dispatched via `OrderPaidDomainEvent` |
 | **Order Management** | **DROP Inventory** | Customer / Supplier | Atomic reservation confirmed upon `OrderPaidDomainEvent` |
@@ -79,14 +79,14 @@ To preserve modularity and prevent the monorepo from decaying into a "big ball o
 
 ### B. Forbidden Architectural Dependencies
 1. **No Circular Imports:** Under no circumstances may `Order Management` import from `Shipment` or `Payment` directly. Information flows downstream or through domain events.
-2. **Immutable Snapshots over Live Joins:** The `Order` domain **never** joins live product pricing from `Catalog`. When an order is placed, an immutable `OrderLineSnapshot` freezes the title, SKU, fit dimensions, selected options, fabric weight, and price in minor units. Future price edits to the catalog cannot mutate historical orders.
+2. **Immutable Snapshots over Live Joins:** The `Order` domain **never** joins live product pricing from `Catalog`. When an order is placed, an immutable `OrderLineSnapshot` freezes the title, SKU, sizing dimensions, selected options, finish, alloy, and price in minor units. Future price edits to the catalog cannot mutate historical orders.
 3. **Domain Event Decoupling:** Cross-context state updates (such as an order advancing to production upon payment confirmation) are coordinated through typed `DomainEvent` handlers within `packages/application`, rather than direct transactional database cross-writes.
 
 ---
 
 ## 3. Architectural Boundaries & Port/Adapter Inversion of Control (JN-018)
 
-Jeanius strictly adheres to **Clean Architecture** (Hexagonal Architecture / Ports & Adapters) to protect core business logic from framework and infrastructure changes:
+Project 925 strictly adheres to **Clean Architecture** (Hexagonal Architecture / Ports & Adapters) to protect core business logic from framework and infrastructure changes:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -94,7 +94,7 @@ Jeanius strictly adheres to **Clean Architecture** (Hexagonal Architecture / Por
 │  apps/storefront (Next.js 15)            apps/admin (Next.js 15)       │
 │  • React Server Components (RSC)         • Operations Kanban Board     │
 │  • Server Actions ("use server")         • Workshop Stage Advance      │
-│  • Route Handlers (Webhooks)             • Tailor Terminal             │
+│  • Route Handlers (Webhooks)             • Jeweller Terminal           │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
                                     ▼
@@ -103,8 +103,9 @@ Jeanius strictly adheres to **Clean Architecture** (Hexagonal Architecture / Por
 │  packages/application                                                  │
 │  • Use Cases: Checkout, AdvanceProductionStage, RegisterShipment       │
 │  • Inbound/Outbound Ports (Interfaces):                                │
-│    - IProductRepository       - IOrderRepository                       │
-│    - IPaymentGateway          - IShipmentCarrierAdapter                │
+│    - IProductRepository       - ICategoryRepository                    │
+│    - IOrderRepository         - IPaymentGateway                        │
+│    - IShipmentCarrierAdapter                                           │
 └───────────────────┬────────────────────────────────▲───────────────────┘
                     │                                │
                     ▼                                │ (Implements Ports)
@@ -171,11 +172,11 @@ graph LR
 | Runtime Layer | Directive / Convention | Permitted Responsibilities | Prohibited Actions |
 | :--- | :--- | :--- | :--- |
 | **Server Components (RSC)** | Default (No directive) | Database queries via Application layer, SEO metadata, reading session cookies, static HTML streaming. | `useState`, `useEffect`, event listeners (`onClick`), mutating data directly. |
-| **Client Components** | `"use client"` | 3D garment fit customizer, interactive cart drawer, Zustand subscriptions, drag-and-drop Kanban. | Direct SQL queries, importing server secrets, holding authoritative business logic. |
+| **Client Components** | `"use client"` | Interactive jewellery configurator, cart drawer, Zustand subscriptions, drag-and-drop Kanban. | Direct SQL queries, importing server secrets, holding authoritative business logic. |
 | **Server Actions** | `"use server"` | Form submissions, cart mutations, workshop stage advance, checkout initiation, path revalidation. | Returning raw database rows without DTO mapping, executing unvalidated inputs. |
 | **Route Handlers** | `app/api/*/route.ts` | External provider webhooks (Stripe, eSewa, DHL), public sitemaps, RSS feeds. | Internal UI data fetching (use RSC instead to eliminate roundtrips). |
 
 ### Caching & Revalidation Strategy
-1. **Dynamic Workshop State:** Admin operational dashboards bypass Data Cache (`dynamic = 'force-dynamic'`) to ensure workshop tailors view real-time stage progression.
+1. **Dynamic Workshop State:** Admin operational dashboards bypass Data Cache (`dynamic = 'force-dynamic'`) to ensure workshop jewellers view real-time stage progression.
 2. **Product Catalog:** Editorial product pages utilize ISR (`revalidate = 3600`) with targeted tag revalidation (`revalidateTag('catalog')`) triggered by Admin product updates.
 3. **Cart & Checkout:** Strictly dynamic per-user session, managed authoritatively via Server Actions and persisted via encrypted session cookies or Supabase database records.

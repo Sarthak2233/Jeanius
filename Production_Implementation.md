@@ -23,10 +23,10 @@ Below is the kind of **Production Implementation Master Roadmap** I would use.
 
 ---
 
-# JEANIUS & JEWL — PRODUCTION IMPLEMENTATION MASTER TODO
+# PROJECT 925 — PRODUCTION IMPLEMENTATION MASTER TODO
 
-**Product:** Jeanius & Jewl
-**Target:** Production-ready global handmade raw denim and handcrafted artisan jewellery commerce platform
+**Product:** Project 925 (Kathmandu Workshop Only)
+**Target:** Production-ready global Kathmandu-based .925 sterling silver artisan jewellery commerce platform
 **Architecture:** DDD modular monolith in a Turborepo monorepo
 **Frontend:** Next.js App Router + TypeScript
 **Database:** Supabase PostgreSQL + Drizzle ORM
@@ -58,7 +58,7 @@ Turn the product specification into an implementation contract before writing fe
 | JN-007 | Define product lifecycle              | Draft → Scheduled → Published → Sold Out → Archived.                                     | DONE        |
 | JN-008 | Define variant lifecycle              | Available → Sold Out → Disabled → Archived.                                              | DONE        |
 | JN-009 | Define payment lifecycle              | Initiated → Pending → Paid/Failed/Expired → Refunded/Partially Refunded.                 | DONE        |
-| JN-010 | Define production lifecycle           | Queued → Cutting → Sewing → Washing → Hardware → QC → Ready → Shipped.                   | DONE        |
+| JN-010 | Define production lifecycle           | Queued → Casting → Setting → Patina → Polishing → QC → Ready → Shipped.                   | DONE        |
 | JN-011 | Define shipment lifecycle             | Pending → Packed → Shipped → In Transit → Delivered → Returned.                          | DONE        |
 | JN-012 | Define return/refund lifecycle        | Requested → Approved/Rejected → Processing → Completed.                                  | DONE        |
 | JN-013 | Define membership/access model        | Public, authenticated and protected/member-only states.                                  | DONE        |
@@ -352,32 +352,33 @@ Implement the restrained Jeanius & Jewl visual language before feature UI.
 | JN-159 | Add announcement scheduling   | Start/end dates.                 | DONE   |
 | JN-160 | Build About content           | Brand story.                     | DONE   |
 | JN-161 | Build Guide content           | OM/DROP/shipping education.      | DONE   |
-| JN-162 | Build Sizing content          | Measurement guidance (Decoupled Garment & Jewellery Vault, Modern Tailor Points A–Q and 1–13, Ease Matrix, and Ring Mandrels). | DONE   |
+| JN-162 | Build Sizing content          | Measurement guidance (Project 925 Jewellery Sizing Studio & Vault, Ring Mandrel, Wide Shank Compensator, Cuff Wrist Gap, Chain Drape, and Patina). | DONE   |
 | JN-163 | Build Contact content         | Support instructions.            | DONE   |
 | JN-164 | Build return/refund content   | Policy pages.                    | DONE   |
 | JN-165 | Build legal content           | Terms/privacy/etc.               | DONE   |
 | JN-166 | Add content publishing state  | Draft/published/archived.        | DONE   |
 | JN-167 | Add content preview           | Admin preview before publishing. | DONE   |
 
-**Stage 08 Craft Architecture Highlights:**
-- **Decoupled Craft Focus (`GARMENT`, `JEWELLERY`, `DUAL_CRAFT`):** Users configure independent sizing profiles with atomic save/clear operations.
-- **Modern Tailor Lower Body (Points A–Q):** Waist, hips, thigh, knee, hem, rises, crotch total, calf, ankle, and posture profiles with Kurabo loomstate shrinkage buffer (+3%).
-- **Modern Tailor Upper Body (Points 1–13):** Collar, chest, waist, stomach, hips, shoulder, yoke, sleeves, bicep, cuffs, armhole, lengths, and female dart mapping (Breast Point, Waist Point, Front Bust).
-- **Fit Ease Matrix & Standard Size Tables:** Modern Tailor ease formulas (Slim: +12cm, Normal: +16cm/+4cm/-2cm, Loose: +20cm/+8cm/-4cm) and finished shirt European size tables (XS–XXL).
-- **Solid 925 Jewellery Calibration:** International mandrel table (US 5.0–13.0) and wide-shank compensator (+0.5 US for ≥8mm bands).
+**Stage 08 Craft Architecture Highlights (Project 925):**
+- **Jewellery Sizing Studio & Vault (`jewellery_preferences`):** Users configure and store verified jewellery specifications with atomic save/clear operations.
+- **Ring Mandrel Calibrator (US 3.0–16.0):** Quarter-size increments mapped to inner diameter (mm) and inner circumference (mm).
+- **Wide Shank Compensator (+0.5 US):** Algorithmic adjustment applied for wide bands (≥6mm) ensuring knuckle clearance.
+- **Heavy Cuff Wrist Gap:** Wrist circumference measurement guide and recommended 1.0"–1.5" open gap for solid silver cuffs.
+- **Chain Drape Visualizer:** Length guidance for collar (18"), mid-chest (20"–22"), and heavy talisman drape (24"–28").
+- **Surface Patina Guide:** High Mirror Buffed, Antiqued Sulfur Patina, and Raw Cast / Brushed Matte.
 - **Auto-Fill Engine:** Resolves customizer defaults from saved vault specifications for zero-friction made-to-order ordering.
 
 ---
 
 # STATE 09 — PRODUCT CATALOG
 
-This is one of the most important Jeanius and Jewels domains.
+This is one of the most important Project 925 domains.
 
 | ID     | Task                          | Description                          | Status    |
 | ------ | ----------------------------- | ------------------------------------ | --------- |
 | JN-168 | Build product repository      | Product retrieval.                   | COMPLETED |
 | JN-169 | Build product listing         | Catalog page.                        | COMPLETED |
-| JN-170 | Build category system         | Bottoms/Tops/Accessories etc.        | COMPLETED |
+| JN-170 | Build category system         | Dynamic categories (Rings/Pendants/Cuffs/Chains & Admin CRUD). | COMPLETED |
 | JN-171 | Build product status          | Available/sold-out/hidden/scheduled. | COMPLETED |
 | JN-172 | Build OM product type         | Made-to-order semantics.             | COMPLETED |
 | JN-173 | Build DROP product type       | Ready-to-ship semantics.             | COMPLETED |
@@ -396,27 +397,27 @@ This is one of the most important Jeanius and Jewels domains.
 
 Make the configurable product experience the central commerce capability.
 
-| ID     | Task                               | Description                                         | Status      |
-| ------ | ---------------------------------- | --------------------------------------------------- | ----------- |
-| JN-180 | Build product detail route         | `/shop/[slug]`.                                     | NOT_STARTED |
-| JN-181 | Build product gallery              | Responsive image gallery.                           | NOT_STARTED |
-| JN-182 | Build product facts                | Denim weight, metal alloy, craft specs.             | NOT_STARTED |
-| JN-183 | Build shipping information         | Production + shipping expectations.                 | NOT_STARTED |
-| JN-184 | Build OM/DROP indicator            | Clearly distinguish commerce models.                | NOT_STARTED |
-| JN-185 | Build option schema loader         | Retrieve configurable options.                      | NOT_STARTED |
-| JN-186 | Build configurator state           | Zustand product configuration store.                | NOT_STARTED |
-| JN-187 | Build required-option validation   | Prevent incomplete purchases.                       | NOT_STARTED |
-| JN-188 | Build compatible-value calculation | Recalculate available options.                      | NOT_STARTED |
-| JN-189 | Build unavailable option state     | Disable invalid combinations.                       | NOT_STARTED |
-| JN-190 | Build variant resolution           | Resolve exact configuration to variant.             | NOT_STARTED |
-| JN-191 | Build dynamic pricing              | Apply option price deltas.                          | NOT_STARTED |
-| JN-192 | Build quantity control             | Quantity validation.                                | NOT_STARTED |
-| JN-193 | Build configuration summary        | Show exact selected options.                        | NOT_STARTED |
-| JN-194 | Build Buy Now                      | Direct checkout initiation.                         | NOT_STARTED |
-| JN-195 | Build Add to Cart                  | Add exact configuration.                            | NOT_STARTED |
-| JN-196 | Persist configuration              | Preserve state across navigation where appropriate. | NOT_STARTED |
-| JN-197 | Validate configuration server-side | Never trust client selection.                       | NOT_STARTED |
-| JN-198 | Test configuration matrix          | Comprehensive combination tests.                    | NOT_STARTED |
+| ID     | Task                               | Description                                         | Status    |
+| ------ | ---------------------------------- | --------------------------------------------------- | --------- |
+| JN-180 | Build product detail route         | `/shop/[slug]`.                                     | COMPLETED |
+| JN-181 | Build product gallery              | Responsive image gallery.                           | COMPLETED |
+| JN-182 | Build product facts                | Silver purity (.925), weight in grams, craft specs. | COMPLETED |
+| JN-183 | Build shipping information         | Production + shipping expectations.                 | COMPLETED |
+| JN-184 | Build OM/DROP indicator            | Clearly distinguish commerce models.                | COMPLETED |
+| JN-185 | Build option schema loader         | Retrieve configurable options.                      | COMPLETED |
+| JN-186 | Build configurator state           | Zustand product configuration store.                | COMPLETED |
+| JN-187 | Build required-option validation   | Prevent incomplete purchases.                       | COMPLETED |
+| JN-188 | Build compatible-value calculation | Recalculate available options.                      | COMPLETED |
+| JN-189 | Build unavailable option state     | Disable invalid combinations.                       | COMPLETED |
+| JN-190 | Build variant resolution           | Resolve exact configuration to variant.             | COMPLETED |
+| JN-191 | Build dynamic pricing              | Apply option price deltas.                          | COMPLETED |
+| JN-192 | Build quantity control             | Quantity validation.                                | COMPLETED |
+| JN-193 | Build configuration summary        | Show exact selected options.                        | COMPLETED |
+| JN-194 | Build Buy Now                      | Direct checkout initiation.                         | COMPLETED |
+| JN-195 | Build Add to Cart                  | Add exact configuration.                            | COMPLETED |
+| JN-196 | Persist configuration              | Preserve state across navigation where appropriate. | COMPLETED |
+| JN-197 | Validate configuration server-side | Never trust client selection.                       | COMPLETED |
+| JN-198 | Test configuration matrix          | Comprehensive combination tests.                    | COMPLETED |
 
 ---
 
@@ -437,16 +438,16 @@ apps/storefront/
 
 | ID     | Task                                 | Description                                         | Status      |
 | ------ | ------------------------------------ | --------------------------------------------------- | ----------- |
-| JN-199 | Create Cart store                    | Cart UI/client state.                               | NOT_STARTED |
-| JN-200 | Create Configurator store            | Product configuration state.                        | NOT_STARTED |
-| JN-201 | Create UI store                      | Drawer/search/modal state where useful.             | NOT_STARTED |
-| JN-202 | Define store selectors               | Prevent unnecessary rerenders.                      | NOT_STARTED |
-| JN-203 | Define persistence strategy          | Persist appropriate guest cart/configuration state. | NOT_STARTED |
-| JN-204 | Implement guest cart persistence     | Local/browser persistence.                          | NOT_STARTED |
-| JN-205 | Implement authenticated cart sync    | Server-backed cart synchronization.                 | NOT_STARTED |
-| JN-206 | Implement guest/login cart merge     | Explicit merge policy.                              | NOT_STARTED |
-| JN-207 | Prevent server/client state mismatch | Hydration-safe implementation.                      | NOT_STARTED |
-| JN-208 | Test store behavior                  | Unit tests for cart/configurator.                   | NOT_STARTED |
+| JN-199 | Create Cart store                    | Cart UI/client state.                               | COMPLETED   |
+| JN-200 | Create Configurator store            | Product configuration state.                        | COMPLETED   |
+| JN-201 | Create UI store                      | Drawer/search/modal state where useful.             | COMPLETED   |
+| JN-202 | Define store selectors               | Prevent unnecessary rerenders.                      | COMPLETED   |
+| JN-203 | Define persistence strategy          | Persist appropriate guest cart/configuration state. | COMPLETED   |
+| JN-204 | Implement guest cart persistence     | Local/browser persistence.                          | COMPLETED   |
+| JN-205 | Implement authenticated cart sync    | Server-backed cart synchronization.                 | COMPLETED   |
+| JN-206 | Implement guest/login cart merge     | Explicit merge policy.                              | COMPLETED   |
+| JN-207 | Prevent server/client state mismatch | Hydration-safe implementation.                      | COMPLETED   |
+| JN-208 | Test store behavior                  | Unit tests for cart/configurator.                   | COMPLETED   |
 
 **Important distinction:** Zustand should manage **client interaction state**. It should **not** become the authoritative source of product price, inventory, variant availability or order state.
 
@@ -577,29 +578,29 @@ PaymentOrchestrator
 
 ---
 
-# STATE 17 — OM MANUFACTURING PIPELINE (TAILOR & JEWELLER WORKSHOP)
+# STATE 17 — OM MANUFACTURING PIPELINE (JEWELLER WORKSHOP)
 
-This is what differentiates Jeanius & Jewl from a generic ecommerce implementation. Scoped for the `TAILOR` (denim atelier) and `JEWELLER` (metalsmith bench atelier) craftsman actors in Kathmandu.
+This is what differentiates Project 925 from a generic ecommerce implementation. Scoped for the `JEWELLER` (metalsmith bench atelier) craftsman actor in the Kathmandu Workshop only.
 
 | ID     | Task                                | Description                                               | Status      |
 | ------ | ----------------------------------- | --------------------------------------------------------- | ----------- |
-| JN-284 | Create ProductionJob                | Manufacturing work order entity supporting CutTicket & BenchTicket. | NOT_STARTED |
-| JN-285 | Freeze production specification     | Exact customer configuration & pattern measurements (denim waist/inseam, ring mandrel size, metal alloy). | NOT_STARTED |
-| JN-286 | Create production queues            | Dual workshop manufacturing queues for `TAILOR` and `JEWELLER`. | NOT_STARTED |
-| JN-287 | Build Cutting & Casting stages      | Point of no return: pattern cut ticket & bolt allocation (denim) vs. casting grain allocation & mold prep (jewellery). | NOT_STARTED |
-| JN-288 | Build Sewing & Setting stages       | Assembly workflow: chainstitch construction (denim) vs. stone setting, sizing & hallmark stamping (jewellery). | NOT_STARTED |
-| JN-289 | Build Washing & Patina stages       | Surface treatment: raw rinse / one-wash (denim) vs. chemical oxidation / heat patina tempering (jewellery). | NOT_STARTED |
-| JN-290 | Build Hardware & Polishing stages   | Finishing details: rivets & copper buttons (denim) vs. rotary buffing & mirror/matte polish (jewellery). | NOT_STARTED |
-| JN-291 | Build QC stage                      | Quality inspection: dimensional tolerance (±0.25") for denim vs. weight (g), ring sizing, & hallmark audit for jewellery. | NOT_STARTED |
-| JN-292 | Build Ready stage                   | Handover packaging: dustproof canvas bags (denim) vs. protective velvet/wooden presentation boxes (jewellery). | NOT_STARTED |
-| JN-293 | Build production status transitions | Controlled dual state machines (`Queued` to `Ready`).     | NOT_STARTED |
-| JN-294 | Calculate production deadline       | Configurable lead time/calendar per craft vertical (Nepal holidays). | NOT_STARTED |
-| JN-295 | Support production notes            | Internal craftsman notes: tailor garment notes & jeweller bench notes. | NOT_STARTED |
-| JN-296 | Track production timestamps         | Stage start/completion telemetry across tailoring stations and silversmith benches. | NOT_STARTED |
-| JN-297 | Track production delays             | Delay logging & defect tagging (`TAILOR` fabric flaws vs. `JEWELLER` casting porosity / inclusions). | NOT_STARTED |
-| JN-298 | Build craftsman floor board         | Dual touch tablet board for `TAILOR` and `JEWELLER` in `apps/admin/workshop`. | NOT_STARTED |
-| JN-299 | Build order-to-production link      | Traceability linking order lines to CutTickets & BenchTickets. | NOT_STARTED |
-| JN-300 | Test production transitions         | Valid/invalid state changes & role permission checks for `TAILOR` and `JEWELLER`. | NOT_STARTED |
+| JN-284 | Create ProductionJob                | Manufacturing work order entity supporting BenchTicket.   | NOT_STARTED |
+| JN-285 | Freeze production specification     | Exact customer configuration (US ring mandrel size, wide shank, wrist gap, metal alloy, patina finish). | NOT_STARTED |
+| JN-286 | Create production queues            | Workshop manufacturing queue for `JEWELLER` at the Kathmandu bench. | NOT_STARTED |
+| JN-287 | Build Casting stage                 | Point of no return: casting grain allocation, wax flask burnout & centrifugal silver pour. | NOT_STARTED |
+| JN-288 | Build Setting stage                 | Assembly workflow: sprue removal, mandrel sizing trueing, stone setting & hallmark stamping. | NOT_STARTED |
+| JN-289 | Build Patina stage                  | Surface treatment: chemical liver of sulfur oxidation & heat patina tempering. | NOT_STARTED |
+| JN-290 | Build Polishing stage               | Finishing details: rotary rouge buffing & high-mirror/brushed matte polish. | NOT_STARTED |
+| JN-291 | Build QC stage                      | Quality inspection: digital caliper tolerance (±0.1mm), weight (g), ring sizing, & hallmark audit. | NOT_STARTED |
+| JN-292 | Build Ready stage                   | Handover packaging: tarnish wrap & solid wooden presentation boxes with polishing cloth. | NOT_STARTED |
+| JN-293 | Build production status transitions | Controlled state machine (`Queued` to `Ready`).           | NOT_STARTED |
+| JN-294 | Calculate production deadline       | Configurable lead time/calendar (Nepal workshop holidays). | NOT_STARTED |
+| JN-295 | Support production notes            | Internal craftsman notes: metalsmith bench notes & inspection marks. | NOT_STARTED |
+| JN-296 | Track production timestamps         | Stage start/completion telemetry across silversmith benches. | NOT_STARTED |
+| JN-297 | Track production delays             | Delay logging & defect tagging (`JEWELLER` casting porosity / inclusions). | NOT_STARTED |
+| JN-298 | Build craftsman floor board         | Touch tablet board for `JEWELLER` in `apps/admin/workshop/jeweller`. | NOT_STARTED |
+| JN-299 | Build order-to-production link      | Traceability linking order lines to BenchTickets.         | NOT_STARTED |
+| JN-300 | Test production transitions         | Valid/invalid state changes & role permission checks for `JEWELLER`. | NOT_STARTED |
 
 ---
 
@@ -666,23 +667,23 @@ Scoped for VIP `MEMBER` collectors on `apps/storefront/member`.
 | JN-330 | Implement protected route guards   | Server-side authorization preventing media/data leakage.  | NOT_STARTED |
 | JN-331 | Implement unauthorized state       | Login/forbidden VIP acquisition UX.                       | NOT_STARTED |
 | JN-332 | Prevent protected metadata leakage | Protect member-only product schemas from public feeds.    | NOT_STARTED |
-| JN-333 | Build member early access window   | 1-hour early access countdown & fabric bolt allocation.   | NOT_STARTED |
+| JN-333 | Build member early access window   | 1-hour early access countdown & silver batch reservation.   | NOT_STARTED |
 | JN-334 | Test authorization boundaries      | Verify GUEST vs CUSTOMER vs MEMBER access boundaries.     | NOT_STARTED |
 
 ### NOTE:
 ## How Members Should Be Provisioned, Onboarded & What Features to Expose
 * **Provisioning (3 Channels):**
   1. *Automated Spend Milestone:* When an authenticated customer completes 2+ bespoke OM orders or exceeds a lifetime spend threshold, an event listener on `OrderPaidEvent` promotes `users_profile.role` to `'MEMBER'` and creates an entry in [memberships](file:///home/sarakb/projects/Jeanius/packages/database/src/schema/content.ts#L63-L84).
-  2. *Cryptographic Atelier Invite:* Physical invitation tokens enclosed in completed garment packages (or sent to VIP patrons) redeemed at `/invite` or `/vip`.
+  2. *Cryptographic Atelier Invite:* Physical invitation tokens enclosed in completed jewellery boxes (or sent to VIP patrons) redeemed at `/invite` or `/vip`.
   3. *Admin Workbench:* Studio managers in `apps/admin` can promote high-value clients directly from the Workshop workbench.
 * **Onboarding:**
   * Collector profile receives the amber star (`★`) badge in the header and account badge.
-  * Personal measurement profile (Points A through Q, ring mandrel diameter) is locked as an active atelier cutting template.
+  * Personal jewellery sizing profile (US ring mandrel diameter, wide shank, wrist gap) is locked as an active atelier bench template.
 * **Exposed Member Features:**
   1. **Advance Drop Window:** 1–24 hour early purchase priority on numbered drops before general customer release ([JN-333](file:///home/sarakb/projects/Jeanius/Production_Implementation.md#L669)).
-  2. **Gated Member Lounge (`/member` or `/together/lounge`):** Access to private prototype releases, deadstock fabric reserves, and studio journals ([JN-329](file:///home/sarakb/projects/Jeanius/Production_Implementation.md#L665)).
-  3. **Direct Bespoke Studio Intake:** Expedited communication with the Kathmandu Master Cutter and Seoul Metalsmith for custom commissions.
-  4. **Complimentary Workshop Servicing:** Free round-trip shipping for garment repairs and silver maintenance.
+  2. **Gated Member Lounge (`/member` or `/together`):** Access to private prototype releases, rare talisman repoussé motifs, and Kathmandu studio journals ([JN-329](file:///home/sarakb/projects/Jeanius/Production_Implementation.md#L665)).
+  3. **Direct Bespoke Studio Intake:** Expedited communication with the Kathmandu Master Metalsmith for custom commissions.
+  4. **Complimentary Workshop Servicing:** Free round-trip shipping for ultrasonic cleaning, oxidization re-darkening, and silver maintenance.
 ---
 
 # STATE 22 — REVIEWS & PRODUCT Q&A
@@ -739,18 +740,18 @@ Scoped for VIP `MEMBER` collectors on `apps/storefront/member`.
 
 | ID     | Task                              | Description                                               | Status      |
 | ------ | --------------------------------- | --------------------------------------------------------- | ----------- |
-| JN-364 | Build admin shell & RBAC menus    | Scoped navigation trees for `TAILOR`, `JEWELLER`, `FULFILLMENT`, `SUPPORT`, `ADMIN`. | NOT_STARTED |
+| JN-364 | Build admin shell & RBAC menus    | Scoped navigation trees for `JEWELLER`, `FULFILLMENT`, `SUPPORT`, `ADMIN`. | NOT_STARTED |
 | JN-365 | Build admin authentication        | Privileged access with sub-path guards (`/admin/*`).       | NOT_STARTED |
 | JN-366 | Build product list                | Search/filter products across models (OM / DROP).         | NOT_STARTED |
 | JN-367 | Build product creation            | Create product with physical specifications.              | NOT_STARTED |
-| JN-368 | Build product editor              | Edit product story, denim mill / metal alloy, and craft specs.          | NOT_STARTED |
-| JN-369 | Build image management            | High-res selvedge macro image upload and gallery ordering.| NOT_STARTED |
-| JN-370 | Build option management           | Waist, inseam length, ring size, metal finish, hardware alloy options. | NOT_STARTED |
+| JN-368 | Build product editor              | Edit product story, silver purity (.925 Sterling Silver), and craft specs. | NOT_STARTED |
+| JN-369 | Build image management            | High-res jewellery macro image upload and gallery ordering.| NOT_STARTED |
+| JN-370 | Build option management           | Ring size, chain length, metal finish, and engraving options. | NOT_STARTED |
 | JN-371 | Build variant management          | SKU, stock limits, and price matrix.                      | NOT_STARTED |
 | JN-372 | Build OM/DROP selector            | Configure Order-Made vs. Ready-to-Ship behavior.          | NOT_STARTED |
 | JN-373 | Build scheduling                  | Scheduled publication & capsule drop countdowns.          | NOT_STARTED |
 | JN-374 | Build access-level controls       | Assign `PUBLIC`, `MEMBER`, or `INTERNAL_STAFF` visibility.| NOT_STARTED |
-| JN-375 | Build related-products management | Curated pairing (e.g. Raw Jeans + Silver Signet Ring + Wallet Chain). | NOT_STARTED |
+| JN-375 | Build related-products management | Curated pairing (e.g. Mandala Signet Ring + Cable Chain + Cuff Bracelet). | NOT_STARTED |
 | JN-376 | Build SEO editor                  | OpenGraph tags, structured JSON-LD data.                  | NOT_STARTED |
 | JN-377 | Build product preview             | Visual preview before going live.                         | NOT_STARTED |
 
@@ -763,12 +764,12 @@ Scoped for the `SUPPORT` customer care specialist and `ADMIN`.
 | ID     | Task                              | Description                                               | Status      |
 | ------ | --------------------------------- | --------------------------------------------------------- | ----------- |
 | JN-378 | Build Support Console order lookup| Search orders by customer email, name, or transaction ID. | NOT_STARTED |
-| JN-379 | Build order detail                | Full commercial, tailoring, and fulfillment context.      | NOT_STARTED |
+| JN-379 | Build order detail                | Full commercial, jewellery craft, and fulfillment context.| NOT_STARTED |
 | JN-380 | Build payment status & details    | Inspect gateway references (Stripe / eSewa) & charges.    | NOT_STARTED |
 | JN-381 | Build production status view      | Monitor live workshop stage progression.                  | NOT_STARTED |
 | JN-382 | Build shipping & split packages   | Multi-package status (Package 1 DROP vs Package 2 OM).    | NOT_STARTED |
 | JN-383 | Build support & audit notes       | Customer care history & staff-only notes.                 | NOT_STARTED |
-| JN-384 | Build pre-cutting / pre-casting cancel | Modify address/sizing or cancel *before* point of no return (`CUTTING` for denim, `CASTING` for jewellery). | NOT_STARTED |
+| JN-384 | Build pre-casting cancel          | Modify address/sizing or cancel *before* point of no return (`CASTING` for jewellery). | NOT_STARTED |
 | JN-385 | Build DROP return claim review    | Review 5-day return requests, photos, & issue refund.     | NOT_STARTED |
 | JN-386 | Build tracking management         | Manual override / update tracking carrier.                | NOT_STARTED |
 | JN-387 | Build order export                | Export compliant commercial data for customs/tax.         | NOT_STARTED |
@@ -776,25 +777,25 @@ Scoped for the `SUPPORT` customer care specialist and `ADMIN`.
 
 ---
 
-# STATE 27 — WORKSHOP FLOOR & INVENTORY (TAILOR, JEWELLER & ADMIN)
+# STATE 27 — WORKSHOP FLOOR & INVENTORY (JEWELLER & ADMIN)
 
-Scoped for `TAILOR` and `JEWELLER` craftsmen on the floor and `ADMIN` operations across both the denim atelier and jewellery silversmith bench.
+Scoped for `JEWELLER` craftsmen on the floor and `ADMIN` operations in the Kathmandu Workshop.
 
 | ID     | Task                             | Description                                               | Status      |
 | ------ | -------------------------------- | --------------------------------------------------------- | ----------- |
-| JN-389 | Build inventory dashboard        | Raw fabric bolt yardage, precious metal casting grain stocks (.925 Silver, Solid Brass, 18K Gold), and DROP stock overview. | NOT_STARTED |
-| JN-390 | Build raw inventory adjustment   | Register new fabric bolts (lengths & shrinkage) and precious metal lots (weight in grams, alloy, purity & supplier). | NOT_STARTED |
-| JN-391 | Build remnant & scrap view       | Track denim remnant cuts and jewellery scrap/filings weight for smelter reclamation. | NOT_STARTED |
-| JN-392 | Build Craftsman Floor Mode       | Touch-friendly tablet UI for `TAILOR` (cutting/sewing bench) and `JEWELLER` (silversmith bench) in `apps/admin/workshop`. | NOT_STARTED |
-| JN-393 | Build Cut-Ticket & Bench-Ticket print station | Thermal/slip printing for Cut-Tickets (denim pattern) and Bench-Tickets (ring sizes, alloy, hallmark, custom engravings). | NOT_STARTED |
-| JN-394 | Build QR routing scan station    | Scan garment tags and jewellery job trays for rapid stage advancement on the floor. | NOT_STARTED |
-| JN-395 | Build Sewing & Setting queues    | Active assembly pipeline: garment chainstitch queue and jeweller stone/hallmark bench queue. | NOT_STARTED |
-| JN-396 | Build Washing & Patina queues    | Garment rinsing/drying queue and jewellery chemical patina/oxidation queue. | NOT_STARTED |
-| JN-397 | Build Hardware & Polishing queues| Garment copper rivets/button fly station and jewellery buffing/polishing station (mirror vs matte). | NOT_STARTED |
-| JN-398 | Build QC inspection station      | Dual inspection stations: garment measurements (waist/inseam ±0.25") and jewellery precision checks (weight in grams, ring mandrel, setting security). | NOT_STARTED |
-| JN-399 | Build completed-production queue | Dual atelier handover queue to Fulfillment dispatch with protective packaging checks. | NOT_STARTED |
-| JN-400 | Add artisan operational notes    | Craftsman bench notes for tailors and jewellers attached to specific job runs. | NOT_STARTED |
-| JN-401 | Add delay & defect logging       | Log weave flaws, machine downtime, casting porosity, metal inclusions, or resize reworks. | NOT_STARTED |
+| JN-389 | Build inventory dashboard        | Precious metal casting grain stocks (.925 Silver, Solid Brass accents), and DROP stock overview. | NOT_STARTED |
+| JN-390 | Build raw inventory adjustment   | Register precious metal lots (weight in grams, alloy batch, purity certification & supplier). | NOT_STARTED |
+| JN-391 | Build remnant & scrap view       | Track jewellery scrap/filings weight for crucible smelter reclamation. | NOT_STARTED |
+| JN-392 | Build Craftsman Floor Mode       | Touch-friendly tablet UI for `JEWELLER` (silversmith bench) in `apps/admin/workshop/jeweller`. | NOT_STARTED |
+| JN-393 | Build Bench-Ticket print station | Thermal/slip printing for Bench-Tickets (ring sizes, alloy, hallmark, custom engravings). | NOT_STARTED |
+| JN-394 | Build QR routing scan station    | Scan jewellery job trays for rapid stage advancement on the bench. | NOT_STARTED |
+| JN-395 | Build Setting queue              | Active assembly pipeline: jeweller sprue removal, mandrel sizing & hallmark bench queue. | NOT_STARTED |
+| JN-396 | Build Patina queue               | Jewellery chemical liver of sulfur patina and heat oxidation queue. | NOT_STARTED |
+| JN-397 | Build Polishing queue            | Jewellery rouge buffing and polishing station (high-mirror vs brushed matte). | NOT_STARTED |
+| JN-398 | Build QC inspection station      | Jewellery precision checks (caliper inner diameter ±0.1mm, weight in grams, setting security). | NOT_STARTED |
+| JN-399 | Build completed-production queue | Atelier handover queue to Fulfillment dispatch with wooden presentation box checks. | NOT_STARTED |
+| JN-400 | Add artisan operational notes    | Craftsman bench notes for jewellers attached to specific job runs. | NOT_STARTED |
+| JN-401 | Add delay & defect logging       | Log casting porosity, metal inclusions, mold cracks, or mandrel resize reworks. | NOT_STARTED |
 
 ---
 
@@ -802,12 +803,12 @@ Scoped for `TAILOR` and `JEWELLER` craftsmen on the floor and `ADMIN` operations
 
 | ID     | Task                             | Description                                               | Status      |
 | ------ | -------------------------------- | --------------------------------------------------------- | ----------- |
-| JN-402 | Build content dashboard          | Lookbook, story, and denim & jewellery care CMS.          | NOT_STARTED |
+| JN-402 | Build content dashboard          | Lookbook, story, and .925 sterling silver care CMS.       | NOT_STARTED |
 | JN-403 | Build announcement editor        | Urgent operational notices (workshop holidays, drops).    | NOT_STARTED |
 | JN-404 | Build policy editor              | Production lead-time, refund, and shipping policy text.   | NOT_STARTED |
-| JN-405 | Build sizing editor              | Fit guide (denim waist/inseam and jewellery ring/chain).  | NOT_STARTED |
+| JN-405 | Build sizing editor              | Fit guide (jewellery ring mandrel / chain length / cuff wrist gap). | NOT_STARTED |
 | JN-406 | Build contact editor             | Channel instructions (Instagram DM vs Email support).     | NOT_STARTED |
-| JN-407 | Build custom atelier inquiry desk| Review bespoke requests, draft tailor/jeweller quote, send invoice.| NOT_STARTED |
+| JN-407 | Build custom atelier inquiry desk| Review bespoke requests, draft jeweller quote, send invoice.| NOT_STARTED |
 | JN-408 | Build customer 360 lookup        | Holistic customer profile (purchases, sizing, inquiries). | NOT_STARTED |
 | JN-409 | Build support resolution log     | Track issue resolution times and customer satisfaction.   | NOT_STARTED |
 
@@ -1785,7 +1786,7 @@ For example:
 Inventory ────────┤
                   └── Customer B
 
-Production Job ───┬── Tailor tablet
+Production Job ───┬── Jeweller tablet
                   └── Admin
 ```
 

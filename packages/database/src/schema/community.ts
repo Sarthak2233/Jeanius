@@ -10,7 +10,7 @@ import {
   check,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
-import { products, productCategoryEnum } from './catalog';
+import { products } from './catalog';
 import { usersProfile } from './auth-profile';
 import { orders } from './order';
 
@@ -75,7 +75,7 @@ export const customOrderRequests = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     customerName: text('customer_name').notNull(),
     customerEmail: text('customer_email').notNull(),
-    category: text('category', { enum: productCategoryEnum }).notNull(),
+    category: text('category').notNull(),
     description: text('description').notNull(),
     desiredFabricWeight: text('desired_fabric_weight'),
     desiredMetalAlloy: text('desired_metal_alloy'),

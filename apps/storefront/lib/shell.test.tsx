@@ -58,8 +58,8 @@ describe('State 07: Store Frontend Shell (JN-145 → JN-156)', () => {
       );
 
       // Brand link
-      assert.ok(html.includes('Jeanius &amp; Jewl'));
-      assert.ok(html.includes('aria-label="Jeanius &amp; Jewl Home"'));
+      assert.ok(html.includes('Project 925'));
+      assert.ok(html.includes('aria-label="Project 925 Home"'));
 
       // Navigation hierarchy
       assert.ok(html.includes('About/Guide'));
@@ -84,12 +84,12 @@ describe('State 07: Store Frontend Shell (JN-145 → JN-156)', () => {
         <DesktopHeader
           isAuthenticated={true}
           role="MEMBER"
-          fullName="Master Tailor"
+          fullName="Master Silversmith"
           cartItemCount={0}
         />,
       );
 
-      assert.ok(html.includes('Master Tailor'));
+      assert.ok(html.includes('Master Silversmith'));
       assert.ok(html.includes('★ VIP'));
       assert.ok(!html.includes('🔒 VIP'));
     });
@@ -101,7 +101,7 @@ describe('State 07: Store Frontend Shell (JN-145 → JN-156)', () => {
 
       assert.ok(html.includes('aria-label="Open navigation menu"'));
       assert.ok(html.includes('aria-controls="mobile-navigation-drawer"'));
-      assert.ok(html.includes('Jeanius &amp; Jewl'));
+      assert.ok(html.includes('Project 925'));
       assert.ok(html.includes('aria-label="Search studio (Press /)"'));
       assert.ok(html.includes('aria-label="Shopping bag, 1 items"'));
     });
@@ -134,7 +134,7 @@ describe('State 07: Store Frontend Shell (JN-145 → JN-156)', () => {
       assert.ok(html.includes('Sizing Guide'));
       assert.ok(html.includes('Contact Studio'));
       assert.ok(html.includes('Region: Worldwide (USD)'));
-      assert.ok(html.includes('Kathmandu &amp; Seoul'));
+      assert.ok(html.includes('Kathmandu Workshop'));
     });
   });
 
@@ -146,7 +146,7 @@ describe('State 07: Store Frontend Shell (JN-145 → JN-156)', () => {
       assert.ok(html.includes('role="contentinfo"'));
 
       // Studio Manifesto
-      assert.ok(html.includes('Jeanius &amp; Jewl Atelier'));
+      assert.ok(html.includes('Project .925 Atelier'));
       assert.ok(html.includes('Kathmandu cutting tables'));
       assert.ok(html.includes('jewellery bench'));
 

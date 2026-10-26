@@ -6,6 +6,7 @@ const SRC_DIR = resolve(process.cwd(), 'docs/assets/diagrams/src');
 const OUT_DIR = resolve(process.cwd(), 'docs/assets/diagrams');
 const CONFIG_PATH = resolve(process.cwd(), 'docs/assets/diagrams/mermaid-config.json');
 const CSS_PATH = resolve(process.cwd(), 'docs/assets/diagrams/diagram-styles.css');
+const PUPPETEER_CONFIG_PATH = resolve(process.cwd(), 'docs/assets/diagrams/puppeteer-config.json');
 
 /**
  * Validates that the SVG has well-formed XML and no duplicate attributes on any tag.
@@ -110,7 +111,10 @@ function generateDiagrams(): void {
     mkdirSync(OUT_DIR, { recursive: true });
   }
 
-  const files = readdirSync(SRC_DIR).filter((f) => extname(f) === '.mmd');
+  const filterArg = process.argv[2];
+  const files = readdirSync(SRC_DIR)
+    .filter((f) => extname(f) === '.mmd')
+    .filter((f) => (!filterArg ? true : f.includes(filterArg)));
 
   if (files.length === 0) {
     console.warn(`No .mmd files found in ${SRC_DIR}`);
@@ -129,8 +133,9 @@ function generateDiagrams(): void {
     process.stdout.write(`Compiling ${file} -> ${name}.svg ... `);
 
     try {
+      const pFlag = existsSync(PUPPETEER_CONFIG_PATH) ? `-p "${PUPPETEER_CONFIG_PATH}" ` : '';
       execSync(
-        `npx -y @mermaid-js/mermaid-cli -i "${inputPath}" -o "${outputPath}" -c "${CONFIG_PATH}" -C "${CSS_PATH}" -b "#0b0f19" --quiet`,
+        `npx -y @mermaid-js/mermaid-cli -i "${inputPath}" -o "${outputPath}" -c "${CONFIG_PATH}" -C "${CSS_PATH}" ${pFlag}-b "#0b0f19" --quiet`,
         { stdio: 'pipe' },
       );
 

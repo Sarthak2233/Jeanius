@@ -1,4 +1,4 @@
-import type { Product, CommerceModel } from '@jeanius/domain';
+import type { Product, CommerceModel, Money, ProductVariant } from '@jeanius/domain';
 import { createLogger } from '@jeanius/observability';
 import type {
   IProductRepository,
@@ -93,5 +93,61 @@ export class CatalogService {
       durationMs: Date.now() - startTime,
     });
     return products;
+  }
+
+  resolveVariant(
+    product: Product,
+    selectedOptions: Record<string, string>,
+  ): {
+    variant?: ProductVariant;
+    effectivePrice: Money;
+    isAvailable: boolean;
+    inventoryCount: number;
+  } {
+    const variant = product.findVariantByOptions(selectedOptions);
+    const effectivePrice = product.calculateEffectivePrice(selectedOptions);
+
+    if (variant) {
+      return {
+        variant,
+        effectivePrice,
+        isAvailable: variant.isAvailable,
+        inventoryCount: variant.inventoryCount,
+      };
+    }
+
+    return {
+      effectivePrice,
+      isAvailable: product.isPublished && product.status !== 'SOLD_OUT',
+      inventoryCount: product.commerceModel === 'OM' ? 999 : 0,
+    };
+  }
+
+  validateConfiguration(
+    product: Product,
+    selectedOptions: Record<string, string>,
+  ): {
+    isValid: boolean;
+    missingOptions: readonly string[];
+    resolvedVariant?: ProductVariant;
+  } {
+    const missingOptions: string[] = [];
+
+    for (const option of product.options) {
+      if (option.isRequired) {
+        const val = selectedOptions[option.code] ?? selectedOptions[option.code.toLowerCase()];
+        if (!val || !val.trim()) {
+          missingOptions.push(option.name);
+        }
+      }
+    }
+
+    const variant = product.findVariantByOptions(selectedOptions);
+
+    return {
+      isValid: missingOptions.length === 0,
+      missingOptions,
+      resolvedVariant: variant,
+    };
   }
 }

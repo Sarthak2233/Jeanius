@@ -12,7 +12,7 @@ Jeanius Core Engineering Team
 ---
 
 ## Context and Problem Statement
-Jeanius releases exclusive ready-to-ship limited runs (DROP model) using rare Japanese selvedge denim fabric (e.g. only 30–50 pairs produced per lot). These capsule drops generate intense burst traffic at the moment of launch, with hundreds or thousands of prospective buyers arriving simultaneously.
+Project 925 releases exclusive ready-to-ship limited runs (DROP model) of handcrafted .925 sterling silver artisan pieces (e.g. only 30–50 pieces produced per lot). These capsule drops generate intense burst traffic at the moment of launch, with hundreds or thousands of prospective buyers arriving simultaneously.
 
 Two major concurrency failure modes threaten the integrity of drops:
 1. **Overselling / Race Conditions:** If inventory is only decremented after payment confirmation, dozens of buyers could be redirected to Stripe/eSewa simultaneously for the last remaining pair. Once they all pay, the system has oversold physical stock, necessitating humiliating manual apologies, chargebacks, and brand damage.

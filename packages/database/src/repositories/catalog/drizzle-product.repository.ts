@@ -15,12 +15,17 @@ import {
 import {
   Product,
   Money,
+  ProductVariant,
+  type ProductOption,
   type ProductId,
+  type VariantId,
+  type VariantStatus,
   type Currency,
   type CommerceModel,
   type ProductCategory,
   type ProductStatus,
   type ProductImageVo,
+  BUILT_IN_CATEGORIES,
 } from '@jeanius/domain';
 import type {
   IProductRepository,
@@ -30,7 +35,7 @@ import type {
 } from '@jeanius/application';
 import { createLogger } from '@jeanius/observability';
 import { db, type Database } from '../../client.js';
-import { products, productImages } from '../../schema/catalog.js';
+import { products, productImages, productVariants, categories } from '../../schema/catalog.js';
 
 export class DrizzleProductRepository implements IProductRepository {
   private readonly logger = createLogger('database:product-repository');
@@ -46,8 +51,18 @@ export class DrizzleProductRepository implements IProductRepository {
       return null;
     }
 
-    const images = await this.fetchImagesForProducts([row.id]);
-    return this.mapToDomain(row, images.get(row.id) ?? []);
+    const [imagesMap, optionsMap, variantsMap] = await Promise.all([
+      this.fetchImagesForProducts([row.id]),
+      this.fetchOptionsForProducts([row.id]),
+      this.fetchVariantsForProducts([row.id]),
+    ]);
+
+    return this.mapToDomain(
+      row,
+      imagesMap.get(row.id) ?? [],
+      optionsMap.get(row.id) ?? [],
+      variantsMap.get(row.id) ?? [],
+    );
   }
 
   async findBySlug(slug: string): Promise<Product | null> {
@@ -64,8 +79,18 @@ export class DrizzleProductRepository implements IProductRepository {
       return null;
     }
 
-    const images = await this.fetchImagesForProducts([row.id]);
-    return this.mapToDomain(row, images.get(row.id) ?? []);
+    const [imagesMap, optionsMap, variantsMap] = await Promise.all([
+      this.fetchImagesForProducts([row.id]),
+      this.fetchOptionsForProducts([row.id]),
+      this.fetchVariantsForProducts([row.id]),
+    ]);
+
+    return this.mapToDomain(
+      row,
+      imagesMap.get(row.id) ?? [],
+      optionsMap.get(row.id) ?? [],
+      variantsMap.get(row.id) ?? [],
+    );
   }
 
   async listPublished(): Promise<readonly Product[]> {
@@ -229,15 +254,21 @@ export class DrizzleProductRepository implements IProductRepository {
       aggregateRows.map((r) => [r.category as ProductCategory, Number(r.count)]),
     );
 
-    // Guarantee all 4 canonical categories are present
-    const canonicalCategories: readonly ProductCategory[] = [
-      'BOTTOMS',
-      'TOPS',
-      'JEWELLERY',
-      'ACCESSORIES',
-    ];
+    // Query active categories from database, with fallback to BUILT_IN_CATEGORIES
+    const dbCategories = await this.database
+      .select({ slug: categories.slug })
+      .from(categories)
+      .where(eq(categories.isActive, true))
+      .orderBy(asc(categories.sortOrder));
 
-    return canonicalCategories.map((cat) => ({
+    const categorySlugs =
+      dbCategories.length > 0
+        ? dbCategories.map((c) => c.slug)
+        : BUILT_IN_CATEGORIES.map((c) => c.slug);
+
+    const allSlugs = Array.from(new Set([...categorySlugs, ...countsMap.keys()]));
+
+    return allSlugs.map((cat) => ({
       category: cat,
       count: countsMap.get(cat) ?? 0,
     }));
@@ -330,9 +361,50 @@ export class DrizzleProductRepository implements IProductRepository {
     return map;
   }
 
+  private async fetchOptionsForProducts(
+    _productIds: readonly string[],
+  ): Promise<Map<string, ProductOption[]>> {
+    return new Map();
+  }
+
+  private async fetchVariantsForProducts(
+    productIds: readonly string[],
+  ): Promise<Map<string, ProductVariant[]>> {
+    if (productIds.length === 0) return new Map();
+
+    const variantRows = await this.database
+      .select()
+      .from(productVariants)
+      .where(inArray(productVariants.productId, [...productIds]));
+
+    const map = new Map<string, ProductVariant[]>();
+    for (const row of variantRows) {
+      const list = map.get(row.productId) ?? [];
+      list.push(
+        new ProductVariant({
+          id: row.id as VariantId,
+          productId: row.productId as ProductId,
+          sku: row.sku,
+          options: (row.options as Record<string, string>) ?? {},
+          additionalPrice: new Money(
+            row.additionalPriceAmount,
+            row.additionalPriceCurrency as Currency,
+          ),
+          inventoryCount: row.inventoryCount,
+          status: row.status as VariantStatus,
+        }),
+      );
+      map.set(row.productId, list);
+    }
+
+    return map;
+  }
+
   private mapToDomain(
     row: typeof products.$inferSelect,
     images: readonly ProductImageVo[] = [],
+    options: readonly ProductOption[] = [],
+    variants: readonly ProductVariant[] = [],
   ): Product {
     return new Product({
       id: row.id as ProductId,
@@ -343,8 +415,14 @@ export class DrizzleProductRepository implements IProductRepository {
       commerceModel: row.commerceModel as CommerceModel,
       category: row.category as ProductCategory,
       status: row.status as ProductStatus,
+      leadTimeDaysMin: row.leadTimeDaysMin,
+      leadTimeDaysMax: row.leadTimeDaysMax,
+      inputSpecifications: row.inputSpecifications as Record<string, unknown> | undefined,
+      priceRules: row.priceRules as Array<Record<string, unknown>> | undefined,
       publishAt: row.publishAt ? new Date(row.publishAt) : undefined,
       images,
+      options,
+      variants,
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt),
     });

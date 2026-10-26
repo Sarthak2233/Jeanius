@@ -60,12 +60,23 @@ export class InvalidStateTransitionError extends DomainError {
   }
 }
 
+export class MetalStockExhaustedError extends DomainError {
+  public readonly code = 'METAL_STOCK_EXHAUSTED';
+  constructor(stockId: string, requestedGrams: number, availableGrams: number) {
+    super(
+      `Insufficient precious metal stock on lot ${stockId}. Requested: ${requestedGrams}g, Available: ${availableGrams}g.`,
+      { stockId, requestedGrams, availableGrams },
+    );
+  }
+}
+
+// Deprecated alias for backward compatibility
 export class FabricBoltExhaustedError extends DomainError {
   public readonly code = 'FABRIC_BOLT_EXHAUSTED';
-  constructor(boltId: string, requestedMeters: number, availableMeters: number) {
+  constructor(stockId: string, requestedGrams: number, availableGrams: number) {
     super(
-      `Insufficient continuous yardage on fabric bolt ${boltId}. Requested: ${requestedMeters}m, Available: ${availableMeters}m.`,
-      { boltId, requestedMeters, availableMeters },
+      `Insufficient precious metal stock on lot ${stockId}. Requested: ${requestedGrams}g, Available: ${availableGrams}g.`,
+      { stockId, requestedGrams, availableGrams },
     );
   }
 }
@@ -82,7 +93,7 @@ export class InventoryHoldExpiredError extends DomainError {
 export class DropSoldOutError extends DomainError {
   public readonly code = 'DROP_SOLD_OUT';
   constructor(variantId: string) {
-    super(`Selected garment variant ${variantId} is completely sold out.`, { variantId });
+    super(`Selected jewellery piece ${variantId} is completely sold out.`, { variantId });
   }
 }
 

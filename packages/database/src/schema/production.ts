@@ -5,10 +5,6 @@ import { usersProfile } from './auth-profile';
 
 export const productionStageEnum = [
   'QUEUED',
-  'CUTTING',
-  'SEWING',
-  'WASHING',
-  'HARDWARE',
   'CASTING',
   'SETTING',
   'PATINA',
@@ -30,7 +26,6 @@ export const productionJobs = pgTable(
       .references(() => orderLines.id, { onDelete: 'cascade' }),
     currentStage: text('current_stage', { enum: productionStageEnum }).notNull().default('QUEUED'),
     targetCompletionDate: timestamp('target_completion_date', { withTimezone: true }).notNull(),
-    cutTicket: jsonb('cut_ticket').$type<Record<string, unknown>>(),
     craftTicket: jsonb('craft_ticket').$type<Record<string, unknown>>(),
     assignedArtisanId: uuid('assigned_artisan_id').references(() => usersProfile.id, {
       onDelete: 'set null',

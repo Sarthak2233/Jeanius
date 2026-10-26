@@ -1,6 +1,6 @@
 # Atelier Content Management System (CMS) & Announcement Protocol
 
-The Jeanius & Jewl platform includes an integrated **Headless CMS and Site Notice Engine** designed specifically for editorial atelier storytelling (workshop stories, craft guides, terms, privacy) and real-time operational notices (drop countdowns, holiday workshop pauses, shipping delays).
+The Project 925 platform includes an integrated **Headless CMS and Site Notice Engine** designed specifically for editorial atelier storytelling (Kathmandu workshop stories, jewellery craft guides, terms, privacy) and real-time operational notices (drop countdowns, holiday workshop pauses, shipping delays).
 
 ---
 
@@ -52,13 +52,13 @@ The Jeanius & Jewl platform includes an integrated **Headless CMS and Site Notic
 
 The CMS manages two categories of pages:
 * **System Core Pages:** Slugs matching core routes (`about`, `guide`, `terms`, `privacy`, `returns`). When published, the storefront routes automatically pull their live body content from the CMS.
-* **Custom Atelier Stories:** Any custom slug (e.g., `kuroki-mill-origin`, `kathmandu-tailor-tables`, `silver-casting-guild`). Once published, they are immediately accessible at `/pages/[slug]`.
+* **Custom Atelier Stories:** Any custom slug (e.g., `kathmandu-silversmith-heritage`, `lost-wax-casting-method`, `silver-patina-process`). Once published, they are immediately accessible at `/pages/[slug]`.
 
 #### Creating or Editing a Page:
 1. Click **`+ Create New Page`** (or click **Edit** on an existing row).
 2. Fill in the required metadata:
-   * **Page Title:** The editorial display heading (e.g., *Origins of Selvedge Denim*).
-   * **URL Slug:** Clean alphanumeric identifier (e.g., `selvedge-denim-history`). Enforced lowercase and unique.
+   * **Page Title:** The editorial display heading (e.g., *Artisan Silversmithing in Kathmandu*).
+   * **URL Slug:** Clean alphanumeric identifier (e.g., `silver-craft-tradition`). Enforced lowercase and unique.
    * **SEO Meta Description:** Snippet used for search engines and social cards.
    * **Publication Status:** Choose between:
      * `DRAFT` — Hidden from public storefront visitors.
@@ -73,13 +73,13 @@ The CMS manages two categories of pages:
 
 ### B. Managing Operational Site Announcements (`ANNOUNCEMENTS` Tab)
 
-Operational notices appear in the top sticky **Announcement Bar** across the entire storefront (e.g., *"Order-Made pieces require 14–21 workshop days"*).
+Operational notices appear in the top sticky **Announcement Bar** across the entire storefront (e.g., *"Order-Made silver pieces require 14–21 workshop days"*).
 
 #### Creating an Announcement:
 1. Switch to the **`Operational Announcements`** tab in the workbench.
 2. Click **`+ Post Announcement`**.
 3. Configure the announcement:
-   * **Notice Title:** Short bold prefix (e.g., *Workshop Notice*, *Autumn Selvedge Drop*).
+   * **Notice Title:** Short bold prefix (e.g., *Workshop Notice*, *Autumn Silver Drop*).
    * **Notice Message:** The description text explaining the update.
    * **Notice Type:** Select the semantic level:
      * `INFO` (Neutral slate notice)

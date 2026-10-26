@@ -45,10 +45,10 @@ export default function HomePage() {
                 width: '6px',
                 height: '6px',
                 borderRadius: '50%',
-                backgroundColor: '#fa0707ff',
+                backgroundColor: '#0284c7',
               }}
             />
-            KATHMANDU CUTTING TABLES · SILVERSMITHING BENCH
+            KATHMANDU WORKSHOP · .925 STERLING SILVERSMITHING
           </div>
 
           <h1
@@ -63,7 +63,7 @@ export default function HomePage() {
               textTransform: 'uppercase',
             }}
           >
-            Precision Raw Selvedge &amp; Bespoke Silversmithing
+            Handcrafted .925 Sterling Silver &amp; Lost-Wax Talismans
           </h1>
 
           <p
@@ -76,14 +76,14 @@ export default function HomePage() {
               fontWeight: 400,
             }}
           >
-            Crafted one piece at a time between our Kathmandu cutting tables and jewellery bench.
-            Authentic Japanese Kurabo shuttle-loom denim paired with hand-carved 925 sterling silver
-            hardware. Zero deadstock, made strictly to order.
+            Forged one piece at a time at our Kathmandu metalsmithing bench. Ancient lost-wax
+            casting, hand-carved matrices, and sacred Newar repoussé traditions rendered in solid
+            .925 sterling silver. Zero deadstock, crafted strictly to order.
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
-            <a
-              href="#atelier-lots"
+            <Link
+              href="/shop"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -101,9 +101,9 @@ export default function HomePage() {
                 transition: 'opacity 150ms ease',
               }}
             >
-              Explore OM Catalog (14-21D)
-              <span aria-hidden="true">↓</span>
-            </a>
+              Explore OM Catalog (10-18D)
+              <span aria-hidden="true">→</span>
+            </Link>
 
             <Link
               href="/sizing"
@@ -124,7 +124,7 @@ export default function HomePage() {
                 transition: 'border-color 150ms ease',
               }}
             >
-              Precision Sizing Guide
+              Mandrel &amp; Sizing Studio
               <span aria-hidden="true">→</span>
             </Link>
           </div>
@@ -155,9 +155,9 @@ export default function HomePage() {
               Production Protocol
             </div>
             <div style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
-              14–21 Workshop Days
+              10–18 Workshop Days
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Precision cut on demand</div>
+            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Individual lost-wax casting</div>
           </div>
 
           <div>
@@ -171,34 +171,13 @@ export default function HomePage() {
                 marginBottom: '0.25rem',
               }}
             >
-              Denim Provenance
+              Metalsmithing Bench
             </div>
             <div style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
-              14oz Kurabo Mills
+              Solid .925 Sterling Silver
             </div>
             <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-              Okayama vintage shuttle looms
-            </div>
-          </div>
-
-          <div>
-            <div
-              style={{
-                fontSize: '0.7rem',
-                fontFamily: 'var(--font-mono, monospace)',
-                color: '#94a3b8',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                marginBottom: '0.25rem',
-              }}
-            >
-              Silversmithing Bench
-            </div>
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
-              Solid 925 Sterling Silver
-            </div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-              Hand-forged &amp; hallmarked in Seoul
+              Kathmandu hallmarked fine alloy
             </div>
           </div>
 
@@ -213,13 +192,34 @@ export default function HomePage() {
                 marginBottom: '0.25rem',
               }}
             >
-              Workshop Guarantee
+              Craft Lineage
             </div>
             <div style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
-              Lifetime Repair Backing
+              Sacred Newar Repoussé
             </div>
             <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-              Union Special chainstitch repairs
+              Lost-wax &amp; chisel detailing
+            </div>
+          </div>
+
+          <div>
+            <div
+              style={{
+                fontSize: '0.7rem',
+                fontFamily: 'var(--font-mono, monospace)',
+                color: '#94a3b8',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                marginBottom: '0.25rem',
+              }}
+            >
+              Workshop Covenant
+            </div>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
+              Lifetime Craft Warranty
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+              Complimentary resizing &amp; polishing
             </div>
           </div>
         </div>
@@ -259,10 +259,11 @@ export default function HomePage() {
               margin: 0,
             }}
           >
-            Order-Made Atelier Catalog
+            Order-Made Jewellery Catalog
           </h2>
           <p style={{ color: '#64748b', fontSize: '0.95rem', margin: '0.5rem 0 0 0' }}>
-            Allocated from limited bolt yardage and individually assembled upon sizing confirmation.
+            Cast from certified fine silver grain and individually tuned upon mandrel sizing
+            confirmation.
           </p>
         </div>
 
@@ -273,7 +274,7 @@ export default function HomePage() {
             gap: '2rem',
           }}
         >
-          {/* Card 1: Lot 001 — Straight Raw Selvedge */}
+          {/* Card 1: Lot 001 — Solid Silver 925 Signet Ring */}
           <div
             style={{
               backgroundColor: '#ffffff',
@@ -288,218 +289,6 @@ export default function HomePage() {
             }}
           >
             <div>
-              {/* Badges strip */}
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '0.5rem',
-                  alignItems: 'center',
-                  marginBottom: '1.25rem',
-                  flexWrap: 'wrap',
-                }}
-              >
-                <StatusBadge status={model} variant="om" />
-                <span
-                  style={{
-                    fontSize: '0.72rem',
-                    fontFamily: 'var(--font-mono, monospace)',
-                    padding: '0.2rem 0.5rem',
-                    borderRadius: '2px',
-                    backgroundColor: '#eff6ff',
-                    color: '#1e40af',
-                    fontWeight: 600,
-                  }}
-                >
-                  KURABO 14OZ RAW
-                </span>
-              </div>
-
-              {/* Denim illustration frame */}
-              <div
-                style={{
-                  height: '180px',
-                  backgroundColor: '#1e293b',
-                  borderRadius: '4px',
-                  marginBottom: '1.5rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  backgroundImage:
-                    'repeating-linear-gradient(45deg, #1e293b, #1e293b 8px, #243048 8px, #243048 16px)',
-                }}
-              >
-                {/* Red Selvedge Line Accent */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    bottom: 0,
-                    right: '24px',
-                    width: '4px',
-                    backgroundColor: '#b91c1c',
-                    boxShadow: '0 0 6px rgba(185, 28, 28, 0.4)',
-                  }}
-                />
-                <div
-                  style={{
-                    textAlign: 'center',
-                    color: '#f8fafc',
-                    zIndex: 2,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
-                      fontSize: '1.4rem',
-                      letterSpacing: '0.12em',
-                      fontWeight: 600,
-                    }}
-                  >
-                    LOT 001
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '0.7rem',
-                      fontFamily: 'var(--font-mono, monospace)',
-                      color: '#94a3b8',
-                      letterSpacing: '0.15em',
-                      marginTop: '4px',
-                    }}
-                  >
-                    RAW SELVEDGE JEAN
-                  </div>
-                </div>
-              </div>
-
-              <h3
-                style={{
-                  fontSize: '1.45rem',
-                  color: '#0f172a',
-                  margin: '0 0 0.5rem 0',
-                  fontWeight: 600,
-                }}
-              >
-                Lot 001 — Straight Raw Selvedge
-              </h3>
-
-              <p
-                style={{
-                  color: '#475569',
-                  fontSize: '0.9rem',
-                  lineHeight: 1.6,
-                  margin: '0 0 1.25rem 0',
-                }}
-              >
-                14oz Japanese Kurabo denim cut and assembled by master artisans. Mid-rise, straight
-                leg silhouette, custom waist and inseam specifications, and Union Special
-                chainstitch hem.
-              </p>
-
-              {/* Specs Pills */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '0.4rem',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                {[
-                  '14oz Kurabo Mill',
-                  'Chainstitch Hem',
-                  'Custom Inseam (28"-36")',
-                  'Solid Brass Hardware',
-                ].map((spec) => (
-                  <span
-                    key={spec}
-                    style={{
-                      fontSize: '0.72rem',
-                      padding: '0.2rem 0.5rem',
-                      backgroundColor: '#f8fafc',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '3px',
-                      color: '#475569',
-                    }}
-                  >
-                    {spec}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  justifyContent: 'space-between',
-                  marginBottom: '1rem',
-                  paddingTop: '1rem',
-                  borderTop: '1px solid #f1f5f9',
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase' }}>
-                    Tailored Price
-                  </div>
-                  <div style={{ fontSize: '1.35rem', fontWeight: 700 }}>
-                    <PriceDisplay amount={28000} currency="USD" />
-                  </div>
-                </div>
-                <span
-                  style={{
-                    fontSize: '0.72rem',
-                    color: '#d97706',
-                    fontFamily: 'var(--font-mono, monospace)',
-                    fontWeight: 600,
-                  }}
-                >
-                  14–21 DAYS
-                </span>
-              </div>
-
-              <Link
-                href="/sizing"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '100%',
-                  padding: '0.75rem',
-                  backgroundColor: '#0f172a',
-                  color: '#ffffff',
-                  borderRadius: '4px',
-                  textDecoration: 'none',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  transition: 'opacity 150ms ease',
-                }}
-              >
-                Configure Measurements &amp; Sizing →
-              </Link>
-            </div>
-          </div>
-
-          {/* Card 2: Lot 002 — Solid Silver 925 Signet Ring */}
-          <div
-            style={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              padding: '2rem',
-              boxShadow: '0 2px 4px rgba(15, 23, 42, 0.02)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              transition: 'border-color 200ms ease, transform 200ms ease',
-            }}
-          >
-            <div>
-              {/* Badges strip */}
               <div
                 style={{
                   display: 'flex',
@@ -521,7 +310,7 @@ export default function HomePage() {
                     fontWeight: 600,
                   }}
                 >
-                  SOLID 925 SILVER
+                  SOLID .925 STERLING
                 </span>
               </div>
 
@@ -555,7 +344,7 @@ export default function HomePage() {
                       fontWeight: 600,
                     }}
                   >
-                    RING 001
+                    LOT 001
                   </div>
                   <div
                     style={{
@@ -566,7 +355,7 @@ export default function HomePage() {
                       marginTop: '4px',
                     }}
                   >
-                    HAND-FORGED 925 SIGNET
+                    KATHMANDU SIGNET RING
                   </div>
                 </div>
               </div>
@@ -579,7 +368,7 @@ export default function HomePage() {
                   fontWeight: 600,
                 }}
               >
-                Lot 002 — Solid Silver 925 Signet Ring
+                Lot 001 — Solid Silver 925 Signet Ring
               </h3>
 
               <p
@@ -590,8 +379,9 @@ export default function HomePage() {
                   margin: '0 0 1.25rem 0',
                 }}
               >
-                Hand-carved in wax and cast in solid 925 sterling silver in Seoul. Finished with a
-                directional satin face and chamfered bevels. Sized to exact mandrel specification.
+                Hand-carved in wax and cast in solid .925 sterling silver at our Kathmandu workshop.
+                Finished with a directional satin face and chamfered comfort-fit bevels. Sized to
+                exact mandrel specification.
               </p>
 
               {/* Specs Pills */}
@@ -604,10 +394,10 @@ export default function HomePage() {
                 }}
               >
                 {[
-                  'Solid 925 Sterling Silver',
+                  'Solid .925 Sterling Silver',
                   'US 4–14 Mandrel Precision',
                   'Directional Satin Face',
-                  'Studio Hallmark Stamped',
+                  'Kathmandu Hallmark Stamped',
                 ].map((spec) => (
                   <span
                     key={spec}
@@ -676,7 +466,204 @@ export default function HomePage() {
                   transition: 'opacity 150ms ease',
                 }}
               >
-                View Mandrel Sizing Chart →
+                Configure Mandrel Measurements →
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 2: Lot 002 — Kathmandu Chiseled Heavy Cuff */}
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+              padding: '2rem',
+              boxShadow: '0 2px 4px rgba(15, 23, 42, 0.02)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              transition: 'border-color 200ms ease, transform 200ms ease',
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '0.5rem',
+                  alignItems: 'center',
+                  marginBottom: '1.25rem',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <StatusBadge status={model} variant="om" />
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontFamily: 'var(--font-mono, monospace)',
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: '2px',
+                    backgroundColor: '#f1f5f9',
+                    color: '#334155',
+                    fontWeight: 600,
+                  }}
+                >
+                  48 GRAMS SOLID SILVER
+                </span>
+              </div>
+
+              {/* Silver illustration frame */}
+              <div
+                style={{
+                  height: '180px',
+                  backgroundColor: '#0f172a',
+                  borderRadius: '4px',
+                  marginBottom: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  backgroundImage: 'radial-gradient(circle at center, #1e293b 0%, #0b0f19 100%)',
+                }}
+              >
+                <div
+                  style={{
+                    textAlign: 'center',
+                    color: '#f8fafc',
+                    zIndex: 2,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-serif, "Playfair Display", Georgia, serif)',
+                      fontSize: '1.4rem',
+                      letterSpacing: '0.12em',
+                      fontWeight: 600,
+                    }}
+                  >
+                    LOT 002
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '0.7rem',
+                      fontFamily: 'var(--font-mono, monospace)',
+                      color: '#cbd5e1',
+                      letterSpacing: '0.15em',
+                      marginTop: '4px',
+                    }}
+                  >
+                    CHISELED HEAVY CUFF
+                  </div>
+                </div>
+              </div>
+
+              <h3
+                style={{
+                  fontSize: '1.45rem',
+                  color: '#0f172a',
+                  margin: '0 0 0.5rem 0',
+                  fontWeight: 600,
+                }}
+              >
+                Lot 002 — Kathmandu Chiseled Heavy Cuff
+              </h3>
+
+              <p
+                style={{
+                  color: '#475569',
+                  fontSize: '0.9rem',
+                  lineHeight: 1.6,
+                  margin: '0 0 1.25rem 0',
+                }}
+              >
+                Heavy triangular profile cuff forged from solid .925 sterling silver bar stock.
+                Carved with traditional Newar geometric chiseling and finished with deliberate
+                sulfur shadow oxidation.
+              </p>
+
+              {/* Specs Pills */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '0.4rem',
+                  marginBottom: '1.5rem',
+                }}
+              >
+                {[
+                  '48 Grams Solid Silver',
+                  'Anvil Chiseled Motifs',
+                  'Sacred Antiqued Patina',
+                  'Custom Wrist Gap (S–XL)',
+                ].map((spec) => (
+                  <span
+                    key={spec}
+                    style={{
+                      fontSize: '0.72rem',
+                      padding: '0.2rem 0.5rem',
+                      backgroundColor: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '3px',
+                      color: '#475569',
+                    }}
+                  >
+                    {spec}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  justifyContent: 'space-between',
+                  marginBottom: '1rem',
+                  paddingTop: '1rem',
+                  borderTop: '1px solid #f1f5f9',
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase' }}>
+                    Artisan Price
+                  </div>
+                  <div style={{ fontSize: '1.35rem', fontWeight: 700 }}>
+                    <PriceDisplay amount={34000} currency="USD" />
+                  </div>
+                </div>
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    color: '#d97706',
+                    fontFamily: 'var(--font-mono, monospace)',
+                    fontWeight: 600,
+                  }}
+                >
+                  12–16 DAYS
+                </span>
+              </div>
+
+              <Link
+                href="/sizing"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  padding: '0.75rem',
+                  backgroundColor: '#0f172a',
+                  color: '#ffffff',
+                  borderRadius: '4px',
+                  textDecoration: 'none',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  transition: 'opacity 150ms ease',
+                }}
+              >
+                Calibrate Wrist Gap →
               </Link>
             </div>
           </div>
@@ -752,9 +739,9 @@ export default function HomePage() {
                 Zero Deadstock Discipline
               </h3>
               <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
-                Once our master tailor marks the Kurabo bolt or our silversmith pours molten 925
-                silver, sizing is permanently locked. No garment is ever pre-sewn to sit on
-                warehouse shelves.
+                Once molten .925 sterling silver is poured into the investment mold at the CASTING
+                stage, sizing is permanently locked. No piece is ever pre-cast to sit on warehouse
+                shelves.
               </p>
             </div>
 
@@ -775,15 +762,15 @@ export default function HomePage() {
                   marginBottom: '0.75rem',
                 }}
               >
-                02 / HERITAGE METALS &amp; DYE
+                02 / SACRED METALLURGY
               </div>
               <h3 style={{ fontSize: '1.15rem', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
-                Pure Kurabo &amp; Solid Silver
+                Pure .925 Alloy &amp; Natural Patina
               </h3>
               <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
-                Slow rope-dyed indigo selvedge with natural warp irregularity, paired with
-                nickel-free solid 925 sterling silver. Materials designed to evolve with honest,
-                lifelong patina.
+                Certified fine silver grain alloyed with copper for structural resilience. Never
+                plated, nickel-free, and designed to cultivate deep shadow oxidation in carved
+                recesses over a lifetime of wear.
               </p>
             </div>
 
@@ -804,15 +791,15 @@ export default function HomePage() {
                   marginBottom: '0.75rem',
                 }}
               >
-                03 / LIFETIME WORKSHOP BACKING
+                03 / LIFETIME WORKSHOP COVENANT
               </div>
               <h3 style={{ fontSize: '1.15rem', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
-                Free Alterations &amp; Care
+                Complimentary Sizing &amp; Care
               </h3>
               <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
-                Every piece is registered to its collector. We provide complimentary Union Special
-                chainstitch re-hemming, structural seam reinforcement, and silver ultrasonic
-                re-polishing.
+                Every piece is registered to its collector. We provide complimentary ring size
+                tuning (+/- 1 US size), joint and link reinforcement, and ultrasonic workshop
+                repolishing for life.
               </p>
             </div>
           </div>
@@ -843,11 +830,11 @@ export default function HomePage() {
               margin: '0 0 0.5rem 0',
             }}
           >
-            Need Tailoring Guidance or Bespoke Specs?
+            Need Mandrel Guidance or Custom Casting?
           </h2>
           <p style={{ color: '#475569', fontSize: '0.95rem', margin: 0, maxWidth: '600px' }}>
-            Our concierge desk assists with inseam shrinkage calculations, waist rise adjustments,
-            and jewellery ring mandrel sizing before your cut ticket is issued.
+            Our Kathmandu workshop silversmiths assist with knuckle clearance, heavy cuff gap
+            calibration, and custom talisman waxes before your casting tree is invested.
           </p>
         </div>
 
@@ -866,7 +853,7 @@ export default function HomePage() {
               textDecoration: 'none',
             }}
           >
-            Contact Studio Concierge →
+            Contact Workshop Concierge →
           </Link>
           <Link
             href="/about"

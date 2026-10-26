@@ -66,7 +66,7 @@ export function MobileHeader({ cartItemCount = 0 }: MobileHeaderProps) {
       {/* Brand logo */}
       <Link
         href="/"
-        aria-label="Jeanius & Jewl Home"
+        aria-label="Project 925 Home"
         style={{
           textDecoration: 'none',
           color: '#0f172a',
@@ -78,7 +78,7 @@ export function MobileHeader({ cartItemCount = 0 }: MobileHeaderProps) {
           whiteSpace: 'nowrap',
         }}
       >
-        Jeanius &amp; Jewl
+        Project 925
       </Link>
 
       {/* Utility Actions */}

@@ -12,20 +12,23 @@ export * from './fulfillment';
 export * from './community';
 export * from './content';
 export * from './audit';
+export * from './settings';
 
 import { usersProfile, addresses } from './auth-profile';
-import { products, productImages, productOptions, optionValues, productVariants } from './catalog';
+import {
+  categories,
+  products,
+  productImages,
+  productVariants,
+  orderMadeProducts,
+  dropProducts,
+  dropVariants,
+} from './catalog';
 import { carts, cartLines } from './cart';
 import { orders, orderLines } from './order';
 import { payments } from './payment';
 import { productionJobs } from './production';
-import {
-  fabricBolts,
-  boltAllocations,
-  inventoryReservations,
-  metalStocks,
-  metalAllocations,
-} from './inventory';
+import { inventoryReservations, metalStocks, metalAllocations } from './inventory';
 import { shipments, shipmentPackages } from './fulfillment';
 import { reviews, questions, customOrderRequests } from './community';
 import { memberships } from './content';
@@ -46,9 +49,12 @@ export const addressesRelations = relations(addresses, ({ one }) => ({
   }),
 }));
 
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  products: many(products),
+}));
+
 export const productsRelations = relations(products, ({ many }) => ({
   images: many(productImages),
-  options: many(productOptions),
   variants: many(productVariants),
   reviews: many(reviews),
   questions: many(questions),
@@ -61,25 +67,33 @@ export const productImagesRelations = relations(productImages, ({ one }) => ({
   }),
 }));
 
-export const productOptionsRelations = relations(productOptions, ({ one, many }) => ({
-  product: one(products, {
-    fields: [productOptions.productId],
-    references: [products.id],
-  }),
-  values: many(optionValues),
-}));
-
-export const optionValuesRelations = relations(optionValues, ({ one }) => ({
-  option: one(productOptions, {
-    fields: [optionValues.optionId],
-    references: [productOptions.id],
-  }),
-}));
-
 export const productVariantsRelations = relations(productVariants, ({ one, many }) => ({
   product: one(products, {
     fields: [productVariants.productId],
     references: [products.id],
+  }),
+  reservations: many(inventoryReservations),
+}));
+
+export const orderMadeProductsRelations = relations(orderMadeProducts, ({ one }) => ({
+  product: one(products, {
+    fields: [orderMadeProducts.productId],
+    references: [products.id],
+  }),
+}));
+
+export const dropProductsRelations = relations(dropProducts, ({ one, many }) => ({
+  product: one(products, {
+    fields: [dropProducts.productId],
+    references: [products.id],
+  }),
+  variants: many(dropVariants),
+}));
+
+export const dropVariantsRelations = relations(dropVariants, ({ one, many }) => ({
+  dropProduct: one(dropProducts, {
+    fields: [dropVariants.dropProductId],
+    references: [dropProducts.id],
   }),
   reservations: many(inventoryReservations),
 }));
@@ -131,10 +145,6 @@ export const orderLinesRelations = relations(orderLines, ({ one }) => ({
     fields: [orderLines.variantId],
     references: [productVariants.id],
   }),
-  allocatedBolt: one(fabricBolts, {
-    fields: [orderLines.allocatedBoltId],
-    references: [fabricBolts.id],
-  }),
   allocatedMetalStock: one(metalStocks, {
     fields: [orderLines.allocatedMetalStockId],
     references: [metalStocks.id],
@@ -160,17 +170,6 @@ export const productionJobsRelations = relations(productionJobs, ({ one }) => ({
   assignedArtisan: one(usersProfile, {
     fields: [productionJobs.assignedArtisanId],
     references: [usersProfile.id],
-  }),
-}));
-
-export const fabricBoltsRelations = relations(fabricBolts, ({ many }) => ({
-  allocations: many(boltAllocations),
-}));
-
-export const boltAllocationsRelations = relations(boltAllocations, ({ one }) => ({
-  bolt: one(fabricBolts, {
-    fields: [boltAllocations.boltId],
-    references: [fabricBolts.id],
   }),
 }));
 

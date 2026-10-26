@@ -4,7 +4,8 @@ import { adminLogoutAction } from '../actions/admin-auth.actions';
 import { createClient } from '../lib/supabase/server';
 
 export interface AdminNavProps {
-  readonly currentBench?: 'DIRECTOR' | 'TAILOR' | 'JEWELLER' | 'FULFILLMENT' | 'SUPPORT' | 'CMS';
+  readonly currentBench?:
+    'DIRECTOR' | 'CATEGORIES' | 'JEWELLER' | 'FULFILLMENT' | 'SUPPORT' | 'CMS';
 }
 
 export async function AdminNav({ currentBench = 'DIRECTOR' }: AdminNavProps) {
@@ -41,7 +42,7 @@ export async function AdminNav({ currentBench = 'DIRECTOR' }: AdminNavProps) {
             textTransform: 'uppercase',
           }}
         >
-          Jeanius Atelier Console
+          Project 925 Console
         </Link>
 
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -61,6 +62,22 @@ export async function AdminNav({ currentBench = 'DIRECTOR' }: AdminNavProps) {
             </Link>
           )}
 
+          {isAdmin && (
+            <Link
+              href="/categories"
+              style={{
+                textDecoration: 'none',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: currentBench === 'CATEGORIES' ? '#38bdf8' : '#94a3b8',
+                borderBottom: currentBench === 'CATEGORIES' ? '2px solid #38bdf8' : 'none',
+                paddingBottom: '0.2rem',
+              }}
+            >
+              Categories
+            </Link>
+          )}
+
           {(isAdmin || role === 'SUPPORT') && (
             <Link
               href="/content"
@@ -74,22 +91,6 @@ export async function AdminNav({ currentBench = 'DIRECTOR' }: AdminNavProps) {
               }}
             >
               CMS &amp; Storytelling
-            </Link>
-          )}
-
-          {(isAdmin || role === 'TAILOR') && (
-            <Link
-              href="/workshop/tailor"
-              style={{
-                textDecoration: 'none',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                color: currentBench === 'TAILOR' ? '#38bdf8' : '#94a3b8',
-                borderBottom: currentBench === 'TAILOR' ? '2px solid #38bdf8' : 'none',
-                paddingBottom: '0.2rem',
-              }}
-            >
-              Denim Bench
             </Link>
           )}
 

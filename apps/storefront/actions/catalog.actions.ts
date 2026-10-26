@@ -6,6 +6,9 @@ import {
   CatalogFilterCriteriaSchema,
   type CatalogPageDto,
   type ProductCardDto,
+  type ProductDetailDto,
+  ConfiguratorSelectionSchema,
+  type ResolvedVariantDto,
 } from '@jeanius/contracts';
 import { createLogger, generateTraceId } from '@jeanius/observability';
 import type { Product } from '@jeanius/domain';
@@ -59,6 +62,49 @@ function mapProductToCardDto(p: Product): ProductCardDto {
       width: img.width,
       height: img.height,
     })),
+  };
+}
+
+function mapProductToDetailDto(p: Product): ProductDetailDto {
+  const cardDto = mapProductToCardDto(p);
+  return {
+    ...cardDto,
+    options: p.options.map((opt) => ({
+      id: opt.id,
+      name: opt.name,
+      code: opt.code,
+      position: opt.position,
+      isRequired: opt.isRequired,
+      values: opt.values.map((val) => ({
+        id: val.id,
+        code: val.code,
+        label: val.label,
+        priceDeltaAmount: val.priceDelta.amount,
+        priceDeltaCurrency: val.priceDelta.currency,
+        isAvailable: val.isAvailable,
+        position: val.position,
+      })),
+    })),
+    variants: p.variants.map((v) => ({
+      id: v.id,
+      sku: v.sku,
+      options: v.options,
+      additionalPriceAmount: v.additionalPrice.amount,
+      additionalPriceCurrency: v.additionalPrice.currency,
+      inventoryCount: v.inventoryCount,
+      status: v.status,
+    })),
+    leadTimeDays: p.commerceModel === 'OM' ? p.leadTimeDaysMax : 2,
+    leadTimeDaysMin: p.leadTimeDaysMin,
+    leadTimeDaysMax: p.leadTimeDaysMax,
+    inputSpecifications: p.inputSpecifications as Record<string, unknown> | undefined,
+    priceRules: p.priceRules as Array<Record<string, unknown>> | undefined,
+    craftSpecs: {
+      purity: 'Solid .925 Sterling Silver',
+      workshop: 'Kathmandu Artisan Atelier',
+      hallmark: "Stamped '925' + Master Silversmith Mark",
+      casing: 'Handcrafted Himalayan Wood Presentation Box',
+    },
   };
 }
 
@@ -297,4 +343,124 @@ export async function getDropCatalogAction(
       ? { ...rawParams, commerceModel: 'DROP' }
       : { commerceModel: 'DROP' };
   return getCatalogAction(params);
+}
+
+export async function getProductDetailBySlugAction(
+  slug: string,
+): Promise<ActionResult<ProductDetailDto>> {
+  const traceId = generateTraceId();
+  const startTime = Date.now();
+
+  try {
+    const service = getCatalogService();
+    const product = await service.getProductBySlug(slug);
+
+    if (!product) {
+      logger.warn('Product detail not found by slug', { traceId, slug });
+      return {
+        success: false,
+        error: { code: 'NOT_FOUND', message: `Product "${slug}" was not found.` },
+      };
+    }
+
+    if (product.commerceModel === 'DROP') {
+      let isAuthenticated = false;
+      try {
+        const supabase = await createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        isAuthenticated = Boolean(user);
+      } catch {
+        isAuthenticated = false;
+      }
+
+      if (!isAuthenticated) {
+        logger.warn('Unauthenticated access blocked for member-only DROP product detail', {
+          traceId,
+          slug,
+        });
+        return {
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Limited Drop pieces are reserved for registered collectors. Please sign in.',
+          },
+        };
+      }
+    }
+
+    return {
+      success: true,
+      data: mapProductToDetailDto(product),
+    };
+  } catch (error) {
+    logger.error('Failed to resolve product detail by slug', {
+      traceId,
+      slug,
+      error: error instanceof Error ? error.message : String(error),
+      durationMs: Date.now() - startTime,
+    });
+
+    return {
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'Unable to fetch product details.' },
+    };
+  }
+}
+
+export async function resolveVariantAction(
+  rawInput: unknown,
+): Promise<ActionResult<ResolvedVariantDto>> {
+  const traceId = generateTraceId();
+  const parsed = ConfiguratorSelectionSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    logger.warn('Invalid configurator selection payload', {
+      traceId,
+      errors: parsed.error.format(),
+    });
+    return {
+      success: false,
+      error: { code: 'VALIDATION_ERROR', message: 'Invalid product option selection.' },
+    };
+  }
+
+  const { productId, selectedOptions } = parsed.data;
+
+  try {
+    const service = getCatalogService();
+    const product = await service.getProductById(productId);
+
+    if (!product) {
+      return {
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'Product not found.' },
+      };
+    }
+
+    const resolved = service.resolveVariant(product, selectedOptions);
+
+    return {
+      success: true,
+      data: {
+        variantId: resolved.variant ? resolved.variant.id : product.id,
+        sku: resolved.variant ? resolved.variant.sku : product.slug.toUpperCase(),
+        unitPriceAmount: resolved.effectivePrice.amount,
+        unitPriceCurrency: resolved.effectivePrice.currency,
+        isAvailable: resolved.isAvailable,
+        inventoryCount: resolved.inventoryCount,
+        selectedOptions,
+      },
+    };
+  } catch (error) {
+    logger.error('Failed to resolve variant on server', {
+      traceId,
+      productId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return {
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'Unable to calculate variant configuration.' },
+    };
+  }
 }

@@ -58,40 +58,33 @@ describe('State 08: Content, CMS & Wholesome Measurements (JN-157 → JN-167)', 
     });
   });
 
-  describe('JN-164 & JN-165: Wholesome Measurement Studio & Guidance', () => {
-    it('renders Points A through Q with anatomical gender options', () => {
+  describe('JN-164 & JN-165: Project 925 Jewellery Sizing Studio & Guidance', () => {
+    it('renders ring mandrel calibrator, wide shank compensator, and conversion table', () => {
       const html = renderToString(<SizingStudioClient />);
 
-      // Points A through Q present
-      assert.ok(html.includes('Point A'));
-      assert.ok(html.includes('Point B'));
-      assert.ok(html.includes('Point F'));
-      assert.ok(html.includes('Point G'));
-      assert.ok(html.includes('Point H'));
-
-      // Gender toggles present
-      assert.ok(html.includes('Men’s Cut'));
-      assert.ok(html.includes('Women’s Cut'));
-      assert.ok(html.includes('Unisex / Vintage'));
-
-      // Method toggles present
-      assert.ok(html.includes('Laid-Flat Garment (Points A–Q)'));
-      assert.ok(html.includes('Body Anatomical Tape'));
-    });
-
-    it('renders the selvedge warp shrinkage engine and ring mandrel table', () => {
-      const html = renderToString(<SizingStudioClient />);
-
-      // Shrinkage engine present
-      assert.ok(html.includes('WARP SHRINKAGE &amp; LOOMSTATE CUT CALCULATOR'));
-      assert.ok(html.includes('Loomstate Cut Inseam'));
-      assert.ok(html.includes('35')); // 34 * 1.03 = 35.02 -> 35"
-
-      // Jewellery mandrel present
+      // Mandrel calibrator & compensator
+      assert.ok(html.includes('Project 925 Sizing &amp; Mandrel Studio'));
       assert.ok(html.includes('Ring Mandrel &amp; Wide Shank Compensator'));
+      assert.ok(html.includes('Base US Mandrel Size'));
+      assert.ok(html.includes('CALIBRATED BENCH CAST SIZE'));
+
+      // Mandrel table headers and rows
+      assert.ok(html.includes('International Mandrel Conversion Chart'));
       assert.ok(html.includes('US Size'));
       assert.ok(html.includes('UK / AU'));
       assert.ok(html.includes('EU Standard'));
+      assert.ok(html.includes('Diameter (mm)'));
+      assert.ok(html.includes('Circumference (mm)'));
+    });
+
+    it('renders workshop covenants and navigation tabs for cuffs, chains, and patina', () => {
+      const html = renderToString(<SizingStudioClient />);
+
+      assert.ok(html.includes('Ring Mandrel &amp; Wide Shank'));
+      assert.ok(html.includes('Heavy Cuff &amp; Wrist Gap'));
+      assert.ok(html.includes('Chain Drape &amp; Link Matrix'));
+      assert.ok(html.includes('Silver Oxidation &amp; Patina'));
+      assert.ok(html.includes('The Kathmandu Ring Mandrel Invariant'));
     });
   });
 });

@@ -1,8 +1,14 @@
 import { pgTable, text, timestamp, integer, jsonb, uuid, index, check } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 import { usersProfile } from './auth-profile';
-import { products, productVariants, commerceModelEnum } from './catalog';
-import { fabricBolts, metalStocks } from './inventory';
+import {
+  products,
+  productVariants,
+  orderMadeProducts,
+  dropVariants,
+  commerceModelEnum,
+} from './catalog';
+import { metalStocks } from './inventory';
 
 export const orderStatusEnum = [
   'PENDING',
@@ -66,9 +72,13 @@ export const orderLines = pgTable(
     productId: uuid('product_id')
       .notNull()
       .references(() => products.id, { onDelete: 'restrict' }),
-    variantId: uuid('variant_id')
-      .notNull()
-      .references(() => productVariants.id, { onDelete: 'restrict' }),
+    variantId: uuid('variant_id').references(() => productVariants.id, { onDelete: 'restrict' }),
+    orderMadeProductId: uuid('order_made_product_id').references(() => orderMadeProducts.id, {
+      onDelete: 'restrict',
+    }),
+    dropVariantId: uuid('drop_variant_id').references(() => dropVariants.id, {
+      onDelete: 'restrict',
+    }),
     productTitle: text('product_title').notNull(),
     sku: text('sku').notNull(),
     commerceModel: text('commerce_model', { enum: commerceModelEnum }).notNull(),
@@ -77,12 +87,11 @@ export const orderLines = pgTable(
     quantity: integer('quantity').notNull().default(1),
     lineTotalAmount: integer('line_total_amount').notNull(),
     lineTotalCurrency: text('line_total_currency').notNull().default('USD'),
-    selectedOptions: jsonb('selected_options').$type<Record<string, string>>().notNull(),
-    customTailoring: jsonb('custom_tailoring').$type<Record<string, number | string>>(),
+    selectedOptions: jsonb('selected_options')
+      .$type<Record<string, string>>()
+      .notNull()
+      .default({}),
     customSpecifications: jsonb('custom_specifications').$type<Record<string, number | string>>(),
-    allocatedBoltId: uuid('allocated_bolt_id').references(() => fabricBolts.id, {
-      onDelete: 'set null',
-    }),
     allocatedMetalStockId: uuid('allocated_metal_stock_id').references(() => metalStocks.id, {
       onDelete: 'set null',
     }),
@@ -92,7 +101,6 @@ export const orderLines = pgTable(
     index('idx_order_lines_order_id').on(table.orderId),
     index('idx_order_lines_product_id').on(table.productId),
     index('idx_order_lines_variant_id').on(table.variantId),
-    index('idx_order_lines_bolt_id').on(table.allocatedBoltId),
     check('chk_order_lines_quantity', sql`${table.quantity} > 0`),
     check('chk_order_lines_unit_price', sql`${table.unitPriceAmount} >= 0`),
     check('chk_order_lines_line_total', sql`${table.lineTotalAmount} >= 0`),

@@ -110,7 +110,7 @@ export class ProductionJob {
     this._updatedAt = new Date();
   }
 
-  recordRework(reason: string, targetStage: 'SEWING' | 'SETTING' = 'SEWING'): void {
+  recordRework(reason: string, targetStage: 'SETTING' | 'POLISHING' = 'SETTING'): void {
     if (this._currentStage !== 'QC') {
       throw new DomainError(
         `Rework can only be triggered from QC stage, current: ${this._currentStage}`,

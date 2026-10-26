@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useCartStore } from '../stores';
+import { useCartStore, selectCartTotalCount, useCartHydrated } from '../stores';
 
 export interface CartIndicatorProps {
   readonly itemCount?: number;
@@ -9,14 +9,19 @@ export interface CartIndicatorProps {
   readonly style?: React.CSSProperties;
 }
 
-export function CartIndicator({ itemCount = 0, className, style }: CartIndicatorProps) {
+export function CartIndicator({ itemCount: propItemCount, className, style }: CartIndicatorProps) {
   const toggleCartDrawer = useCartStore((state) => state.toggleCartDrawer);
+  const storeTotalCount = useCartStore(selectCartTotalCount);
+  const isHydrated = useCartHydrated();
+
+  const effectiveCount =
+    propItemCount !== undefined ? propItemCount : isHydrated ? storeTotalCount : 0;
 
   return (
     <button
       type="button"
       onClick={toggleCartDrawer}
-      aria-label={`Shopping bag, ${itemCount} items`}
+      aria-label={`Shopping bag, ${effectiveCount} items`}
       className={className}
       style={{
         background: 'none',
@@ -50,7 +55,7 @@ export function CartIndicator({ itemCount = 0, className, style }: CartIndicator
         <path d="M16 10a4 4 0 0 1-8 0" />
       </svg>
 
-      {itemCount > 0 && (
+      {effectiveCount > 0 && (
         <span
           style={{
             position: 'absolute',
@@ -58,19 +63,20 @@ export function CartIndicator({ itemCount = 0, className, style }: CartIndicator
             right: '4px',
             backgroundColor: '#0f172a',
             color: '#ffffff',
-            fontSize: '0.65rem',
-            fontWeight: 700,
             borderRadius: '9999px',
-            minWidth: '18px',
+            fontSize: '0.625rem',
+            fontFamily: 'var(--font-mono, monospace)',
+            fontWeight: 700,
+            width: '18px',
             height: '18px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '0 4px',
             lineHeight: 1,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
           }}
         >
-          {itemCount}
+          {effectiveCount > 99 ? '99+' : effectiveCount}
         </span>
       )}
     </button>

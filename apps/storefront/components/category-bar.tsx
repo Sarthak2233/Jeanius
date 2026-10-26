@@ -3,7 +3,7 @@
 import React from 'react';
 import type { CategoryCountDto } from '@jeanius/contracts';
 
-export type CategoryKey = 'ALL' | 'BOTTOMS' | 'TOPS' | 'JEWELLERY' | 'ACCESSORIES';
+export type CategoryKey = string;
 
 export interface CategoryBarProps {
   readonly activeCategory: CategoryKey;
@@ -13,19 +13,27 @@ export interface CategoryBarProps {
   readonly className?: string;
 }
 
-interface CategoryOption {
-  readonly key: CategoryKey;
-  readonly label: string;
-  readonly craftSubtitle: string;
-}
+const CANONICAL_LABELS: Record<string, string> = {
+  ALL: 'All Pieces',
+  rings: 'Rings',
+  'bracelets-cuffs': 'Bracelets & Cuffs',
+  'necklaces-pendants': 'Necklaces & Pendants',
+  earrings: 'Earrings',
+  'chains-links': 'Chains & Links',
+  artefacts: 'Artefacts',
+  BOTTOMS: 'Bottoms',
+  TOPS: 'Tops',
+  JEWELLERY: 'Jewellery',
+  ACCESSORIES: 'Accessories',
+};
 
-const CATEGORIES: readonly CategoryOption[] = [
-  { key: 'ALL', label: 'All Pieces', craftSubtitle: 'Kathmandu Workshop' },
-  { key: 'BOTTOMS', label: 'Bottoms', craftSubtitle: 'Kurabo & Kuroki Raw Denim' },
-  { key: 'TOPS', label: 'Tops', craftSubtitle: 'Type II Jackets & Overshirts' },
-  { key: 'JEWELLERY', label: 'Jewellery', craftSubtitle: '.925 Silver & Solid Brass' },
-  { key: 'ACCESSORIES', label: 'Accessories', craftSubtitle: 'Tochigi Bridle Leather' },
-];
+function formatLabel(slug: string): string {
+  if (CANONICAL_LABELS[slug]) return CANONICAL_LABELS[slug];
+  return slug
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
 export function CategoryBar({
   activeCategory,
@@ -44,10 +52,32 @@ export function CategoryBar({
 
   const allCount = totalAllCount ?? categoryCounts.reduce((acc, curr) => acc + curr.count, 0);
 
+  // Derive active category tabs dynamically from categoryCounts
+  const categoriesToDisplay = React.useMemo(() => {
+    if (categoryCounts.length > 0) {
+      return [
+        { key: 'ALL', label: 'All Pieces' },
+        ...categoryCounts.map((c) => ({
+          key: c.category,
+          label: formatLabel(c.category),
+        })),
+      ];
+    }
+    // Fallback if no counts yet
+    return [
+      { key: 'ALL', label: 'All Pieces' },
+      { key: 'rings', label: 'Rings' },
+      { key: 'bracelets-cuffs', label: 'Bracelets & Cuffs' },
+      { key: 'necklaces-pendants', label: 'Necklaces & Pendants' },
+      { key: 'chains-links', label: 'Chains & Links' },
+      { key: 'artefacts', label: 'Artefacts' },
+    ];
+  }, [categoryCounts]);
+
   return (
     <nav aria-label="Product categories" className={`catalog-category-bar ${className}`}>
       <div role="tablist" aria-orientation="horizontal" className="catalog-category-list">
-        {CATEGORIES.map((cat) => {
+        {categoriesToDisplay.map((cat) => {
           const isActive = activeCategory === cat.key;
           const count = cat.key === 'ALL' ? allCount : (countMap.get(cat.key) ?? 0);
 

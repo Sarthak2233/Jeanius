@@ -84,10 +84,7 @@ export class DrizzleProductionJobRepository implements IProductionJobRepository 
       orderLineId: row.orderLineId as OrderLineId,
       currentStage: row.currentStage as ProductionStage,
       targetCompletionDate: new Date(row.targetCompletionDate),
-      craftTicket:
-        (row.craftTicket ?? row.cutTicket)
-          ? ((row.craftTicket ?? row.cutTicket) as unknown as CraftTicket)
-          : undefined,
+      craftTicket: row.craftTicket ? (row.craftTicket as unknown as CraftTicket) : undefined,
       assignedArtisanId: row.assignedArtisanId ?? undefined,
       reworkCount: row.reworkCount,
       delayDays: row.delayDays,

@@ -5,3 +5,4 @@
 export * from './schema/index';
 export * from './client';
 export * from './repositories/index';
+export { eq, and, or, sql, desc, asc, count, inArray } from 'drizzle-orm';

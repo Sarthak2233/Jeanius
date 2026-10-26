@@ -1,0 +1,43 @@
+graph TD
+    classDef clientLayer fill:#1e293b,stroke:#38bdf8,stroke-width:1.5px,color:#f8fafc;
+    classDef appLayer fill:#0f172a,stroke:#818cf8,stroke-width:1.5px,color:#f8fafc;
+    classDef dataLayer fill:#1e1e24,stroke:#34d399,stroke-width:1.5px,color:#f8fafc;
+    classDef gateLayer fill:#2a1b18,stroke:#f59e0b,stroke-width:1.5px,color:#f8fafc;
+    classDef vipLayer fill:#1e1b4b,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph PublicStorefront["Public Storefront (/shop — Order-Made Jewellery)"]
+        ShopRoute["/shop Route (Public Catalog)<br/>• 100% Order-Made Collection<br/>• Editorial Banner linking to /drop"]:::clientLayer
+        OMConfig["Open-Ended OrderMadeConfigurator<br/>• Freeform Sizing Text Input (e.g. US 10.35, EU 63)<br/>• Master Silversmith Bench Notes Textarea<br/>• Inside Rune Engraving & Patina Selector"]:::clientLayer
+        SizingGuide["Informational Sizing Reference Guide<br/>• International Mandrel Conversion Table<br/>• Wrist Circumference & Gap Diagram<br/>• Chain Drape Visualizer"]:::appLayer
+        CartOrder["Cart & Order Checkout Line<br/>• orderMadeProductId -> order_made_products<br/>• customSpecifications JSONB (Customer Inputs)"]:::dataLayer
+    end
+
+    subgraph MemberLounge["VIP Member Lounge (/drop — State 21 Limited Drops)"]
+        DropRoute["/drop Route (VIP Vault Entry)<br/>• Server-Side Authorization Guard<br/>• Evaluates against atelier_settings threshold"]:::clientLayer
+        SettingsTable["atelier_settings Table<br/>• member_om_order_threshold (Admin Controllable: 0, 1, 2...)"]:::dataLayer
+        AuthCheck{"Session & Qualification Check"}:::gateLayer
+
+        GuestGate["Atelier Acquisition Gate (Guest)<br/>• Numbered Batches Teaser Card<br/>• Sign In or Register CTA"]:::gateLayer
+        CustomerGate["VIP Member Privilege Gate (Customer)<br/>• Threshold Not Met (e.g. Needs N OM Orders)<br/>• Redeem Invite Code / Atelier Progress"]:::gateLayer
+        DropVault["Active DROP Catalog (Member / Admin / Threshold 0)<br/>• Numbered Allocation Counters<br/>• Live Physical SKU Stock Telemetry<br/>• Instant 48-Hour Kathmandu Dispatch"]:::vipLayer
+    end
+
+    subgraph StreamlinedPersistence["Streamlined Catalog Architecture"]
+        OMProducts["order_made_products Table<br/>• inputSpecifications (JSONB)<br/>• priceRules & Bespoke Metadata"]:::dataLayer
+        DropProducts["drop_products & drop_variants Tables<br/>• dropBatchNumber & totalBatchQuantity<br/>• drop_variants: Physical Ready-to-Ship SKUs"]:::dataLayer
+        DeletedTables["Pruned Legacy Tables (DELETED)<br/>❌ product_options<br/>❌ option_values"]:::dataLayer
+    end
+
+    %% Public Flow
+    ShopRoute --> OMConfig
+    OMConfig -.->|"opens informational guide"| SizingGuide
+    OMConfig --> CartOrder
+    CartOrder --> OMProducts
+
+    %% Gated Flow
+    DropRoute --> AuthCheck
+    SettingsTable -.->|"supplies threshold"| AuthCheck
+    AuthCheck -->|"Unauthenticated"| GuestGate
+    AuthCheck -->|"orders < threshold"| CustomerGate
+    AuthCheck -->|"orders >= threshold or role=MEMBER"| DropVault
+    DropVault --> DropProducts

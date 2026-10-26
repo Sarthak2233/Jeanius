@@ -8,7 +8,7 @@ import {
   type OrderLineId,
   type ProductId,
   type VariantId,
-  type BoltId,
+  type MetalStockId,
   type CustomerId,
   type Currency,
   type OrderStatus,
@@ -114,8 +114,8 @@ export class DrizzleOrderRepository implements IOrderRepository {
           lineTotalAmount: line.lineTotal.amount,
           lineTotalCurrency: line.lineTotal.currency,
           selectedOptions: line.selectedOptions,
-          customTailoring: line.customTailoring,
-          allocatedBoltId: line.allocatedBoltId,
+          customSpecifications: line.customSpecifications,
+          allocatedMetalStockId: line.allocatedMetalStockId,
           createdAt: new Date(),
         })
         .onConflictDoNothing();
@@ -142,9 +142,9 @@ export class DrizzleOrderRepository implements IOrderRepository {
           quantity: lineRow.quantity,
           lineTotal: new Money(lineRow.lineTotalAmount, lineRow.lineTotalCurrency as Currency),
           selectedOptions: lineRow.selectedOptions,
-          customTailoring: lineRow.customTailoring ?? undefined,
-          allocatedBoltId: lineRow.allocatedBoltId
-            ? (lineRow.allocatedBoltId as BoltId)
+          customSpecifications: lineRow.customSpecifications ?? undefined,
+          allocatedMetalStockId: lineRow.allocatedMetalStockId
+            ? (lineRow.allocatedMetalStockId as MetalStockId)
             : undefined,
         }),
     );

@@ -1,0 +1,80 @@
+flowchart TD
+    classDef client fill:#1e1b4b,stroke:#818cf8,stroke-width:1.5px,color:#e0e7ff;
+    classDef store fill:#14532d,stroke:#4ade80,stroke-width:1.5px,color:#dcfce7;
+    classDef storage fill:#451a03,stroke:#fb923c,stroke-width:1.5px,color:#ffedd5;
+    classDef server fill:#18181b,stroke:#a1a1aa,stroke-width:1.5px,color:#f4f4f5;
+    classDef app fill:#312e81,stroke:#a5b4fc,stroke-width:1.5px,color:#e0e7ff;
+    classDef domain fill:#831843,stroke:#f472b6,stroke-width:1.5px,color:#fdf2f8;
+    classDef database fill:#0f172a,stroke:#38bdf8,stroke-width:1.5px,color:#e0f2fe;
+
+    subgraph StorefrontViews ["Storefront UI Presentation Layer (apps/storefront/components)"]
+        PDP["Product Detail & Configurator<br/>(/shop/[slug])<br/>• Size Mandrel Selector<br/>• Finish Swatches<br/>• Price Delta Telemetry"]:::client
+        CartDrawer["Cart Quick-Bag Drawer<br/>• Drawer Slide-Over<br/>• Line Items & Quantities<br/>• Subtotal & Checkout CTA"]:::client
+        Header["Storefront Shell Header<br/>• CartIndicator Bag Badge<br/>• Search Trigger<br/>• Mobile Nav Toggle"]:::client
+        SearchModal["Global Search Modal<br/>• Keyboard Shortcut '/'<br/>• Dynamic Results Tray"]:::client
+    end
+
+    subgraph ZustandStores ["Modular Zustand Client Stores (apps/storefront/stores/)"]
+        ConfigStore["useConfiguratorStore (JN-200)<br/>• selectedOptions (ring size, finish)<br/>• activeSku & activeVariantId<br/>• unitPriceAmount (base + deltas)<br/>• Sizing Vault Defaults<br/>• Validation Errors State"]:::store
+        CartStore["useCartStore (JN-199)<br/>• items: CartItem[]<br/>• isCartDrawerOpen: boolean<br/>• isHydrated & isSyncing<br/>• addItem / removeItem / updateQty<br/>• syncWithServer / mergeGuestCart"]:::store
+        UiStore["useUiStore (JN-201)<br/>• isSearchOpen<br/>• isMobileNavOpen<br/>• isAnnouncementDismissed<br/>• modal & toast triggers"]:::store
+    end
+
+    subgraph StoreSelectors ["Performance Selectors Layer (JN-202)"]
+        CartSelectors["Cart Selectors<br/>• selectCartItems<br/>• selectCartTotalCount<br/>• selectCartSubtotal<br/>• selectIsCartDrawerOpen"]:::store
+        ConfigSelectors["Configurator Selectors<br/>• selectConfiguredOptions<br/>• selectConfiguredUnitPrice<br/>• selectIsConfigValid"]:::store
+        UiSelectors["UI Selectors<br/>• selectIsSearchOpen<br/>• selectIsMobileNavOpen"]:::store
+    end
+
+    subgraph PersistenceEngine ["Client Persistence & Hydration Engine (JN-203, JN-204, JN-207)"]
+        CartStorage["localStorage Adapter<br/>('jeanius_cart_state_v1')<br/>• Zod Contract Validation<br/>• Hydration-Safe onRehydrateStorage<br/>• Zero SSR Layout Shift"]:::storage
+        DraftStorage["sessionStorage Adapter<br/>('jeanius_configurator_draft_v1')<br/>• PDP Active Selections Draft<br/>• Preserves State on Navigation"]:::storage
+    end
+
+    subgraph ServerActionBoundary ["Storefront Server Actions Boundary (apps/storefront/actions/cart.actions.ts)"]
+        CartActions["Cart Server Actions<br/>• fetchServerCartAction()<br/>• syncCartWithServerAction()<br/>• mergeGuestCartAction()<br/>• mapCartToDto()"]:::server
+    end
+
+    subgraph ApplicationLayer ["Application Layer (packages/application)"]
+        CartService["CartService (Application Orchestrator)<br/>• getCartByCustomerId()<br/>• syncCart()<br/>• mergeGuestCart()<br/>• clearCart()"]:::app
+        CartPort["ICartRepository (Port Interface)<br/>• findById()<br/>• findByCustomerId()<br/>• save()<br/>• delete()"]:::app
+    end
+
+    subgraph DomainLayer ["Domain Layer (packages/domain - Pure DDD)"]
+        CartEntity["Cart Aggregate Root<br/>• addLine()<br/>• mergeLines()<br/>• calculateSubtotal()<br/>• Clamping qty <= 10<br/>• Invariant verification"]:::domain
+        CartLineEntity["CartLine Entity<br/>• computeCartLineFingerprint()<br/>• calculateLineTotal()"]:::domain
+    end
+
+    subgraph DatabaseLayer ["Database Layer (packages/database)"]
+        CartRepo["DrizzleCartRepository (Adapter)<br/>• Implements ICartRepository<br/>• Explicit ACID transaction<br/>• Bidirectional entity/row mapping"]:::database
+        DbTables["PostgreSQL Schema<br/>• carts table<br/>• cart_lines table"]:::database
+    end
+
+    PDP -->|User selects size / finish| ConfigStore
+    PDP -->|Add to Atelier Bag| CartStore
+    Header -->|Toggle bag| CartStore
+    Header -->|Open search / menu| UiStore
+    CartDrawer -->|Update qty / remove| CartStore
+
+    CartStore --> CartSelectors
+    ConfigStore --> ConfigSelectors
+    UiStore --> UiSelectors
+
+    CartSelectors -->|Render itemCount| Header
+    CartSelectors -->|Render lines & subtotal| CartDrawer
+    ConfigSelectors -->|Render dynamic price| PDP
+    UiSelectors -->|Render overlays| SearchModal
+
+    CartStore <-->|Persist & Hydrate| CartStorage
+    ConfigStore <-->|Persist Active Draft| DraftStorage
+
+    CartStore -->|Collector Signs In / Syncs| CartActions
+    CartActions -->|Invokes use cases| CartService
+    CartService -->|Instantiates & mutates| CartEntity
+    CartEntity --> CartLineEntity
+    CartService -->|Calls repository port| CartPort
+    CartPort -.->|Implemented by| CartRepo
+    CartRepo -->|ACID transactions| DbTables
+    CartRepo -->|Returns domain entities| CartService
+    CartService -->|Returns Cart aggregate| CartActions
+    CartActions -->|Returns CartDto| CartStore

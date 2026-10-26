@@ -33,25 +33,25 @@ export function assertActorAccessLevel(actor: Actor, requiredLevel: AccessLevel)
 }
 
 /**
- * Asserts whether an OM production job can still be cancelled or edited by the customer/support.
+ * Asserts whether a Project 925 OM production job can still be cancelled or edited.
  * Point of No Return:
- * - Denim (BOTTOMS / TOPS): Stage 'CUTTING'
- * - Jewellery (JEWELLERY): Stage 'CASTING'
+ * - Sterling Silver Jewellery: Stage 'CASTING' (once molten .925 sterling silver is poured into flask)
  */
-export function assertPrePointOfNoReturn(
-  category: 'BOTTOMS' | 'TOPS' | 'JEWELLERY' | 'ACCESSORIES',
-  currentStage: string,
-): void {
-  const isJewellery = category === 'JEWELLERY';
-  const pointOfNoReturn = isJewellery ? 'CASTING' : 'CUTTING';
-  const irreversibleStages = isJewellery
-    ? ['CASTING', 'SETTING', 'PATINA', 'POLISHING', 'QC', 'READY', 'SHIPPED']
-    : ['CUTTING', 'SEWING', 'WASHING', 'HARDWARE', 'QC', 'READY', 'SHIPPED'];
+export function assertPrePointOfNoReturn(_category: string, currentStage: string): void {
+  const irreversibleStages = [
+    'CASTING',
+    'SETTING',
+    'PATINA',
+    'POLISHING',
+    'QC',
+    'READY',
+    'SHIPPED',
+  ];
 
   if (irreversibleStages.includes(currentStage)) {
     throw new ForbiddenError(
-      category,
-      `Order item cannot be modified or cancelled: craft process has already reached stage '${currentStage}'. (Point of No Return for ${isJewellery ? 'jewellery' : 'denim'} is '${pointOfNoReturn}').`,
+      'PRODUCTION',
+      `Order item cannot be modified or cancelled: metalsmithing process has already reached stage '${currentStage}'. (Point of No Return is 'CASTING' when liquid sterling silver is poured).`,
     );
   }
 }

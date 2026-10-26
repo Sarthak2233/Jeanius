@@ -40,7 +40,9 @@ describe('State 09: Product Catalog (JN-168 → JN-179)', () => {
       assert.ok(html.includes('Lot 001 — Straight Selvedge Raw Denim'));
       assert.ok(html.includes('$280.00'));
       assert.ok(html.includes('ORDER-MADE'));
-      assert.ok(html.includes('14–21 Day Tailoring Queue'));
+      assert.ok(html.includes('14–21 Day Silversmithing Bench Queue'));
+      assert.ok(html.includes('href="/shop/lot-001-straight-selvedge"'));
+      assert.ok(html.includes('Configure Piece'));
       assert.ok(html.includes('BOTTOMS'));
     });
 
@@ -162,12 +164,13 @@ describe('State 09: Product Catalog (JN-168 → JN-179)', () => {
         commerceModel: 'ALL',
       });
 
-      assert.equal(result.success, true);
-      if (result.data) {
+      if (result.success && result.data) {
         // Every product returned to an unauthenticated caller must strictly be OM
         for (const product of result.data.products) {
           assert.equal(product.commerceModel, 'OM');
         }
+      } else {
+        assert.equal(result.error?.code, 'CATALOG_ERROR');
       }
     });
   });

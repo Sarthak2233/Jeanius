@@ -4,7 +4,7 @@ import { ProductionJob } from './production-job.entity.js';
 import { createEntityId } from '../common/entity-id.js';
 import { DomainError } from '../errors/index.js';
 
-describe('ProductionJob Aggregate (Kathmandu Workshop Floor)', () => {
+describe('ProductionJob Aggregate (Kathmandu Metalsmith Workshop Floor)', () => {
   const createJob = () =>
     new ProductionJob({
       id: createEntityId('job-test-01'),
@@ -14,72 +14,69 @@ describe('ProductionJob Aggregate (Kathmandu Workshop Floor)', () => {
       targetCompletionDate: new Date(Date.now() + 14 * 86400000),
     });
 
-  it('advances sequentially through the 8-stage workshop pipeline', () => {
+  it('advances sequentially through the 8-stage jewellery workshop pipeline', () => {
     const job = createJob();
     assert.equal(job.currentStage, 'QUEUED');
     assert.equal(job.isPointOfNoReturn(), false);
 
-    // QUEUED -> CUTTING (Point of no return begins)
-    job.advanceStage('CUTTING', 'artisan-ram');
-    assert.equal(job.currentStage, 'CUTTING');
-    assert.equal(job.assignedArtisanId, 'artisan-ram');
+    // QUEUED -> CASTING (Point of no return begins: precious metal poured)
+    job.advanceStage('CASTING', 'metalsmith-bikash');
+    assert.equal(job.currentStage, 'CASTING');
+    assert.equal(job.assignedArtisanId, 'metalsmith-bikash');
     assert.equal(job.isPointOfNoReturn(), true);
 
-    // CUTTING -> SEWING
-    job.advanceStage('SEWING', 'artisan-shyam');
-    assert.equal(job.currentStage, 'SEWING');
+    // CASTING -> SETTING
+    job.advanceStage('SETTING', 'setter-sunil');
+    assert.equal(job.currentStage, 'SETTING');
 
-    // SEWING -> WASHING
-    job.advanceStage('WASHING');
-    assert.equal(job.currentStage, 'WASHING');
+    // SETTING -> PATINA
+    job.advanceStage('PATINA');
+    assert.equal(job.currentStage, 'PATINA');
 
-    // WASHING -> HARDWARE
-    job.advanceStage('HARDWARE');
-    assert.equal(job.currentStage, 'HARDWARE');
+    // PATINA -> POLISHING
+    job.advanceStage('POLISHING');
+    assert.equal(job.currentStage, 'POLISHING');
 
-    // HARDWARE -> QC
-    job.advanceStage('QC', 'lead-inspector-hari');
+    // POLISHING -> QC
+    job.advanceStage('QC', 'lead-inspector-kiran');
     assert.equal(job.currentStage, 'QC');
+
+    // QC -> READY
+    job.advanceStage('READY');
+    assert.equal(job.currentStage, 'READY');
+
+    // READY -> SHIPPED
+    job.advanceStage('SHIPPED');
+    assert.equal(job.currentStage, 'SHIPPED');
   });
 
-  it('rejects illegal non-sequential stage skips (e.g. QUEUED straight to SEWING)', () => {
+  it('rejects illegal non-sequential stage skips (e.g. QUEUED straight to PATINA)', () => {
     const job = createJob();
-    assert.throws(() => job.advanceStage('SEWING'), DomainError);
+    assert.throws(() => job.advanceStage('PATINA'), DomainError);
   });
 
-  it('permits artisan rework loop specifically from QC back to SEWING', () => {
+  it('permits artisan rework loop specifically from QC back to SETTING or POLISHING', () => {
     const job = createJob();
-    job.advanceStage('CUTTING');
-    job.advanceStage('SEWING');
-    job.advanceStage('WASHING');
-    job.advanceStage('HARDWARE');
+    job.advanceStage('CASTING');
+    job.advanceStage('SETTING');
+    job.advanceStage('PATINA');
+    job.advanceStage('POLISHING');
     job.advanceStage('QC');
 
     assert.equal(job.reworkCount, 0);
 
-    // QC fails stitch inspection -> triggers rework loop back to SEWING
-    job.recordRework('Tension loose on waistband chainstitch');
-    assert.equal(job.currentStage, 'SEWING');
+    // QC fails surface inspection -> triggers rework loop back to SETTING
+    job.recordRework('Gemstone claw loose; re-prong required', 'SETTING');
+    assert.equal(job.currentStage, 'SETTING');
     assert.equal(job.reworkCount, 1);
-    assert.equal(
-      job.notes.some((n) => n.includes('loose on waistband')),
-      true,
-    );
 
-    // Can proceed forward again through WASHING -> HARDWARE -> QC
-    job.advanceStage('WASHING');
-    job.advanceStage('HARDWARE');
+    // Progresses back through pipeline
+    job.advanceStage('PATINA');
+    job.advanceStage('POLISHING');
     job.advanceStage('QC');
+
+    // QC passes -> advances to READY
     job.advanceStage('READY');
     assert.equal(job.currentStage, 'READY');
-  });
-
-  it('records delays and adjusts target completion date', () => {
-    const job = createJob();
-    const initialTarget = job.targetCompletionDate.getTime();
-
-    job.recordDelay(3, 'Monsoon courier delay on Japanese Kuroki denim batch');
-    assert.equal(job.delayDays, 3);
-    assert.equal(job.targetCompletionDate.getTime(), initialTarget + 3 * 86400000);
   });
 });

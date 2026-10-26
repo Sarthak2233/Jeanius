@@ -1,5 +1,5 @@
 import type { UpdateProfileDto, CreateAddressInputDto } from '@jeanius/contracts';
-import type { UserProfile, DenimMeasurements, JewelleryMeasurements } from '@jeanius/domain';
+import type { UserProfile, JewelleryMeasurements } from '@jeanius/domain';
 import { NotFoundError } from '@jeanius/domain';
 import { createLogger } from '@jeanius/observability';
 import type { IUserProfileRepository } from './user-profile-repository.port';
@@ -45,11 +45,6 @@ export class CustomerProfileUseCase {
       throw new NotFoundError('UserProfile', userId);
     }
 
-    const denimPreferences =
-      dto.denimPreferences === null
-        ? undefined
-        : (dto.denimPreferences ?? existing.denimPreferences);
-
     const jewelleryPreferences =
       dto.jewelleryPreferences === null
         ? undefined
@@ -59,30 +54,16 @@ export class CustomerProfileUseCase {
       fullName: dto.fullName ?? existing.fullName,
       phone: dto.phone ?? existing.phone,
       avatarUrl: dto.avatarUrl ?? existing.avatarUrl,
-      craftFocus: dto.craftFocus ?? existing.craftFocus,
-      denimPreferences,
       jewelleryPreferences,
       updatedAt: new Date(),
     });
 
     this.logger.info('Customer profile updated', {
       userId,
-      craftFocus: updated.craftFocus,
-      hasGarmentVault: !!updated.denimPreferences,
       hasJewelleryVault: !!updated.jewelleryPreferences,
     });
 
     return updated;
-  }
-
-  async updateGarmentPreferences(
-    userId: string,
-    preferences: DenimMeasurements,
-  ): Promise<UserProfile> {
-    return this.updateProfile(userId, {
-      denimPreferences: preferences,
-      craftFocus: 'GARMENT',
-    });
   }
 
   async updateJewelleryPreferences(
@@ -91,12 +72,7 @@ export class CustomerProfileUseCase {
   ): Promise<UserProfile> {
     return this.updateProfile(userId, {
       jewelleryPreferences: preferences,
-      craftFocus: 'JEWELLERY',
     });
-  }
-
-  async clearGarmentPreferences(userId: string): Promise<UserProfile> {
-    return this.updateProfile(userId, { denimPreferences: null });
   }
 
   async clearJewelleryPreferences(userId: string): Promise<UserProfile> {

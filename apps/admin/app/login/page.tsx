@@ -246,21 +246,7 @@ function LoginFormContent() {
             >
               Director (ADMIN)
             </button>
-            <button
-              type="button"
-              onClick={() => fillCredentials('mastercutter@jeanius.co', 'tailorpassword123')}
-              style={{
-                padding: '0.5rem',
-                fontSize: '0.75rem',
-                backgroundColor: '#1e293b',
-                border: '1px solid #475569',
-                borderRadius: '4px',
-                color: '#cbd5e1',
-                cursor: 'pointer',
-              }}
-            >
-              Master Cutter (TAILOR)
-            </button>
+
             <button
               type="button"
               onClick={() => fillCredentials('metalsmith@jeanius.co', 'jewellerpassword123')}

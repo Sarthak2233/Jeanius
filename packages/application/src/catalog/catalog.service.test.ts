@@ -39,15 +39,14 @@ class MockProductRepository implements IProductRepository {
     }
 
     const categoryCounts: CategoryCount[] = [
-      { category: 'BOTTOMS', count: this.products.filter((p) => p.category === 'BOTTOMS').length },
-      { category: 'TOPS', count: this.products.filter((p) => p.category === 'TOPS').length },
+      { category: 'rings', count: this.products.filter((p) => p.category === 'rings').length },
       {
-        category: 'JEWELLERY',
-        count: this.products.filter((p) => p.category === 'JEWELLERY').length,
+        category: 'bracelets-cuffs',
+        count: this.products.filter((p) => p.category === 'bracelets-cuffs').length,
       },
       {
-        category: 'ACCESSORIES',
-        count: this.products.filter((p) => p.category === 'ACCESSORIES').length,
+        category: 'necklaces-pendants',
+        count: this.products.filter((p) => p.category === 'necklaces-pendants').length,
       },
     ];
 
@@ -69,34 +68,39 @@ class MockProductRepository implements IProductRepository {
       ? this.products.filter((p) => p.commerceModel === commerceModel)
       : this.products;
     return [
-      { category: 'BOTTOMS', count: list.filter((p) => p.category === 'BOTTOMS').length },
-      { category: 'TOPS', count: list.filter((p) => p.category === 'TOPS').length },
-      { category: 'JEWELLERY', count: list.filter((p) => p.category === 'JEWELLERY').length },
-      { category: 'ACCESSORIES', count: list.filter((p) => p.category === 'ACCESSORIES').length },
+      { category: 'rings', count: list.filter((p) => p.category === 'rings').length },
+      {
+        category: 'bracelets-cuffs',
+        count: list.filter((p) => p.category === 'bracelets-cuffs').length,
+      },
+      {
+        category: 'necklaces-pendants',
+        count: list.filter((p) => p.category === 'necklaces-pendants').length,
+      },
     ];
   }
 }
 
-describe('CatalogService Application Service (JN-168 → JN-177)', () => {
+describe('CatalogService Application Service — Project 925', () => {
   const p1 = new Product({
     id: 'p-1' as ProductId,
-    slug: 'lot-001',
-    title: 'Lot 001 Jeans',
-    description: 'Selvedge denim jeans',
+    slug: 'vajra-signet-ring',
+    title: 'Vajra Signet Ring',
+    description: 'Hand-carved .925 sterling silver signet with ancient Vajra motif',
     basePrice: Money.fromMajor(280, 'USD'),
     commerceModel: 'OM',
-    category: 'BOTTOMS',
+    category: 'rings',
     status: 'PUBLISHED',
   });
 
   const p2 = new Product({
     id: 'p-2' as ProductId,
-    slug: 'lot-j01',
-    title: 'Lot J01 Signet Ring',
-    description: 'Solid sterling silver ring',
-    basePrice: Money.fromMajor(180, 'USD'),
+    slug: 'garuda-heavy-cuff',
+    title: 'Garuda Heavy Cuff',
+    description: 'Solid .925 sterling silver open cuff with hand-chiseled feathering',
+    basePrice: Money.fromMajor(420, 'USD'),
     commerceModel: 'DROP',
-    category: 'JEWELLERY',
+    category: 'bracelets-cuffs',
     status: 'PUBLISHED',
   });
 
@@ -104,22 +108,22 @@ describe('CatalogService Application Service (JN-168 → JN-177)', () => {
   const service = new CatalogService(mockRepo);
 
   it('filters catalog by category accurately', async () => {
-    const result = await service.getCatalog({ category: 'BOTTOMS' });
+    const result = await service.getCatalog({ category: 'rings' });
     assert.equal(result.totalCount, 1);
-    assert.equal(result.products[0]?.slug, 'lot-001');
-    assert.equal(result.categoryCounts.length, 4);
+    assert.equal(result.products[0]?.slug, 'vajra-signet-ring');
+    assert.equal(result.categoryCounts.length, 3);
   });
 
   it('filters catalog by commerce model accurately', async () => {
     const result = await service.getCatalog({ commerceModel: 'DROP' });
     assert.equal(result.totalCount, 1);
-    assert.equal(result.products[0]?.slug, 'lot-j01');
+    assert.equal(result.products[0]?.slug, 'garuda-heavy-cuff');
   });
 
   it('retrieves product by slug', async () => {
-    const item = await service.getProductBySlug('lot-001');
+    const item = await service.getProductBySlug('vajra-signet-ring');
     assert.ok(item);
-    assert.equal(item?.title, 'Lot 001 Jeans');
+    assert.equal(item?.title, 'Vajra Signet Ring');
   });
 
   it('returns related products excluding the current product', async () => {
@@ -130,15 +134,15 @@ describe('CatalogService Application Service (JN-168 → JN-177)', () => {
 
   it('calculates category counts filtered by commerce model', async () => {
     const omCounts = await service.getCategoryCounts('OM');
-    const bottomsOm = omCounts.find((c) => c.category === 'BOTTOMS');
-    const jewelleryOm = omCounts.find((c) => c.category === 'JEWELLERY');
-    assert.equal(bottomsOm?.count, 1);
-    assert.equal(jewelleryOm?.count, 0);
+    const ringsOm = omCounts.find((c) => c.category === 'rings');
+    const cuffsOm = omCounts.find((c) => c.category === 'bracelets-cuffs');
+    assert.equal(ringsOm?.count, 1);
+    assert.equal(cuffsOm?.count, 0);
 
     const dropCounts = await service.getCategoryCounts('DROP');
-    const bottomsDrop = dropCounts.find((c) => c.category === 'BOTTOMS');
-    const jewelleryDrop = dropCounts.find((c) => c.category === 'JEWELLERY');
-    assert.equal(bottomsDrop?.count, 0);
-    assert.equal(jewelleryDrop?.count, 1);
+    const ringsDrop = dropCounts.find((c) => c.category === 'rings');
+    const cuffsDrop = dropCounts.find((c) => c.category === 'bracelets-cuffs');
+    assert.equal(ringsDrop?.count, 0);
+    assert.equal(cuffsDrop?.count, 1);
   });
 });

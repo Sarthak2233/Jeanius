@@ -1,23 +1,19 @@
-# JEANIUS & JEWL — Precision Denim & Artisan Jewellery Atelier
+# PROJECT 925 — Kathmandu .925 Sterling Silver Artisan Jewellery Atelier
 
-> **Crafted in Kathmandu, Nepal. Worn Worldwide.**  
-> A bespoke direct-to-consumer atelier uniting handmade raw selvedge denim and handcrafted artisan jewellery, built on Next.js, Supabase, Drizzle ORM, and Turborepo.
+> **Crafted in the Kathmandu Workshop, Nepal. Worn Worldwide.**  
+> An artisan direct-to-consumer jewellery atelier dedicated exclusively to handcrafted .925 sterling silver, built on Next.js 15, Supabase, Drizzle ORM, and Turborepo.
 
 ---
 
 ## 1. Brand & Commerce Overview
 
-**Jeanius & Jewl** unites two parallel, complementary artisanal traditions under a singular aesthetic philosophy: **"Worn Together, Aged Together."** Operating out of Kathmandu, Nepal, and serving a global audience of connoisseurs, the atelier crafts:
-- **Handmade Raw Denim:** Bespoke jeans, workwear jackets, and accessories cut and sewn from shuttle-loom Japanese selvedge denim, designed to crease, fade, and patina uniquely to the wearer's life.
-- **Handcrafted Artisan Jewellery:** Heavy .925 sterling silver and solid brass signet rings, curb wallet chains, cuffs, and hardware accents that oxidize and polish organically with time and wear.
+**Project 925** operates strictly out of the **Kathmandu Workshop** in Nepal, serving a global audience of collectors and patrons. The atelier specializes exclusively in handcrafted .925 sterling silver artisan jewellery:
+- **Order-Made (OM) Pieces:** Bespoke signet rings, ancient Newar repoussé talisman pendants, sculptural cuffs, and cast chains forged and finished to individual customer specifications upon payment.
+- **Ready-to-Ship (DROP) Releases:** Small-batch, numbered limited editions (e.g. 25 numbered talisman pendants, 15 heavy .925 silver cuffs) with immediate inventory reservations and 24–48 hour dispatch.
+- **TOGETHER & Membership:** Access-controlled community releases, early purchase priority windows, and private co-commissioning salons.
+- **Dynamic Category Architecture:** Real-time category creation, reordering, and visibility toggling managed directly by workshop staff via the Admin workbench.
 
-Both verticals operate symmetrically across three core commerce models:
-
-* **OM (Order-Made):** Custom garments and jewellery forged and tailored to order upon payment. Customers configure exact physical specifications—fit, waist, and inseam for jeans; ring sizes (US 4–14), chain lengths, metal alloys, and bespoke hand-engravings for jewellery. Production is governed by dynamic workshop policies (`ProductionPolicy`) calculating live lead times across Tailor and Metalsmith benches.
-* **DROP (Ready-to-Ship):** Small-batch, curated runs of limited-edition pieces (e.g. 50 jackets in 16oz Deadstock Kuroki denim, 25 numbered sculptural brass cuffs) with immediate physical inventory reservation and distinct return/exchange policies.
-* **TOGETHER & Membership:** Gated community releases, member-only drops, and archival projects with server-enforced access controls.
-
-The customer interface follows a **restrained, minimalist editorial aesthetic**: generous whitespace, subtle tactile borders, raw tactile tones (deep indigo, unbleached ecru, oxidized silver, warm brass), and high-fidelity photography with zero generic ecommerce clutter.
+The customer interface follows a **restrained, minimalist editorial aesthetic**: generous whitespace, subtle tactile borders, raw tactile tones (oxidized sulfur silver, high-mirror highlights, warm bone substrates), and macro-photography capturing authentic metalsmith chisel and crucible textures.
 
 ---
 
@@ -29,9 +25,9 @@ The platform is designed as a **Domain-Driven Design (DDD) Modular Monolith** ho
 | :--- | :--- | :--- |
 | **Monorepo Engine** | **Turborepo + pnpm** | Cached task orchestration, strict package boundaries, fast builds. |
 | **Customer Storefront** | **Next.js App Router (React 19)** | High-speed Server Components, SEO metadata, editorial shop UI (`apps/storefront`). |
-| **Workshop Admin Portal**| **Next.js App Router (React 19)** | Real-time OM manufacturing queue board, order management, inventory control (`apps/admin`). |
+| **Workshop Admin Portal**| **Next.js App Router (React 19)** | Real-time OM jewellery bench kanban, dynamic category management (`/categories`), order fulfillment (`apps/admin`). |
 | **State Management** | **Zustand** | Ephemeral browser interaction only (cart drawer, active configurator selections). Server remains authoritative. |
-| **Backend & APIs** | **Next.js Server Actions & Route Handlers** | Server Actions for application mutations; Route Handlers for external webhooks. No standalone microservice. |
+| **Backend & APIs** | **Next.js Server Actions & Route Handlers** | Server Actions for application mutations; Route Handlers for external webhooks. Zero standalone microservices. |
 | **Database & ORM** | **Supabase PostgreSQL + Drizzle ORM** | Type-safe SQL schemas, zero-cold-start queries, version-controlled migrations (`packages/database`). |
 | **Contracts & Validation**| **Zod** | Shared schemas validating API payloads, forms, and external webhooks (`packages/contracts`). |
 | **Payment Orchestrator** | **Multi-Rail Provider Gateway** | Provider abstraction routing international cards via **Stripe** and Nepal domestic rails via **eSewa / Khalti** (`packages/integrations`). |
@@ -43,26 +39,26 @@ The platform is designed as a **Domain-Driven Design (DDD) Modular Monolith** ho
 ## 3. Monorepo Directory Layout
 
 ```text
-jeanius-and-jewl/
+jeanius/
 ├── apps/
 │   ├── storefront/                 # Customer-facing Next.js App Router webstore (Port 3000)
-│   │   ├── app/                    # Catalog, Product Detail (/shop/[slug]), Cart, Checkout, Policies
-│   │   ├── components/             # Storefront UI primitives (PriceDisplay, StatusBadge, Header)
+│   │   ├── app/                    # Catalog, Product Detail (/shop/[slug]), Sizing Studio, Cart, Account
+│   │   ├── components/             # Storefront UI primitives (PriceDisplay, StatusBadge, Header, CategoryBar)
 │   │   ├── stores/                 # Zustand client stores (cart-store, configurator-store, ui-store)
 │   │   └── package.json
-│   └── admin/                      # Internal workshop & fulfillment Next.js application (Port 3001)
-│       ├── app/                    # OM Manufacturing Pipeline Kanban, Orders, Inventory
+│   └── admin/                      # Internal Kathmandu Workshop Next.js application (Port 3001)
+│       ├── app/                    # OM Jewellery Bench Kanban (/workshop/jeweller), Categories (/categories), Orders
 │       ├── components/             # Admin UI primitives (AdminNav, StatusBadge, PriceDisplay)
 │       └── package.json
 │
 ├── packages/
 │   ├── domain/                     # Pure TypeScript DDD entities & value objects (Zero external dependencies)
-│   │   └── src/entities/           # Product, Variant, Cart, Order, ProductionJob, Money, Address
+│   │   └── src/catalog/            # Product, Category, Variant, Cart, Order, ProductionJob, Money
 │   ├── application/                # Use cases, application services, and repository port interfaces
-│   │   └── src/                    # CatalogService, CartService, CheckoutService, ProductionService
-│   ├── database/                   # Supabase PostgreSQL + Drizzle ORM schemas and client
-│   │   ├── src/schema/             # products, variants, orders, production_jobs tables
-│   │   └── migrations/             # Generated SQL schema migrations
+│   │   └── src/                    # CatalogService, CategoryService, CartService, CheckoutService
+│   ├── database/                   # Supabase PostgreSQL + Drizzle ORM schemas, migrations, repositories
+│   │   ├── src/schema/             # products, categories, variants, orders, production_jobs
+│   │   └── src/repositories/       # Drizzle implementations of application repository ports
 │   ├── contracts/                  # Zod validation schemas and shared DTO types
 │   ├── integrations/               # External adapters: PaymentOrchestrator (Stripe & eSewa/Khalti)
 │   ├── config/                     # Typed server and client environment validation
@@ -74,12 +70,13 @@ jeanius-and-jewl/
 │
 ├── docs/
 │   ├── architecture/               # Architecture diagrams and system overview
-│   ├── adr/                        # Architecture Decision Records (ADR-001 to ADR-005)
+│   ├── adr/                        # Architecture Decision Records (ADR-001 to ADR-007)
+│   ├── assets/diagrams/            # Compiled SVG diagrams with dark atelier theme
 │   └── product/                    # Complete product specifications and domain glossary
 │
 ├── scripts/
-│   └── verify-monorepo.sh          # One-step workspace compilation & verification script
-├── .github/workflows/ci.yml        # Continuous integration pipeline (typecheck, lint, build)
+│   ├── verify-monorepo.sh          # One-step workspace compilation & verification script
+│   └── generate-diagrams.ts        # Central Mermaid SVG compilation tool
 ├── turbo.json                      # Turborepo task pipeline configuration
 ├── pnpm-workspace.yaml             # Monorepo workspace package declarations
 └── tsconfig.base.json              # Shared strict TypeScript compiler settings
@@ -106,12 +103,12 @@ sequenceDiagram
     participant Application as packages/application
     participant Database as packages/database (Drizzle)
     participant Orchestrator as packages/integrations (Payment)
-    actor Workshop as apps/admin (Tailor)
+    actor Workshop as apps/admin (Jeweller)
 
-    Customer->>Storefront: Views Lot 001 Straight Raw Denim
-    Customer->>Zustand: Selects Fit=Straight, Waist=32, Inseam=34
+    Customer->>Storefront: Views Lot J01 .925 Signet Ring
+    Customer->>Zustand: Selects Size=US 10, Finish=Antiqued Patina
     Note over Zustand: Updates UI interaction state locally
-    Customer->>Storefront: Clicks "Order Custom Jeans"
+    Customer->>Storefront: Clicks "Order Custom Piece"
     Storefront->>ServerAction: submitCheckout(orderPayload)
     ServerAction->>Application: CheckoutService.initiateCheckout()
     Application->>Database: Verify current price & create PENDING Order
@@ -121,34 +118,37 @@ sequenceDiagram
     Orchestrator->>Storefront: Webhook notification (/api/webhooks/*)
     Storefront->>Application: Mark Order PAID & spawn ProductionJob(QUEUED)
     Application->>Database: Persist ProductionJob in PostgreSQL
-    Workshop->>Database: Views OM Production Board in apps/admin
-    Note over Workshop: Tailor advances job: QUEUED → CUTTING → SEWING...
+    Workshop->>Database: Views OM Bench Queue in apps/admin
+    Note over Workshop: Jeweller advances job: QUEUED → CASTING → SETTING...
 ```
 
 </details>
 
 ### Architectural Guardrails
 1. **Domain Purity:** `@jeanius/domain` never imports React, Next.js, or database libraries.
-2. **Repository Abstraction:** Application logic talks only to repository interfaces (`IProductRepository`, `IOrderRepository`). Direct SQL/Drizzle calls live exclusively inside `@jeanius/database`.
+2. **Repository Abstraction:** Application logic talks only to repository interfaces (`IProductRepository`, `ICategoryRepository`, `IOrderRepository`). Direct SQL/Drizzle calls live exclusively inside `@jeanius/database`.
 3. **Server Authority:** Zustand manages client UI state only (e.g. drawer open/close, active button toggles). Prices, inventory checks, discount calculations, and order creation are **always authoritative on the server**.
 
 ---
 
-## 5. OM Manufacturing Pipeline
+## 5. OM Jewellery Manufacturing Pipeline
 
-Unlike standard ecommerce, Jeanius operates a dedicated manufacturing workflow for custom orders:
+Project 925 operates an 8-stage manufacturing workflow for made-to-order silver jewellery in the Kathmandu Workshop:
 
 ```text
-[1. QUEUED] ──► [2. CUTTING] ──► [3. SEWING] ──► [4. WASHING]
-                                                       │
-[8. SHIPPED] ◄── [7. READY] ◄── [6. QC INSPECTION] ◄── [5. HARDWARE]
+[1. QUEUED] ──► [2. CASTING] ──► [3. SETTING] ──► [4. PATINA]
+                                                        │
+[8. SHIPPED] ◄── [7. READY] ◄── [6. QC INSPECTION] ◄── [5. POLISHING]
 ```
 
-* **Cutting:** Master artisan lays out Kurabo raw denim bolts, chalks custom measurements, and precision-cuts panels.
-* **Sewing:** Union Special chainstitch construction, flat-felled inseams, and reinforced pocket bags.
-* **Washing:** Optional one-wash bath to remove initial starch while preserving raw selvedge character.
-* **Hardware:** Hand-hammered solid copper rivets and branded donut buttons.
-* **QC Inspection:** Verification of measurements (tolerance: ±0.25") before packaging.
+* **1. QUEUED:** Bench job created upon payment; precious silver stock allocated and Bench Ticket printed.
+* **2. CASTING [Point of No Return]:** Lost-wax investment mold burnout and centrifugal silver pour. Cancellation locked.
+* **3. SETTING:** Sprue removal, mandrel trueing to exact US size, bezel stone setting, inside-band engraving.
+* **4. PATINA:** Controlled chemical liver of sulfur oxidation for shadow depth in carved recesses.
+* **5. POLISHING:** Multi-stage abrasive rouge buffing (High Mirror, Brushed Matte, or Antiqued).
+* **6. QC INSPECTION:** Vernier caliper measurement (inner diameter tolerance ±0.1mm) and .925 hallmark stamp check.
+* **7. READY:** Ultrasonic bath cleaning, wrapped in tarnish-preventing paper, placed in wooden presentation box with polishing cloth.
+* **8. SHIPPED:** Tracking number registered and handed to carrier (HS Code 7113.11).
 
 ---
 
@@ -190,11 +190,14 @@ pnpm turbo run dev
 ### Code Quality & Testing
 
 ```bash
-# Typecheck all 11 workspace packages and applications
+# Typecheck all workspace packages and applications
 pnpm turbo run typecheck
 
 # Build all packages and applications for production
 pnpm turbo run build
+
+# Run unit and integration test suites
+pnpm turbo run test
 
 # Run the complete automated monorepo verification script
 ./scripts/verify-monorepo.sh
@@ -211,27 +214,12 @@ Key architectural decisions are formally documented in [docs/adr/](file:///home/
 * [ADR-003: Zustand for Client-Side State Management](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-003-zustand-client-state.md) — Enforcing strict separation between ephemeral UI state and server authority.
 * [ADR-004: Next.js Server Boundary & API Strategy](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-004-nextjs-server-boundary.md) — Utilizing Server Actions and Route Handlers instead of an independent API microservice.
 * [ADR-005: Decoupled Payment Orchestrator Architecture](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-005-payment-orchestrator.md) — Provider-independent multi-rail architecture supporting Nepal domestic and global payments.
+* [ADR-006: Two-Phase Inventory Hold](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-006-two-phase-inventory-reservation.md) — Claim + 10-minute TTL atomic reservation preventing overselling on limited drops.
+* [ADR-007: Transactional Outbox Pattern](file:///home/sarakb/projects/Jeanius/docs/adr/ADR-007-transactional-outbox-pattern.md) — Atomically staging domain events in PostgreSQL to guarantee reliable asynchronous delivery.
 
 ---
 
-## 8. Implementation Roadmap
+## 8. License & Craftsmanship
 
-The full production engineering backlog is tracked in [Production_Implementation.md](file:///home/sarakb/projects/Jeanius/Production_Implementation.md) across 42 states and ~600 tasks:
-
-* **State 00:** Product Contract & Architecture Foundation
-* **State 01:** Monorepo Foundation (`JN-028` – `JN-045`) — **DONE**
-* **State 02:** Engineering Governance (`JN-046` – `JN-062`)
-* **State 03:** Domain Model (`JN-063` – `JN-084`)
-* **State 04–05:** Database Schema & Supabase Auth (`JN-085` – `JN-127`)
-* **State 06–09:** Design System, Shell & Product Catalog (`JN-128` – `JN-179`)
-* **State 10–15:** Core Commerce (Configurator, Zustand, Cart, Checkout, Payments, Orders)
-* **State 16–19:** OM Manufacturing Pipeline & DROP Fulfillment
-* **State 20–30:** Customer Portal, Admin Operations & Notifications
-* **State 31–42:** Hardening, Security, SEO, Testing, and Production Launch
-
----
-
-## 9. License & Craftsmanship
-
-Proprietary and confidential. Developed for **Jeanius Handmade Denim Works**.  
+Proprietary and confidential. Developed for **Project 925 Artisan Jewellery Atelier (Kathmandu Workshop)**.  
 All rights reserved © 2026.

@@ -51,7 +51,7 @@ export async function adminLoginAction(
     const result = await useCase.execute(validated);
 
     // Verify user has staff or admin privileges
-    const allowedStaffRoles = ['ADMIN', 'TAILOR', 'JEWELLER', 'FULFILLMENT', 'SUPPORT'];
+    const allowedStaffRoles = ['ADMIN', 'JEWELLER', 'FULFILLMENT', 'SUPPORT'];
     if (!allowedStaffRoles.includes(result.role)) {
       logger.warn('Non-staff account attempted admin workbench login', {
         traceId,
@@ -71,8 +71,7 @@ export async function adminLoginAction(
 
     // Role-tailored initial redirection path
     let redirectPath = '/';
-    if (result.role === 'TAILOR') redirectPath = '/workshop/tailor';
-    else if (result.role === 'JEWELLER') redirectPath = '/workshop/jeweller';
+    if (result.role === 'JEWELLER') redirectPath = '/workshop/jeweller';
     else if (result.role === 'FULFILLMENT') redirectPath = '/fulfillment';
     else if (result.role === 'SUPPORT') redirectPath = '/support';
 

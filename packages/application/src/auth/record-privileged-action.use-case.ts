@@ -20,7 +20,7 @@ export class RecordPrivilegedActionUseCase {
 
   async execute(params: PrivilegedActionParams): Promise<void> {
     // Only privileged staff and admin roles can author privileged actions
-    assertActorHasRole(params.actor, ['ADMIN', 'TAILOR', 'JEWELLER', 'FULFILLMENT', 'SUPPORT']);
+    assertActorHasRole(params.actor, ['ADMIN', 'JEWELLER', 'FULFILLMENT', 'SUPPORT']);
 
     await this.auditLogRepository.record({
       actorId: params.actor.id,

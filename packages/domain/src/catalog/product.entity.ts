@@ -12,6 +12,7 @@ import {
 } from './product-type.js';
 import type { ProductOption } from './product-option.entity.js';
 import type { ProductVariant } from './variant.entity.js';
+import type { OrderMadeInputSchema, OrderMadePriceRule } from './order-made-specification.vo.js';
 import { DomainError } from '../errors/index.js';
 
 export interface ProductImageVo {
@@ -33,6 +34,10 @@ export interface ProductProps {
   readonly commerceModel: CommerceModel;
   readonly category: ProductCategory;
   readonly status?: ProductStatus;
+  readonly leadTimeDaysMin?: number;
+  readonly leadTimeDaysMax?: number;
+  readonly inputSpecifications?: OrderMadeInputSchema | Record<string, unknown>;
+  readonly priceRules?: readonly (OrderMadePriceRule | Record<string, unknown>)[];
   readonly publishAt?: Date;
   readonly images?: readonly ProductImageVo[];
   readonly options?: readonly ProductOption[];
@@ -54,6 +59,10 @@ export class Product {
   private readonly _images: ProductImageVo[];
   private readonly _options: ProductOption[];
   private readonly _variants: ProductVariant[];
+  readonly leadTimeDaysMin: number;
+  readonly leadTimeDaysMax: number;
+  readonly inputSpecifications?: OrderMadeInputSchema | Record<string, unknown>;
+  readonly priceRules?: readonly (OrderMadePriceRule | Record<string, unknown>)[];
   readonly createdAt: Date;
   private _updatedAt: Date;
 
@@ -73,6 +82,10 @@ export class Product {
     this.commerceModel = props.commerceModel;
     this.category = props.category;
     this._status = props.status ?? 'DRAFT';
+    this.leadTimeDaysMin = props.leadTimeDaysMin ?? (props.commerceModel === 'OM' ? 7 : 1);
+    this.leadTimeDaysMax = props.leadTimeDaysMax ?? (props.commerceModel === 'OM' ? 14 : 2);
+    this.inputSpecifications = props.inputSpecifications;
+    this.priceRules = props.priceRules ? [...props.priceRules] : undefined;
     this._publishAt = props.publishAt;
     this._images = props.images ? [...props.images] : [];
     this._options = props.options ? [...props.options] : [];
@@ -168,5 +181,30 @@ export class Product {
 
   findVariantBySku(sku: string): ProductVariant | undefined {
     return this._variants.find((v) => v.sku.toUpperCase() === sku.toUpperCase());
+  }
+
+  findVariantByOptions(selectedOptions: Record<string, string>): ProductVariant | undefined {
+    return this._variants.find((variant) => {
+      const variantEntries = Object.entries(variant.options);
+      if (variantEntries.length === 0) return false;
+      for (const [key, value] of variantEntries) {
+        const selectedVal = selectedOptions[key] ?? selectedOptions[key.toLowerCase()];
+        if (selectedVal !== value) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  calculateEffectivePrice(selectedOptions?: Record<string, string>): Money {
+    if (!selectedOptions || Object.keys(selectedOptions).length === 0) {
+      return this.basePrice;
+    }
+    const variant = this.findVariantByOptions(selectedOptions);
+    if (variant) {
+      return this.basePrice.add(variant.additionalPrice);
+    }
+    return this.basePrice;
   }
 }
