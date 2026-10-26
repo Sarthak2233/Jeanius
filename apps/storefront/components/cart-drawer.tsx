@@ -347,15 +347,40 @@ export function CartDrawer({
             <span style={{ color: '#0f172a', fontWeight: 500 }}>Calculated at checkout</span>
           </div>
 
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            disabled={items.length === 0}
-            onClick={handleProceedToCheckout}
-          >
-            PROCEED TO CHECKOUT
-          </Button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              disabled={items.length === 0}
+              onClick={handleProceedToCheckout}
+            >
+              PROCEED TO CHECKOUT
+            </Button>
+
+            <Link
+              href="/cart"
+              onClick={closeCartDrawer}
+              style={{
+                display: 'block',
+                width: '100%',
+                textAlign: 'center',
+                padding: '0.65rem 1rem',
+                backgroundColor: 'transparent',
+                color: '#334155',
+                border: '1px solid #cbd5e1',
+                borderRadius: '6px',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                textDecoration: 'none',
+                boxSizing: 'border-box',
+              }}
+            >
+              View Full Bag Details
+            </Link>
+          </div>
 
           <p
             style={{

@@ -5,4 +5,5 @@ export interface ICartRepository {
   findByCustomerId(customerId: string): Promise<Cart | null>;
   save(cart: Cart): Promise<void>;
   delete(id: string): Promise<void>;
+  deleteExpiredCarts(olderThan: Date): Promise<number>;
 }

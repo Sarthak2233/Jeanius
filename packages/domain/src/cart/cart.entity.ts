@@ -102,6 +102,15 @@ export class Cart {
     this._updatedAt = new Date();
   }
 
+  findLine(lineId: CartLineId): CartLine | undefined {
+    return this._lines.find((l) => l.id === lineId);
+  }
+
+  isExpired(ttlDays: number = 14): boolean {
+    const cutoff = Date.now() - ttlDays * 24 * 60 * 60 * 1000;
+    return this._updatedAt.getTime() < cutoff;
+  }
+
   calculateSubtotal(): Money {
     if (this._lines.length === 0) {
       return Money.zero(this.currency);
