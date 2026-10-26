@@ -1,0 +1,57 @@
+flowchart TD
+    classDef client fill:#1e1b4b,stroke:#818cf8,stroke-width:1.5px,color:#e0e7ff;
+    classDef step fill:#14532d,stroke:#4ade80,stroke-width:1.5px,color:#dcfce7;
+    classDef server fill:#18181b,stroke:#a1a1aa,stroke-width:1.5px,color:#f4f4f5;
+    classDef app fill:#312e81,stroke:#a5b4fc,stroke-width:1.5px,color:#e0e7ff;
+    classDef integration fill:#3730a3,stroke:#c7d2fe,stroke-width:1.5px,color:#f8fafc;
+    classDef domain fill:#831843,stroke:#f472b6,stroke-width:1.5px,color:#fdf2f8;
+    classDef database fill:#0f172a,stroke:#38bdf8,stroke-width:1.5px,color:#e0f2fe;
+
+    subgraph StorefrontUI ["Storefront UI & Testing Portal (apps/storefront)"]
+        CheckoutView["CheckoutView (/checkout)<br/>• Selects Bank Transfer Rail<br/>• Initiates Order & Payment Session"]:::client
+        BankSimView["BankSimulationView (/checkout/bank-sim)<br/>• Displays Amount & Dual Currency (USD/NPR)<br/>• Pre-fills Mock Bank Reference (TXN-BNK-...)<br/>• Optional Custom Reference / Slip Notes<br/>• Submits Simulated Transfer"]:::client
+        ConfirmationView["ConfirmationView (/checkout/confirmation)<br/>• Order Confirmed Banner<br/>• Payment Status: PENDING VERIFICATION<br/>• Displays Captured Bank Voucher Reference"]:::step
+        TestingControls["Test Settlement Helper<br/>• simulateBankSettlementAction()<br/>• Simulates PENDING -> PAID or FAILED"]:::client
+    end
+
+    subgraph ServerBoundary ["Storefront Server Boundary (apps/storefront/actions/payment.actions.ts)"]
+        InitPaymentAction["initiateOrderPaymentAction()<br/>• Retrieves Pending Order<br/>• Invokes PaymentOrchestrator<br/>• Returns Bank Simulation Redirect URL"]:::server
+        ConfirmBankAction["confirmBankTransferAction()<br/>• Captures Voucher Code & Memo<br/>• Transitions Payment Status to PENDING<br/>• Records Financial Audit Trail"]:::server
+        SimulateSettlementAction["simulateBankSettlementAction()<br/>• QA/Admin Verification Tool<br/>• Settles (PAID) or Rejects (FAILED)"]:::server
+    end
+
+    subgraph ApplicationLayer ["Application Layer (packages/application)"]
+        PaymentOrchestrator["PaymentOrchestrator (JN-244)<br/>• Selects Adapter by Rail / Currency (JN-245)<br/>• USD: International Bank Wire Rail<br/>• NPR: Nepal Domestic Bank Transfer Rail<br/>• Enforces Idempotency (JN-249)"]:::app
+        PaymentProviderPort["IPaymentProvider (Interface - JN-240)<br/>• initiatePayment(order, opts)<br/>• confirmTransfer(paymentId, ref)<br/>• verifyWebhook(payload, sig)<br/>• processRefund(paymentId, amount)"]:::app
+        PaymentRepoPort["IPaymentRepository (Port)<br/>• findById(id)<br/>• findByOrderId(orderId)<br/>• findByIdempotencyKey(key)<br/>• save(payment, tx)"]:::app
+    end
+
+    subgraph IntegrationsLayer ["Integrations Layer (packages/integrations)"]
+        SimulatedBankAdapter["SimulatedBankAdapter (Passable Bank Rail)<br/>• Implements IPaymentProvider<br/>• Generates /checkout/bank-sim URL<br/>• Captures Mock Bank Slip Reference<br/>• Resolves Passable Status: PENDING<br/>• Future Hook: Real Bank SDK Integration"]:::integration
+        StripeFutureAdapter["Future Adapter (Stripe/Card Rail)"]:::integration
+    end
+
+    subgraph DomainLayer ["Domain Layer (packages/domain - Pure DDD)"]
+        PaymentEntity["Payment Aggregate Root (JN-075, JN-241)<br/>• Status: INITIATED -> PENDING -> PAID<br/>• Idempotency Key Enforced<br/>• Dual Currency: Display vs Settlement (JN-252/253)<br/>• Financial Audit Ledger (JN-254)"]:::domain
+        DomainEvents["Payment Domain Events<br/>• PaymentPendingEvent<br/>• PaymentSettledEvent (JN-107)<br/>• PaymentFailedEvent (JN-120)<br/>• PaymentRefundedEvent (JN-114)"]:::domain
+    end
+
+    subgraph DatabaseLayer ["Database Layer (packages/database)"]
+        DrizzlePaymentRepo["DrizzlePaymentRepository (JN-051)<br/>• ACID Transaction Support<br/>• Dual Currency & Reference Persistence<br/>• Outbox Event Publishing"]:::database
+        DbTables["PostgreSQL Schema<br/>• payments table (JN-100)<br/>• outbox_events table"]:::database
+    end
+
+    CheckoutView -->|1. Submit Order| InitPaymentAction
+    InitPaymentAction -->|2. Delegate Payment| PaymentOrchestrator
+    PaymentOrchestrator -->|3. Route to Rail| SimulatedBankAdapter
+    SimulatedBankAdapter -->|4. Return Sim URL| InitPaymentAction
+    InitPaymentAction -->|5. Redirect| BankSimView
+    BankSimView -->|6. Confirm Transfer| ConfirmBankAction
+    ConfirmBankAction -->|7. Update State to PENDING| PaymentOrchestrator
+    PaymentOrchestrator -->|8. Mutate Payment| PaymentEntity
+    PaymentEntity -->|9. Emit Event| DomainEvents
+    PaymentOrchestrator -->|10. Persist| DrizzlePaymentRepo
+    DrizzlePaymentRepo --> DbTables
+    ConfirmBankAction -->|11. Redirect with PENDING| ConfirmationView
+    TestingControls -->|12. QA Simulation| SimulateSettlementAction
+    SimulateSettlementAction -->|13. Transition State| PaymentOrchestrator
