@@ -18,9 +18,24 @@ import {
 import type { IOrderRepository } from '@jeanius/application';
 import { db, type Database } from '../../client';
 import { orders, orderLines } from '../../schema/order';
+import { idempotencyKeys } from '../../schema/payment';
 
 export class DrizzleOrderRepository implements IOrderRepository {
   constructor(private readonly database: Database = db) {}
+
+  async findByIdempotencyKey(key: string): Promise<Order | null> {
+    const records = await this.database
+      .select()
+      .from(idempotencyKeys)
+      .where(eq(idempotencyKeys.key, key))
+      .limit(1);
+
+    const record = records[0];
+    if (!record || !record.responseBody) return null;
+    const body = record.responseBody as { orderId?: string };
+    if (!body.orderId) return null;
+    return this.findById(body.orderId);
+  }
 
   async findById(id: string): Promise<Order | null> {
     const result = await this.database.select().from(orders).where(eq(orders.id, id)).limit(1);
@@ -48,7 +63,7 @@ export class DrizzleOrderRepository implements IOrderRepository {
     return Promise.all(rows.map((row) => this.loadOrderWithLines(row)));
   }
 
-  async save(order: Order): Promise<void> {
+  async save(order: Order, idempotencyKey?: string): Promise<void> {
     await this.database
       .insert(orders)
       .values({
@@ -117,6 +132,22 @@ export class DrizzleOrderRepository implements IOrderRepository {
           customSpecifications: line.customSpecifications,
           allocatedMetalStockId: line.allocatedMetalStockId,
           createdAt: new Date(),
+        })
+        .onConflictDoNothing();
+    }
+
+    if (idempotencyKey) {
+      await this.database
+        .insert(idempotencyKeys)
+        .values({
+          key: idempotencyKey,
+          scope: 'checkout',
+          responseStatus: 200,
+          responseBody: {
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+          },
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         })
         .onConflictDoNothing();
     }

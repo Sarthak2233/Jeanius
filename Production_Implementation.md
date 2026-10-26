@@ -457,46 +457,46 @@ Those remain server/domain concerns.
 
 # STATE 12 — CART
 
-| ID     | Task                            | Description                       | Status      |
-| ------ | ------------------------------- | --------------------------------- | ----------- |
-| JN-209 | Create cart application service | Add item/use case.                | NOT_STARTED |
-| JN-210 | Create cart repository          | Persistent cart access.           | NOT_STARTED |
-| JN-211 | Add cart item                   | Exact variant/configuration.      | NOT_STARTED |
-| JN-212 | Update quantity                 | Quantity validation.              | NOT_STARTED |
-| JN-213 | Remove item                     | Remove cart line.                 | NOT_STARTED |
-| JN-214 | Recalculate cart                | Server-authoritative totals.      | NOT_STARTED |
-| JN-215 | Validate stock                  | Server-side availability.         | NOT_STARTED |
-| JN-216 | Validate price                  | Detect price changes.             | NOT_STARTED |
-| JN-217 | Handle discontinued variant     | Clear actionable state.           | NOT_STARTED |
-| JN-218 | Build mini-cart                 | Header/cart drawer.               | NOT_STARTED |
-| JN-219 | Build cart page                 | Full cart.                        | NOT_STARTED |
-| JN-220 | Build cart summary              | Subtotal/shipping/discount/total. | NOT_STARTED |
-| JN-221 | Handle cart expiration          | Stale data strategy.              | NOT_STARTED |
-| JN-222 | Test concurrent stock changes   | Prevent invalid purchase.         | NOT_STARTED |
+| ID     | Task                            | Description                       | Status    |
+| ------ | ------------------------------- | --------------------------------- | --------- |
+| JN-209 | Create cart application service | Add item/use case.                | COMPLETED |
+| JN-210 | Create cart repository          | Persistent cart access.           | COMPLETED |
+| JN-211 | Add cart item                   | Exact variant/configuration.      | COMPLETED |
+| JN-212 | Update quantity                 | Quantity validation.              | COMPLETED |
+| JN-213 | Remove item                     | Remove cart line.                 | COMPLETED |
+| JN-214 | Recalculate cart                | Server-authoritative totals.      | COMPLETED |
+| JN-215 | Validate stock                  | Server-side availability.         | COMPLETED |
+| JN-216 | Validate price                  | Detect price changes.             | COMPLETED |
+| JN-217 | Handle discontinued variant     | Clear actionable state.           | COMPLETED |
+| JN-218 | Build mini-cart                 | Header/cart drawer.               | COMPLETED |
+| JN-219 | Build cart page                 | Full cart.                        | COMPLETED |
+| JN-220 | Build cart summary              | Subtotal/shipping/discount/total. | COMPLETED |
+| JN-221 | Handle cart expiration          | Stale data strategy.              | COMPLETED |
+| JN-222 | Test concurrent stock changes   | Prevent invalid purchase.         | COMPLETED |
 
 ---
 
 # STATE 13 — CHECKOUT
 
-| ID     | Task                               | Description                           | Status      |
-| ------ | ---------------------------------- | ------------------------------------- | ----------- |
-| JN-223 | Build checkout route               | Checkout application shell.           | NOT_STARTED |
-| JN-224 | Build checkout summary             | Exact product/configuration.          | NOT_STARTED |
-| JN-225 | Build customer information         | Contact details.                      | NOT_STARTED |
-| JN-226 | Build address form                 | International shipping address.       | NOT_STARTED |
-| JN-227 | Build country validation           | Supported destination rules.          | NOT_STARTED |
-| JN-228 | Implement military-base validation | If current policy remains applicable. | NOT_STARTED |
-| JN-229 | Build shipping calculation         | Shipping cost/method abstraction.     | NOT_STARTED |
-| JN-230 | Display OM lead time               | Production + shipping separation.     | NOT_STARTED |
-| JN-231 | Display DROP policy                | Separate return/refund rules.         | NOT_STARTED |
-| JN-232 | Build order review                 | Final confirmation.                   | NOT_STARTED |
-| JN-233 | Implement checkout validation      | Server-side validation.               | NOT_STARTED |
-| JN-234 | Implement checkout idempotency     | Prevent duplicate orders.             | NOT_STARTED |
-| JN-235 | Handle price changes               | Require customer confirmation.        | NOT_STARTED |
-| JN-236 | Handle inventory changes           | Block unavailable checkout.           | NOT_STARTED |
-| JN-237 | Create pending order               | Transaction boundary.                 | NOT_STARTED |
-| JN-238 | Redirect/initiate payment          | Payment adapter.                      | NOT_STARTED |
-| JN-239 | Build checkout failure UX          | Recovery path.                        | NOT_STARTED |
+| ID     | Task                               | Description                           | Status    |
+| ------ | ---------------------------------- | ------------------------------------- | --------- |
+| JN-223 | Build checkout route               | Checkout application shell.           | COMPLETED |
+| JN-224 | Build checkout summary             | Exact product/configuration.          | COMPLETED |
+| JN-225 | Build customer information         | Contact details.                      | COMPLETED |
+| JN-226 | Build address form                 | International shipping address.       | COMPLETED |
+| JN-227 | Build country validation           | Supported destination rules.          | COMPLETED |
+| JN-228 | Implement military-base validation | If current policy remains applicable. | COMPLETED |
+| JN-229 | Build shipping calculation         | Shipping cost/method abstraction.     | COMPLETED |
+| JN-230 | Display OM lead time               | Production + shipping separation.     | COMPLETED |
+| JN-231 | Display DROP policy                | Separate return/refund rules.         | COMPLETED |
+| JN-232 | Build order review                 | Final confirmation.                   | COMPLETED |
+| JN-233 | Implement checkout validation      | Server-side validation.               | COMPLETED |
+| JN-234 | Implement checkout idempotency     | Prevent duplicate orders.             | COMPLETED |
+| JN-235 | Handle price changes               | Require customer confirmation.        | COMPLETED |
+| JN-236 | Handle inventory changes           | Block unavailable checkout.           | COMPLETED |
+| JN-237 | Create pending order               | Transaction boundary.                 | COMPLETED |
+| JN-238 | Redirect/initiate payment          | Payment adapter.                      | COMPLETED |
+| JN-239 | Build checkout failure UX          | Recovery path.                        | COMPLETED |
 
 ---
 
